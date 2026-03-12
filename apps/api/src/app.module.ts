@@ -1,11 +1,17 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from './prisma/prisma.module';
-import { TodoModule } from './todo/todo.module';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { TodoModule } from './todo/todo.module.js';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
+import { PluginModule } from './plugin/plugin.module.js';
+import { CvaApiPlugin } from '@rahataid/project-cva/api';
 
 @Module({
-  imports: [PrismaModule, TodoModule],
+  imports: [
+    PrismaModule,
+    TodoModule,
+    PluginModule.register([CvaApiPlugin]),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

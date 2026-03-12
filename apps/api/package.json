@@ -25,6 +25,8 @@
     "@nestjs/core": "catalog:",
     "@nestjs/platform-fastify": "catalog:",
     "@nestjs/swagger": "catalog:",
+    "@rahataid/plugin-sdk": "workspace:*",
+    "@rahataid/project-cva": "workspace:*",
     "@rs/db": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.3",

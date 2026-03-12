@@ -16,6 +16,8 @@ import { Route as AppUsersRouteImport } from './routes/_app.users'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
 import { Route as AppProjectsRouteImport } from './routes/_app.projects'
 import { Route as AppFundManagementRouteImport } from './routes/_app.fund-management'
+import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.index'
+import { Route as AppProjectsNewRouteImport } from './routes/_app.projects.new'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -51,32 +53,47 @@ const AppFundManagementRoute = AppFundManagementRouteImport.update({
   path: '/fund-management',
   getParentRoute: () => AppRoute,
 } as any)
+const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppProjectsRoute,
+} as any)
+const AppProjectsNewRoute = AppProjectsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AppProjectsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/fund-management': typeof AppFundManagementRoute
-  '/projects': typeof AppProjectsRoute
+  '/projects': typeof AppProjectsRouteWithChildren
   '/services': typeof AppServicesRoute
   '/users': typeof AppUsersRoute
   '/vendors': typeof AppVendorsRoute
+  '/projects/new': typeof AppProjectsNewRoute
+  '/projects/': typeof AppProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/fund-management': typeof AppFundManagementRoute
-  '/projects': typeof AppProjectsRoute
   '/services': typeof AppServicesRoute
   '/users': typeof AppUsersRoute
   '/vendors': typeof AppVendorsRoute
   '/': typeof AppIndexRoute
+  '/projects/new': typeof AppProjectsNewRoute
+  '/projects': typeof AppProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/_app/fund-management': typeof AppFundManagementRoute
-  '/_app/projects': typeof AppProjectsRoute
+  '/_app/projects': typeof AppProjectsRouteWithChildren
   '/_app/services': typeof AppServicesRoute
   '/_app/users': typeof AppUsersRoute
   '/_app/vendors': typeof AppVendorsRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/projects/new': typeof AppProjectsNewRoute
+  '/_app/projects/': typeof AppProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,14 +104,17 @@ export interface FileRouteTypes {
     | '/services'
     | '/users'
     | '/vendors'
+    | '/projects/new'
+    | '/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/fund-management'
-    | '/projects'
     | '/services'
     | '/users'
     | '/vendors'
     | '/'
+    | '/projects/new'
+    | '/projects'
   id:
     | '__root__'
     | '/_app'
@@ -104,6 +124,8 @@ export interface FileRouteTypes {
     | '/_app/users'
     | '/_app/vendors'
     | '/_app/'
+    | '/_app/projects/new'
+    | '/_app/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -161,12 +183,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFundManagementRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/projects/': {
+      id: '/_app/projects/'
+      path: '/'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof AppProjectsIndexRouteImport
+      parentRoute: typeof AppProjectsRoute
+    }
+    '/_app/projects/new': {
+      id: '/_app/projects/new'
+      path: '/new'
+      fullPath: '/projects/new'
+      preLoaderRoute: typeof AppProjectsNewRouteImport
+      parentRoute: typeof AppProjectsRoute
+    }
   }
 }
 
+interface AppProjectsRouteChildren {
+  AppProjectsNewRoute: typeof AppProjectsNewRoute
+  AppProjectsIndexRoute: typeof AppProjectsIndexRoute
+}
+
+const AppProjectsRouteChildren: AppProjectsRouteChildren = {
+  AppProjectsNewRoute: AppProjectsNewRoute,
+  AppProjectsIndexRoute: AppProjectsIndexRoute,
+}
+
+const AppProjectsRouteWithChildren = AppProjectsRoute._addFileChildren(
+  AppProjectsRouteChildren,
+)
+
 interface AppRouteChildren {
   AppFundManagementRoute: typeof AppFundManagementRoute
-  AppProjectsRoute: typeof AppProjectsRoute
+  AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppServicesRoute: typeof AppServicesRoute
   AppUsersRoute: typeof AppUsersRoute
   AppVendorsRoute: typeof AppVendorsRoute
@@ -175,7 +225,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppFundManagementRoute: AppFundManagementRoute,
-  AppProjectsRoute: AppProjectsRoute,
+  AppProjectsRoute: AppProjectsRouteWithChildren,
   AppServicesRoute: AppServicesRoute,
   AppUsersRoute: AppUsersRoute,
   AppVendorsRoute: AppVendorsRoute,

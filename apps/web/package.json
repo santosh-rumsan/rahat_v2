@@ -14,6 +14,9 @@
   "dependencies": {
     "@base-ui/react": "catalog:",
     "@fontsource-variable/inter": "^5.2.8",
+    "@rahataid/plugin-sdk": "workspace:*",
+    "@rahataid/project-beneficiary": "workspace:*",
+    "@rahataid/project-cva": "workspace:*",
     "@rs/ui": "workspace:*",
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/react-devtools": "catalog:tanstack",
