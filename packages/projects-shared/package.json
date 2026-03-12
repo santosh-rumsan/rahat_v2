@@ -1,27 +1,19 @@
 {
-  "name": "@rahataid/plugin-project-beneficiary",
+  "name": "@rahataid/projects-shared",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
-    },
-    "./frontend": {
-      "types": "./dist/frontend/index.d.ts",
-      "default": "./dist/frontend/index.js"
-    }
+    ".": "./src/index.ts",
+    "./beneficiary": "./src/beneficiary/index.ts"
   },
   "scripts": {
-    "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
-    "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@rahataid/plugin-sdk": "workspace:*",
-    "@rahataid/projects-shared": "workspace:*",
+    "@rs/ui": "workspace:*",
     "lucide-react": "catalog:"
   },
   "peerDependencies": {

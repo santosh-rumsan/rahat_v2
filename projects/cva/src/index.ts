@@ -1,2 +1,2 @@
-export { CvaApiPlugin, CvaModule } from './api/index.js'
-export { CvaWebPlugin } from './web/index.js'
+export { CvaBackendPlugin, CvaModule } from './backend/index.js'
+export { CvaFrontendPlugin } from './frontend/index.js'

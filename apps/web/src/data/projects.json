@@ -1,0 +1,62 @@
+[
+  {
+    "id": "nepal-earthquake-relief",
+    "name": "Nepal Earthquake Relief",
+    "projectType": "CVA",
+    "status": "Active",
+    "location": "Kathmandu, Nepal",
+    "beneficiaries": 1240,
+    "budget": "$320,000",
+    "image": "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=400&h=200&fit=crop"
+  },
+  {
+    "id": "flood-recovery-terai",
+    "name": "Flood Recovery – Terai",
+    "projectType": "ANTICIPATORY_ACTION",
+    "status": "Active",
+    "location": "Terai Region, Nepal",
+    "beneficiaries": 890,
+    "budget": "$180,000",
+    "image": "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=400&h=200&fit=crop"
+  },
+  {
+    "id": "urban-food-security",
+    "name": "Urban Food Security",
+    "projectType": "BENEFICIARY_MANAGEMENT",
+    "status": "Planning",
+    "location": "Pokhara, Nepal",
+    "beneficiaries": 420,
+    "budget": "$95,000",
+    "image": "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=400&h=200&fit=crop"
+  },
+  {
+    "id": "drought-response-karnali",
+    "name": "Drought Response – Karnali",
+    "projectType": "MICROLOANS",
+    "status": "Completed",
+    "location": "Karnali Province, Nepal",
+    "beneficiaries": 1670,
+    "budget": "$210,000",
+    "image": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop"
+  },
+  {
+    "id": "landslide-recovery-sindhupalchok",
+    "name": "Landslide Recovery – Sindhupalchok",
+    "projectType": "CVA",
+    "status": "Active",
+    "location": "Sindhupalchok, Nepal",
+    "beneficiaries": 610,
+    "budget": "$140,000",
+    "image": "https://images.unsplash.com/photo-1568454537842-d933259bb258?w=400&h=200&fit=crop"
+  },
+  {
+    "id": "winterisation-support-humla",
+    "name": "Winterisation Support",
+    "projectType": "MICROLEARNING",
+    "status": "Planning",
+    "location": "Humla District, Nepal",
+    "beneficiaries": 320,
+    "budget": "$75,000",
+    "image": "https://images.unsplash.com/photo-1491555103944-7c647fd857e6?w=400&h=200&fit=crop"
+  }
+]

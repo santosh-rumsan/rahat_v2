@@ -18,6 +18,9 @@ import { Route as AppProjectsRouteImport } from './routes/_app.projects'
 import { Route as AppFundManagementRouteImport } from './routes/_app.fund-management'
 import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.index'
 import { Route as AppProjectsNewRouteImport } from './routes/_app.projects.new'
+import { Route as AppProjectsIdRouteImport } from './routes/_app.projects.$id'
+import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$id.index'
+import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -63,6 +66,22 @@ const AppProjectsNewRoute = AppProjectsNewRouteImport.update({
   path: '/new',
   getParentRoute: () => AppProjectsRoute,
 } as any)
+const AppProjectsIdRoute = AppProjectsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AppProjectsRoute,
+} as any)
+const AppProjectsIdIndexRoute = AppProjectsIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppProjectsIdRoute,
+} as any)
+const AppProjectsIdBeneficiariesRoute =
+  AppProjectsIdBeneficiariesRouteImport.update({
+    id: '/beneficiaries',
+    path: '/beneficiaries',
+    getParentRoute: () => AppProjectsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -71,8 +90,11 @@ export interface FileRoutesByFullPath {
   '/services': typeof AppServicesRoute
   '/users': typeof AppUsersRoute
   '/vendors': typeof AppVendorsRoute
+  '/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/projects/new': typeof AppProjectsNewRoute
   '/projects/': typeof AppProjectsIndexRoute
+  '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRoute
+  '/projects/$id/': typeof AppProjectsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/fund-management': typeof AppFundManagementRoute
@@ -82,6 +104,8 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/projects/new': typeof AppProjectsNewRoute
   '/projects': typeof AppProjectsIndexRoute
+  '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRoute
+  '/projects/$id': typeof AppProjectsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,8 +116,11 @@ export interface FileRoutesById {
   '/_app/users': typeof AppUsersRoute
   '/_app/vendors': typeof AppVendorsRoute
   '/_app/': typeof AppIndexRoute
+  '/_app/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/_app/projects/new': typeof AppProjectsNewRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
+  '/_app/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRoute
+  '/_app/projects/$id/': typeof AppProjectsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -104,8 +131,11 @@ export interface FileRouteTypes {
     | '/services'
     | '/users'
     | '/vendors'
+    | '/projects/$id'
     | '/projects/new'
     | '/projects/'
+    | '/projects/$id/beneficiaries'
+    | '/projects/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/fund-management'
@@ -115,6 +145,8 @@ export interface FileRouteTypes {
     | '/'
     | '/projects/new'
     | '/projects'
+    | '/projects/$id/beneficiaries'
+    | '/projects/$id'
   id:
     | '__root__'
     | '/_app'
@@ -124,8 +156,11 @@ export interface FileRouteTypes {
     | '/_app/users'
     | '/_app/vendors'
     | '/_app/'
+    | '/_app/projects/$id'
     | '/_app/projects/new'
     | '/_app/projects/'
+    | '/_app/projects/$id/beneficiaries'
+    | '/_app/projects/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -197,15 +232,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsNewRouteImport
       parentRoute: typeof AppProjectsRoute
     }
+    '/_app/projects/$id': {
+      id: '/_app/projects/$id'
+      path: '/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof AppProjectsIdRouteImport
+      parentRoute: typeof AppProjectsRoute
+    }
+    '/_app/projects/$id/': {
+      id: '/_app/projects/$id/'
+      path: '/'
+      fullPath: '/projects/$id/'
+      preLoaderRoute: typeof AppProjectsIdIndexRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
+    '/_app/projects/$id/beneficiaries': {
+      id: '/_app/projects/$id/beneficiaries'
+      path: '/beneficiaries'
+      fullPath: '/projects/$id/beneficiaries'
+      preLoaderRoute: typeof AppProjectsIdBeneficiariesRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
   }
 }
 
+interface AppProjectsIdRouteChildren {
+  AppProjectsIdBeneficiariesRoute: typeof AppProjectsIdBeneficiariesRoute
+  AppProjectsIdIndexRoute: typeof AppProjectsIdIndexRoute
+}
+
+const AppProjectsIdRouteChildren: AppProjectsIdRouteChildren = {
+  AppProjectsIdBeneficiariesRoute: AppProjectsIdBeneficiariesRoute,
+  AppProjectsIdIndexRoute: AppProjectsIdIndexRoute,
+}
+
+const AppProjectsIdRouteWithChildren = AppProjectsIdRoute._addFileChildren(
+  AppProjectsIdRouteChildren,
+)
+
 interface AppProjectsRouteChildren {
+  AppProjectsIdRoute: typeof AppProjectsIdRouteWithChildren
   AppProjectsNewRoute: typeof AppProjectsNewRoute
   AppProjectsIndexRoute: typeof AppProjectsIndexRoute
 }
 
 const AppProjectsRouteChildren: AppProjectsRouteChildren = {
+  AppProjectsIdRoute: AppProjectsIdRouteWithChildren,
   AppProjectsNewRoute: AppProjectsNewRoute,
   AppProjectsIndexRoute: AppProjectsIndexRoute,
 }

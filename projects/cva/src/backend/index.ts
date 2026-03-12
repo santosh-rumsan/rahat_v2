@@ -4,7 +4,7 @@ import { CvaModule } from './cva.module.js'
 
 export { CvaModule }
 
-export const CvaApiPlugin: ProjectBackendPlugin = {
+export const CvaBackendPlugin: ProjectBackendPlugin = {
   projectType: PROJECT_TYPES.CVA,
   module: CvaModule,
 }
