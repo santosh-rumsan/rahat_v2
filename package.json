@@ -13,6 +13,7 @@
     "db:migrate": "dotenv -e .env -- pnpm --filter @rs/db db:migrate",
     "db:studio": "dotenv -e .env -- pnpm --filter @rs/db studio",
     "dev": "turbo watch dev --continue",
+    "dev:select": "node scripts/dev.js",
     "dev:api": "cd apps/api && pnpm dev",
     "dev:web": "cd apps/web && pnpm dev",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",

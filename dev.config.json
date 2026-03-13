@@ -1,0 +1,22 @@
+{
+  "active": [
+    "api",
+    "web",
+    "@rahataid/plugin-dashboard",
+    "@rahataid/plugin-fund-management",
+    "@rahataid/plugin-vendors",
+    "@rahataid/plugin-project-cva"
+  ],
+  "available": {
+    "core": ["api", "web"],
+    "projects": [
+      "@rahataid/plugin-project-aa",
+      "@rahataid/plugin-project-beneficiary",
+      "@rahataid/plugin-project-cva",
+      "@rahataid/plugin-project-microlearning",
+      "@rahataid/plugin-project-microloans"
+    ],
+    "plugins": [
+    ]
+  }
+}

@@ -30,7 +30,7 @@ function Projects() {
         </div>
         <button
           onClick={() => navigate({ to: '/projects/new' })}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors"
         >
           <Plus size={16} />
           Add New Project
@@ -46,7 +46,7 @@ function Projects() {
             placeholder="Search projects…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+            className="w-full pl-9 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
           />
         </div>
       </div>
@@ -59,7 +59,7 @@ function Projects() {
             <div
               key={p.id}
               onClick={() => navigate({ to: '/projects/$id', params: { id: p.id } })}
-              className="bg-gray-50 rounded-2xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
+              className="bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
             >
               <div className="relative h-36 overflow-hidden">
                 <img
@@ -68,7 +68,7 @@ function Projects() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <span
-                  className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[p.status]}`}
+                  className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[p.status]}`}
                 >
                   {p.status}
                 </span>
@@ -77,7 +77,7 @@ function Projects() {
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="font-semibold text-gray-900 text-sm leading-tight">{p.name}</h3>
                   {plugin && (
-                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
+                    <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded whitespace-nowrap flex-shrink-0">
                       {plugin.label}
                     </span>
                   )}

@@ -55,4 +55,4 @@ dist/
 .turbo
 
 # tanstack
-.tanstack
+.tanstackdev.config.json

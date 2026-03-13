@@ -10,3 +10,11 @@ export interface Beneficiary {
   householdSize?: number
   notes?: string
 }
+
+export interface BeneficiaryGroup {
+  id: string
+  name: string
+  description?: string
+  beneficiaryIds: string[]
+  createdAt: string
+}

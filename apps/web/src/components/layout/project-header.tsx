@@ -20,6 +20,8 @@ export function ProjectHeader({ projectId, projectName, menuItems = [], onBack }
     return () => window.removeEventListener('click', close)
   }, [openDropdown])
 
+  const isBeneficiariesOpen = openDropdown === 'beneficiaries'
+
   return (
     <header className="flex items-center gap-4 px-6 h-14 border-b border-gray-200 bg-[#f0f0f0] shrink-0">
       <button
@@ -41,14 +43,46 @@ export function ProjectHeader({ projectId, projectName, menuItems = [], onBack }
           Overview
         </Link>
 
-        <Link
-          to="/projects/$id/beneficiaries"
-          params={{ id: projectId }}
-          className="px-3 py-1.5 text-sm text-gray-600 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors"
-          activeProps={{ className: 'px-3 py-1.5 text-sm text-gray-900 bg-gray-100 rounded-md font-medium' }}
-        >
-          Beneficiaries
-        </Link>
+        {/* Beneficiaries dropdown */}
+        <div className="relative">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              setOpenDropdown(isBeneficiariesOpen ? null : 'beneficiaries')
+            }}
+            className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          >
+            Beneficiaries
+            <ChevronDown size={14} className={`transition-transform ${isBeneficiariesOpen ? 'rotate-180' : ''}`} />
+          </button>
+          {isBeneficiariesOpen && (
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="absolute left-0 top-full mt-1 min-w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50"
+            >
+              <Link
+                to="/projects/$id/beneficiaries"
+                params={{ id: projectId }}
+                onClick={() => setOpenDropdown(null)}
+                className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                activeProps={{ className: 'block px-3 py-2 text-sm font-medium text-gray-900 bg-gray-50' }}
+                activeOptions={{ exact: true }}
+              >
+                All Beneficiaries
+              </Link>
+              <Link
+                to="/projects/$id/beneficiaries/groups"
+                params={{ id: projectId }}
+                search={{ group: undefined }}
+                onClick={() => setOpenDropdown(null)}
+                className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                activeProps={{ className: 'block px-3 py-2 text-sm font-medium text-gray-900 bg-gray-50' }}
+              >
+                Groups
+              </Link>
+            </div>
+          )}
+        </div>
 
         <Link
           to="/projects/$id/project-management"
