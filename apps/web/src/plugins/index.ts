@@ -3,7 +3,11 @@ import { CvaFrontendPlugin } from '@rahataid/plugin-project-cva/frontend'
 import { AaFrontendPlugin } from '@rahataid/plugin-project-aa/frontend'
 import { MicrolearningFrontendPlugin } from '@rahataid/plugin-project-microlearning/frontend'
 import { MicroloansFrontendPlugin } from '@rahataid/plugin-project-microloans/frontend'
+import { DashboardFrontendPlugin } from '@rahataid/plugin-dashboard/frontend'
+import { VendorsFrontendPlugin } from '@rahataid/plugin-vendors/frontend'
+import { FundManagementFrontendPlugin } from '@rahataid/plugin-fund-management/frontend'
 import { registerPlugin } from './registry'
+import { registerAppPlugin } from './app-registry'
 
 // Register all installed project plugins
 registerPlugin(CvaFrontendPlugin)
@@ -12,4 +16,10 @@ registerPlugin(AaFrontendPlugin)
 registerPlugin(MicrolearningFrontendPlugin)
 registerPlugin(MicroloansFrontendPlugin)
 
+// Register app plugins
+registerAppPlugin(DashboardFrontendPlugin)
+registerAppPlugin(VendorsFrontendPlugin)
+registerAppPlugin(FundManagementFrontendPlugin)
+
 export { getRegisteredPlugins, getPlugin } from './registry'
+export { getRegisteredAppPlugins, getAppPlugin } from './app-registry'

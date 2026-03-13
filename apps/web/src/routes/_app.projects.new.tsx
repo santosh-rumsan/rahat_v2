@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
 import * as React from 'react'
 import { getRegisteredPlugins, getPlugin } from '../plugins'
+import { loadSettings } from '../lib/settings-store'
 
 export const Route = createFileRoute('/_app/projects/new')({ component: NewProject })
 
@@ -11,7 +12,11 @@ function NewProject() {
   const navigate = useNavigate()
   const [step, setStep] = React.useState<Step>('select-type')
   const [selectedType, setSelectedType] = React.useState<string | null>(null)
-  const plugins = getRegisteredPlugins()
+  const { enabledProjectTypes } = loadSettings()
+  const allPlugins = getRegisteredPlugins()
+  const plugins = enabledProjectTypes === null
+    ? allPlugins
+    : allPlugins.filter((p) => enabledProjectTypes.includes(p.projectType))
 
   function handleSelectType(projectType: string) {
     setSelectedType(projectType)

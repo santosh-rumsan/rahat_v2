@@ -4,7 +4,7 @@
 @import "@fontsource-variable/inter";
 
 @source "../../../packages/ui/src/*.{ts,tsx}";
-@source "../../../packages/projects-shared/src/*.{ts,tsx}";
+@source "../../../packages/projects-shared/src/**/*.{ts,tsx}";
 @source "../../../projects/*/src/**/*.{ts,tsx}";
 
 @custom-variant dark (&:is(.dark *));

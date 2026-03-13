@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppVendorsRouteImport } from './routes/_app.vendors'
 import { Route as AppUsersRouteImport } from './routes/_app.users'
+import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
 import { Route as AppProjectsRouteImport } from './routes/_app.projects'
 import { Route as AppFundManagementRouteImport } from './routes/_app.fund-management'
@@ -20,7 +21,9 @@ import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.ind
 import { Route as AppProjectsNewRouteImport } from './routes/_app.projects.new'
 import { Route as AppProjectsIdRouteImport } from './routes/_app.projects.$id'
 import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$id.index'
+import { Route as AppProjectsIdProjectManagementRouteImport } from './routes/_app.projects.$id.project-management'
 import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
+import { Route as AppProjectsIdProjectManagementAddTaskRouteImport } from './routes/_app.projects.$id.project-management.add-task'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -39,6 +42,11 @@ const AppVendorsRoute = AppVendorsRouteImport.update({
 const AppUsersRoute = AppUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AppRoute,
 } as any)
 const AppServicesRoute = AppServicesRouteImport.update({
@@ -76,11 +84,23 @@ const AppProjectsIdIndexRoute = AppProjectsIdIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppProjectsIdRoute,
 } as any)
+const AppProjectsIdProjectManagementRoute =
+  AppProjectsIdProjectManagementRouteImport.update({
+    id: '/project-management',
+    path: '/project-management',
+    getParentRoute: () => AppProjectsIdRoute,
+  } as any)
 const AppProjectsIdBeneficiariesRoute =
   AppProjectsIdBeneficiariesRouteImport.update({
     id: '/beneficiaries',
     path: '/beneficiaries',
     getParentRoute: () => AppProjectsIdRoute,
+  } as any)
+const AppProjectsIdProjectManagementAddTaskRoute =
+  AppProjectsIdProjectManagementAddTaskRouteImport.update({
+    id: '/add-task',
+    path: '/add-task',
+    getParentRoute: () => AppProjectsIdProjectManagementRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -88,24 +108,30 @@ export interface FileRoutesByFullPath {
   '/fund-management': typeof AppFundManagementRoute
   '/projects': typeof AppProjectsRouteWithChildren
   '/services': typeof AppServicesRoute
+  '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRoute
   '/vendors': typeof AppVendorsRoute
   '/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/projects/new': typeof AppProjectsNewRoute
   '/projects/': typeof AppProjectsIndexRoute
   '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRoute
+  '/projects/$id/project-management': typeof AppProjectsIdProjectManagementRouteWithChildren
   '/projects/$id/': typeof AppProjectsIdIndexRoute
+  '/projects/$id/project-management/add-task': typeof AppProjectsIdProjectManagementAddTaskRoute
 }
 export interface FileRoutesByTo {
   '/fund-management': typeof AppFundManagementRoute
   '/services': typeof AppServicesRoute
+  '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRoute
   '/vendors': typeof AppVendorsRoute
   '/': typeof AppIndexRoute
   '/projects/new': typeof AppProjectsNewRoute
   '/projects': typeof AppProjectsIndexRoute
   '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRoute
+  '/projects/$id/project-management': typeof AppProjectsIdProjectManagementRouteWithChildren
   '/projects/$id': typeof AppProjectsIdIndexRoute
+  '/projects/$id/project-management/add-task': typeof AppProjectsIdProjectManagementAddTaskRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,6 +139,7 @@ export interface FileRoutesById {
   '/_app/fund-management': typeof AppFundManagementRoute
   '/_app/projects': typeof AppProjectsRouteWithChildren
   '/_app/services': typeof AppServicesRoute
+  '/_app/settings': typeof AppSettingsRoute
   '/_app/users': typeof AppUsersRoute
   '/_app/vendors': typeof AppVendorsRoute
   '/_app/': typeof AppIndexRoute
@@ -120,7 +147,9 @@ export interface FileRoutesById {
   '/_app/projects/new': typeof AppProjectsNewRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
   '/_app/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRoute
+  '/_app/projects/$id/project-management': typeof AppProjectsIdProjectManagementRouteWithChildren
   '/_app/projects/$id/': typeof AppProjectsIdIndexRoute
+  '/_app/projects/$id/project-management/add-task': typeof AppProjectsIdProjectManagementAddTaskRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,30 +158,37 @@ export interface FileRouteTypes {
     | '/fund-management'
     | '/projects'
     | '/services'
+    | '/settings'
     | '/users'
     | '/vendors'
     | '/projects/$id'
     | '/projects/new'
     | '/projects/'
     | '/projects/$id/beneficiaries'
+    | '/projects/$id/project-management'
     | '/projects/$id/'
+    | '/projects/$id/project-management/add-task'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/fund-management'
     | '/services'
+    | '/settings'
     | '/users'
     | '/vendors'
     | '/'
     | '/projects/new'
     | '/projects'
     | '/projects/$id/beneficiaries'
+    | '/projects/$id/project-management'
     | '/projects/$id'
+    | '/projects/$id/project-management/add-task'
   id:
     | '__root__'
     | '/_app'
     | '/_app/fund-management'
     | '/_app/projects'
     | '/_app/services'
+    | '/_app/settings'
     | '/_app/users'
     | '/_app/vendors'
     | '/_app/'
@@ -160,7 +196,9 @@ export interface FileRouteTypes {
     | '/_app/projects/new'
     | '/_app/projects/'
     | '/_app/projects/$id/beneficiaries'
+    | '/_app/projects/$id/project-management'
     | '/_app/projects/$id/'
+    | '/_app/projects/$id/project-management/add-task'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -195,6 +233,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof AppUsersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/services': {
@@ -246,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdIndexRouteImport
       parentRoute: typeof AppProjectsIdRoute
     }
+    '/_app/projects/$id/project-management': {
+      id: '/_app/projects/$id/project-management'
+      path: '/project-management'
+      fullPath: '/projects/$id/project-management'
+      preLoaderRoute: typeof AppProjectsIdProjectManagementRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
     '/_app/projects/$id/beneficiaries': {
       id: '/_app/projects/$id/beneficiaries'
       path: '/beneficiaries'
@@ -253,16 +305,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdBeneficiariesRouteImport
       parentRoute: typeof AppProjectsIdRoute
     }
+    '/_app/projects/$id/project-management/add-task': {
+      id: '/_app/projects/$id/project-management/add-task'
+      path: '/add-task'
+      fullPath: '/projects/$id/project-management/add-task'
+      preLoaderRoute: typeof AppProjectsIdProjectManagementAddTaskRouteImport
+      parentRoute: typeof AppProjectsIdProjectManagementRoute
+    }
   }
 }
 
+interface AppProjectsIdProjectManagementRouteChildren {
+  AppProjectsIdProjectManagementAddTaskRoute: typeof AppProjectsIdProjectManagementAddTaskRoute
+}
+
+const AppProjectsIdProjectManagementRouteChildren: AppProjectsIdProjectManagementRouteChildren =
+  {
+    AppProjectsIdProjectManagementAddTaskRoute:
+      AppProjectsIdProjectManagementAddTaskRoute,
+  }
+
+const AppProjectsIdProjectManagementRouteWithChildren =
+  AppProjectsIdProjectManagementRoute._addFileChildren(
+    AppProjectsIdProjectManagementRouteChildren,
+  )
+
 interface AppProjectsIdRouteChildren {
   AppProjectsIdBeneficiariesRoute: typeof AppProjectsIdBeneficiariesRoute
+  AppProjectsIdProjectManagementRoute: typeof AppProjectsIdProjectManagementRouteWithChildren
   AppProjectsIdIndexRoute: typeof AppProjectsIdIndexRoute
 }
 
 const AppProjectsIdRouteChildren: AppProjectsIdRouteChildren = {
   AppProjectsIdBeneficiariesRoute: AppProjectsIdBeneficiariesRoute,
+  AppProjectsIdProjectManagementRoute:
+    AppProjectsIdProjectManagementRouteWithChildren,
   AppProjectsIdIndexRoute: AppProjectsIdIndexRoute,
 }
 
@@ -290,6 +367,7 @@ interface AppRouteChildren {
   AppFundManagementRoute: typeof AppFundManagementRoute
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppServicesRoute: typeof AppServicesRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppUsersRoute: typeof AppUsersRoute
   AppVendorsRoute: typeof AppVendorsRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -299,6 +377,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppFundManagementRoute: AppFundManagementRoute,
   AppProjectsRoute: AppProjectsRouteWithChildren,
   AppServicesRoute: AppServicesRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppUsersRoute: AppUsersRoute,
   AppVendorsRoute: AppVendorsRoute,
   AppIndexRoute: AppIndexRoute,

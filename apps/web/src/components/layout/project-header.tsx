@@ -50,6 +50,25 @@ export function ProjectHeader({ projectId, projectName, menuItems = [], onBack }
           Beneficiaries
         </Link>
 
+        <Link
+          to="/projects/$id/project-management"
+          params={{ id: projectId }}
+          className="px-3 py-1.5 text-sm text-gray-600 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          activeProps={{ className: 'px-3 py-1.5 text-sm text-gray-900 bg-gray-100 rounded-md font-medium' }}
+          activeOptions={{ exact: true }}
+        >
+          Project Management
+        </Link>
+
+        <Link
+          to="/projects/$id/project-management/add-task"
+          params={{ id: projectId }}
+          className="px-3 py-1.5 text-sm text-gray-600 rounded-md hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          activeProps={{ className: 'px-3 py-1.5 text-sm text-gray-900 bg-gray-100 rounded-md font-medium' }}
+        >
+          Add Task
+        </Link>
+
         {menuItems.map((item) => {
           if (item.type === 'link') {
             return (

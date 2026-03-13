@@ -359,6 +359,12 @@ importers:
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
+      '@rahataid/plugin-dashboard':
+        specifier: workspace:*
+        version: link:../../plugins/dashboard
+      '@rahataid/plugin-fund-management':
+        specifier: workspace:*
+        version: link:../../plugins/fund-management
       '@rahataid/plugin-project-aa':
         specifier: workspace:*
         version: link:../../projects/aa
@@ -377,6 +383,9 @@ importers:
       '@rahataid/plugin-sdk':
         specifier: workspace:*
         version: link:../../packages/plugin-sdk
+      '@rahataid/plugin-vendors':
+        specifier: workspace:*
+        version: link:../../plugins/vendors
       '@rahataid/projects-shared':
         specifier: workspace:*
         version: link:../../packages/projects-shared
@@ -604,6 +613,72 @@ importers:
       prettier:
         specifier: 'catalog:'
         version: 3.6.2
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  plugins/dashboard:
+    dependencies:
+      '@rahataid/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.563.0(react@19.2.4)
+    devDependencies:
+      '@rs/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/react':
+        specifier: catalog:react19
+        version: 19.2.14
+      react:
+        specifier: catalog:react19
+        version: 19.2.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  plugins/fund-management:
+    dependencies:
+      '@rahataid/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.563.0(react@19.2.4)
+    devDependencies:
+      '@rs/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/react':
+        specifier: catalog:react19
+        version: 19.2.14
+      react:
+        specifier: catalog:react19
+        version: 19.2.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  plugins/vendors:
+    dependencies:
+      '@rahataid/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.563.0(react@19.2.4)
+    devDependencies:
+      '@rs/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@types/react':
+        specifier: catalog:react19
+        version: 19.2.14
+      react:
+        specifier: catalog:react19
+        version: 19.2.4
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

@@ -51,6 +51,13 @@ export interface ProjectFrontendPlugin {
   DashboardPage?: (props: DashboardPageProps) => unknown
 }
 
+export interface AppFrontendPlugin {
+  id: string
+  label: string
+  route: string
+  PageComponent: () => unknown
+}
+
 export const PROJECT_TYPES = {
   CVA: 'CVA',
   BENEFICIARY_MANAGEMENT: 'BENEFICIARY_MANAGEMENT',
