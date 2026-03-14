@@ -13,24 +13,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@rs/ui'
 import type { Beneficiary } from './types.js'
-import { loadBeneficiaries, saveBeneficiaries } from './beneficiary-form.js'
-
-// ─── mock seed data ───────────────────────────────────────────────────────────
-
-const MOCK_BENEFICIARIES: Beneficiary[] = [
-  { id: '1', name: 'Gita Sharma', age: 34, gender: 'Female', location: 'Ward 5, Kathmandu', phone: '9841234567', status: 'Verified', enrolledDate: '2026-02-10', householdSize: 4 },
-  { id: '2', name: 'Raju Tamang', age: 45, gender: 'Male', location: 'Ward 2, Lalitpur', phone: '9852345678', status: 'Pending', enrolledDate: '2026-02-12', householdSize: 6 },
-  { id: '3', name: 'Sunita Rai', age: 28, gender: 'Female', location: 'Ward 8, Bhaktapur', phone: '9863456789', status: 'Verified', enrolledDate: '2026-02-14', householdSize: 3 },
-  { id: '4', name: 'Dipak Magar', age: 52, gender: 'Male', location: 'Ward 1, Kathmandu', status: 'Inactive', enrolledDate: '2026-02-15', householdSize: 5 },
-  { id: '5', name: 'Kamala Thapa', age: 39, gender: 'Female', location: 'Ward 3, Lalitpur', phone: '9874567890', status: 'Verified', enrolledDate: '2026-02-18', householdSize: 2 },
-  { id: '6', name: 'Bikram Gurung', age: 31, gender: 'Male', location: 'Ward 6, Kathmandu', phone: '9885678901', status: 'Pending', enrolledDate: '2026-02-20', householdSize: 4 },
-  { id: '7', name: 'Saraswati Limbu', age: 44, gender: 'Female', location: 'Ward 9, Bhaktapur', phone: '9896789012', status: 'Verified', enrolledDate: '2026-02-22', householdSize: 5 },
-  { id: '8', name: 'Hari Prasad Oli', age: 58, gender: 'Male', location: 'Ward 4, Lalitpur', status: 'Inactive', enrolledDate: '2026-02-24', householdSize: 3, notes: 'Relocated to another district' },
-  { id: '9', name: 'Anita Shrestha', age: 26, gender: 'Female', location: 'Ward 7, Kathmandu', phone: '9807890123', status: 'Verified', enrolledDate: '2026-02-26', householdSize: 2 },
-  { id: '10', name: 'Narayan Bista', age: 37, gender: 'Male', location: 'Ward 11, Lalitpur', phone: '9818901234', status: 'Pending', enrolledDate: '2026-02-28', householdSize: 6 },
-  { id: '11', name: 'Puja Karki', age: 22, gender: 'Female', location: 'Ward 2, Bhaktapur', phone: '9829012345', status: 'Verified', enrolledDate: '2026-03-01', householdSize: 4 },
-  { id: '12', name: 'Mohan Khatri', age: 49, gender: 'Male', location: 'Ward 14, Kathmandu', phone: '9840123456', status: 'Inactive', enrolledDate: '2026-03-03', householdSize: 7 },
-]
+import { useBeneficiaries, useDeleteBeneficiary } from './queries.js'
 
 // ─── constants ────────────────────────────────────────────────────────────────
 
@@ -49,16 +32,19 @@ export interface BeneficiaryListProps {
 }
 
 export function BeneficiaryList({ projectId = 'default', onAdd, onEdit }: BeneficiaryListProps) {
-  const [beneficiaries, setBeneficiaries] = React.useState<Beneficiary[]>(() => {
-    const stored = loadBeneficiaries(projectId)
-    if (stored.length > 0) return stored
-    saveBeneficiaries(projectId, MOCK_BENEFICIARIES)
-    return MOCK_BENEFICIARIES
-  })
+  const { data: beneficiaries = [] as Beneficiary[], isLoading } = useBeneficiaries(projectId)
+  const deleteMutation = useDeleteBeneficiary(projectId)
   const [search, setSearch] = React.useState('')
-  const [selectedId, setSelectedId] = React.useState<string>(beneficiaries[0]?.id ?? '')
+  const [selectedId, setSelectedId] = React.useState<string>('')
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null)
   const menuRef = React.useRef<HTMLDivElement>(null)
+
+  // keep selectedId in sync with loaded data
+  React.useEffect(() => {
+    if (!selectedId && beneficiaries.length > 0) {
+      setSelectedId(beneficiaries[0]!.id)
+    }
+  }, [beneficiaries, selectedId])
 
   // close menu on outside click
   React.useEffect(() => {
@@ -81,11 +67,23 @@ export function BeneficiaryList({ projectId = 'default', onAdd, onEdit }: Benefi
   const selected = beneficiaries.find((b) => b.id === selectedId) ?? beneficiaries[0]
 
   function handleDelete(id: string) {
-    const next = beneficiaries.filter((b) => b.id !== id)
-    setBeneficiaries(next)
-    saveBeneficiaries(projectId, next)
-    if (selectedId === id) setSelectedId(next[0]?.id ?? '')
-    setMenuOpenId(null)
+    deleteMutation.mutate(id, {
+      onSuccess: () => {
+        if (selectedId === id) {
+          const next = beneficiaries.filter((b) => b.id !== id)
+          setSelectedId(next[0]?.id ?? '')
+        }
+        setMenuOpenId(null)
+      },
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center bg-[#f0f0f0]">
+        <div className="h-7 w-7 animate-spin rounded-full border-4 border-gray-200 border-t-orange-500" />
+      </div>
+    )
   }
 
   return (

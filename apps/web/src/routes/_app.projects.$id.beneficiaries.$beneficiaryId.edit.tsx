@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { BeneficiaryForm, loadBeneficiaries } from '@rahataid/projects-shared/beneficiary'
+import { BeneficiaryForm, useBeneficiary } from '@rahataid/projects-shared/beneficiary'
 
 export const Route = createFileRoute('/_app/projects/$id/beneficiaries/$beneficiaryId/edit')({
   component: BeneficiaryEditPage,
@@ -8,8 +8,15 @@ export const Route = createFileRoute('/_app/projects/$id/beneficiaries/$benefici
 function BeneficiaryEditPage() {
   const { id, beneficiaryId } = Route.useParams()
   const navigate = useNavigate()
+  const { data: beneficiary, isLoading } = useBeneficiary(id, beneficiaryId)
 
-  const beneficiary = loadBeneficiaries(id).find((b) => b.id === beneficiaryId)
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-gray-500">
+        Loading...
+      </div>
+    )
+  }
 
   if (!beneficiary) {
     return (

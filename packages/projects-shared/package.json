@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@rahataid/plugin-sdk": "workspace:*",
+    "@rahataid/sdk": "workspace:*",
     "@rs/ui": "workspace:*",
+    "@tanstack/react-query": "catalog:tanstack",
     "lucide-react": "catalog:"
   },
   "peerDependencies": {

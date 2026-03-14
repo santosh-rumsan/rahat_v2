@@ -2,24 +2,7 @@ import * as React from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { cn } from '@rs/ui'
 import type { Beneficiary } from './types.js'
-
-// ─── storage helpers (shared with beneficiary-list) ──────────────────────────
-
-export function beneficiaryStorageKey(projectId: string) {
-  return `rahat-beneficiaries:${projectId}`
-}
-
-export function loadBeneficiaries(projectId: string): Beneficiary[] {
-  try {
-    const raw = localStorage.getItem(beneficiaryStorageKey(projectId))
-    if (raw) return JSON.parse(raw) as Beneficiary[]
-  } catch {}
-  return []
-}
-
-export function saveBeneficiaries(projectId: string, list: Beneficiary[]) {
-  localStorage.setItem(beneficiaryStorageKey(projectId), JSON.stringify(list))
-}
+import { useCreateBeneficiary, useUpdateBeneficiary } from './queries.js'
 
 // ─── constants ────────────────────────────────────────────────────────────────
 
@@ -76,15 +59,18 @@ export function BeneficiaryForm({ projectId, beneficiary, onSave, onCancel }: Be
   const isEditing = !!beneficiary
   const isValid = form.name.trim() && form.age && form.location.trim()
 
+  const createMutation = useCreateBeneficiary(projectId)
+  const updateMutation = useUpdateBeneficiary(projectId)
+  const isPending = createMutation.isPending || updateMutation.isPending
+
   const setField = <K extends keyof FormState>(k: K, v: FormState[K]) =>
     setForm((f) => ({ ...f, [k]: v }))
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
     if (!isValid) return
-    const saved: Beneficiary = {
-      id: beneficiary?.id ?? `bfn${Date.now()}`,
-      enrolledDate: beneficiary?.enrolledDate ?? new Date().toISOString().split('T')[0]!,
+
+    const data = {
       name: form.name.trim(),
       age: Number(form.age),
       gender: form.gender,
@@ -95,12 +81,14 @@ export function BeneficiaryForm({ projectId, beneficiary, onSave, onCancel }: Be
       notes: form.notes.trim() || undefined,
     }
 
-    const existing = loadBeneficiaries(projectId)
-    const next = isEditing
-      ? existing.map((b) => (b.id === saved.id ? saved : b))
-      : [...existing, saved]
-    saveBeneficiaries(projectId, next)
-    onSave(saved)
+    if (isEditing && beneficiary) {
+      updateMutation.mutate(
+        { id: beneficiary.id, data },
+        { onSuccess: (saved: Beneficiary) => onSave(saved) },
+      )
+    } else {
+      createMutation.mutate(data, { onSuccess: (saved: Beneficiary) => onSave(saved) })
+    }
   }
 
   return (
@@ -249,10 +237,10 @@ export function BeneficiaryForm({ projectId, beneficiary, onSave, onCancel }: Be
         <div className="flex items-center gap-3 pt-2">
           <button
             type="submit"
-            disabled={!isValid}
+            disabled={!isValid || isPending}
             className="px-6 py-2.5 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            {isEditing ? 'Save changes' : 'Add beneficiary'}
+            {isPending ? 'Saving…' : isEditing ? 'Save changes' : 'Add beneficiary'}
           </button>
           <button
             type="button"

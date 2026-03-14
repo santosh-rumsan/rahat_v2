@@ -24,6 +24,7 @@ import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$
 import { Route as AppProjectsIdProjectManagementRouteImport } from './routes/_app.projects.$id.project-management'
 import { Route as AppProjectsIdBenefitsRouteImport } from './routes/_app.projects.$id.benefits'
 import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
+import { Route as AppProjectsIdBeneficiariesIndexRouteImport } from './routes/_app.projects.$id.beneficiaries.index'
 import { Route as AppProjectsIdProjectManagementAddTaskRouteImport } from './routes/_app.projects.$id.project-management.add-task'
 import { Route as AppProjectsIdBenefitsTokensRouteImport } from './routes/_app.projects.$id.benefits.tokens'
 import { Route as AppProjectsIdBeneficiariesGroupsRouteImport } from './routes/_app.projects.$id.beneficiaries.groups'
@@ -106,6 +107,12 @@ const AppProjectsIdBeneficiariesRoute =
     path: '/beneficiaries',
     getParentRoute: () => AppProjectsIdRoute,
   } as any)
+const AppProjectsIdBeneficiariesIndexRoute =
+  AppProjectsIdBeneficiariesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppProjectsIdBeneficiariesRoute,
+  } as any)
 const AppProjectsIdProjectManagementAddTaskRoute =
   AppProjectsIdProjectManagementAddTaskRouteImport.update({
     id: '/add-task',
@@ -156,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
   '/projects/$id/project-management/add-task': typeof AppProjectsIdProjectManagementAddTaskRoute
+  '/projects/$id/beneficiaries/': typeof AppProjectsIdBeneficiariesIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
 }
 export interface FileRoutesByTo {
@@ -167,7 +175,6 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/projects/new': typeof AppProjectsNewRoute
   '/projects': typeof AppProjectsIndexRoute
-  '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRouteWithChildren
   '/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
   '/projects/$id/project-management': typeof AppProjectsIdProjectManagementRouteWithChildren
   '/projects/$id': typeof AppProjectsIdIndexRoute
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
   '/projects/$id/project-management/add-task': typeof AppProjectsIdProjectManagementAddTaskRoute
+  '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
 }
 export interface FileRoutesById {
@@ -198,6 +206,7 @@ export interface FileRoutesById {
   '/_app/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/_app/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
   '/_app/projects/$id/project-management/add-task': typeof AppProjectsIdProjectManagementAddTaskRoute
+  '/_app/projects/$id/beneficiaries/': typeof AppProjectsIdBeneficiariesIndexRoute
   '/_app/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
 }
 export interface FileRouteTypes {
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/projects/$id/beneficiaries/groups'
     | '/projects/$id/benefits/tokens'
     | '/projects/$id/project-management/add-task'
+    | '/projects/$id/beneficiaries/'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -232,7 +242,6 @@ export interface FileRouteTypes {
     | '/'
     | '/projects/new'
     | '/projects'
-    | '/projects/$id/beneficiaries'
     | '/projects/$id/benefits'
     | '/projects/$id/project-management'
     | '/projects/$id'
@@ -240,6 +249,7 @@ export interface FileRouteTypes {
     | '/projects/$id/beneficiaries/groups'
     | '/projects/$id/benefits/tokens'
     | '/projects/$id/project-management/add-task'
+    | '/projects/$id/beneficiaries'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
   id:
     | '__root__'
@@ -262,6 +272,7 @@ export interface FileRouteTypes {
     | '/_app/projects/$id/beneficiaries/groups'
     | '/_app/projects/$id/benefits/tokens'
     | '/_app/projects/$id/project-management/add-task'
+    | '/_app/projects/$id/beneficiaries/'
     | '/_app/projects/$id/beneficiaries/$beneficiaryId/edit'
   fileRoutesById: FileRoutesById
 }
@@ -376,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdBeneficiariesRouteImport
       parentRoute: typeof AppProjectsIdRoute
     }
+    '/_app/projects/$id/beneficiaries/': {
+      id: '/_app/projects/$id/beneficiaries/'
+      path: '/'
+      fullPath: '/projects/$id/beneficiaries/'
+      preLoaderRoute: typeof AppProjectsIdBeneficiariesIndexRouteImport
+      parentRoute: typeof AppProjectsIdBeneficiariesRoute
+    }
     '/_app/projects/$id/project-management/add-task': {
       id: '/_app/projects/$id/project-management/add-task'
       path: '/add-task'
@@ -417,6 +435,7 @@ declare module '@tanstack/react-router' {
 interface AppProjectsIdBeneficiariesRouteChildren {
   AppProjectsIdBeneficiariesAddRoute: typeof AppProjectsIdBeneficiariesAddRoute
   AppProjectsIdBeneficiariesGroupsRoute: typeof AppProjectsIdBeneficiariesGroupsRoute
+  AppProjectsIdBeneficiariesIndexRoute: typeof AppProjectsIdBeneficiariesIndexRoute
   AppProjectsIdBeneficiariesBeneficiaryIdEditRoute: typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
 }
 
@@ -425,6 +444,7 @@ const AppProjectsIdBeneficiariesRouteChildren: AppProjectsIdBeneficiariesRouteCh
     AppProjectsIdBeneficiariesAddRoute: AppProjectsIdBeneficiariesAddRoute,
     AppProjectsIdBeneficiariesGroupsRoute:
       AppProjectsIdBeneficiariesGroupsRoute,
+    AppProjectsIdBeneficiariesIndexRoute: AppProjectsIdBeneficiariesIndexRoute,
     AppProjectsIdBeneficiariesBeneficiaryIdEditRoute:
       AppProjectsIdBeneficiariesBeneficiaryIdEditRoute,
   }
