@@ -1,29 +1,11 @@
 import type { Beneficiary, CreateBeneficiaryInput, UpdateBeneficiaryInput } from '../types/beneficiary.js'
 import type { BeneficiaryService } from './service.js'
+import { openDb } from '../db.js'
 
-const DB_NAME = 'rahat-db'
-const DB_VERSION = 1
 const STORE_NAME = 'beneficiaries'
 
 interface IDBBeneficiary extends Beneficiary {
   projectId: string
-}
-
-function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION)
-
-    request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' })
-        store.createIndex('by_project', 'projectId', { unique: false })
-      }
-    }
-
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error)
-  })
 }
 
 function tx(

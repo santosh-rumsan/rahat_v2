@@ -3,6 +3,7 @@ import { ChevronLeft } from 'lucide-react'
 import * as React from 'react'
 import { getRegisteredPlugins, getPlugin } from '../plugins'
 import { loadSettings } from '../lib/settings-store'
+import { useCreateProject } from '@rahataid/projects-shared'
 
 export const Route = createFileRoute('/_app/projects/new')({ component: NewProject })
 
@@ -13,6 +14,7 @@ function NewProject() {
   const [step, setStep] = React.useState<Step>('select-type')
   const [selectedType, setSelectedType] = React.useState<string | null>(null)
   const { enabledProjectTypes } = loadSettings()
+  const createProject = useCreateProject()
   const allPlugins = getRegisteredPlugins()
   const plugins = enabledProjectTypes === null
     ? allPlugins
@@ -24,9 +26,19 @@ function NewProject() {
   }
 
   function handleSetupSubmit(data: Record<string, unknown>) {
-    // TODO: call API to create project
-    console.log('Create project', { type: selectedType, ...data })
-    navigate({ to: '/projects' })
+    if (!selectedType) return
+    createProject.mutate(
+      {
+        projectType: selectedType,
+        name: data.name as string,
+        location: data.location as string,
+        image: data.image as string,
+        startDate: data.startDate as string,
+        endDate: data.endDate as string,
+        projectOwner: data.projectOwner as string,
+      },
+      { onSuccess: () => navigate({ to: '/projects' }) }
+    )
   }
 
   const plugin = selectedType ? getPlugin(selectedType) : null

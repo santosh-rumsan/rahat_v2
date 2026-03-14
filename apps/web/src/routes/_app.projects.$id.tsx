@@ -1,7 +1,7 @@
 import { Outlet, createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
-import projectsData from '../data/projects.json'
 import { getPlugin } from '../plugins'
 import { ProjectHeader } from '../components/layout/project-header'
+import { useProject } from '@rahataid/projects-shared'
 
 export const Route = createFileRoute('/_app/projects/$id')({ component: ProjectLayout })
 
@@ -11,7 +11,15 @@ function ProjectLayout() {
   const location = useLocation()
   const onBack = () => navigate({ to: '/projects' })
 
-  const project = projectsData.find((p) => p.id === id)
+  const { data: project, isLoading } = useProject(id)
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+        Loading…
+      </div>
+    )
+  }
 
   if (!project) {
     return (

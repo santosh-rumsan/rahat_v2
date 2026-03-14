@@ -23,6 +23,7 @@ export interface ProjectSummary {
 
 export interface DashboardPageProps {
   project: ProjectSummary
+  onEdit?: () => void
 }
 
 export interface MenuLink {

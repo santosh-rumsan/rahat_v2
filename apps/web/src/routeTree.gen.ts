@@ -17,11 +17,17 @@ import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
 import { Route as AppProjectsRouteImport } from './routes/_app.projects'
 import { Route as AppFundManagementRouteImport } from './routes/_app.fund-management'
+import { Route as AppVendorsIndexRouteImport } from './routes/_app.vendors.index'
 import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.index'
+import { Route as AppVendorsAddRouteImport } from './routes/_app.vendors.add'
+import { Route as AppVendorsVendorIdRouteImport } from './routes/_app.vendors.$vendorId'
 import { Route as AppProjectsNewRouteImport } from './routes/_app.projects.new'
 import { Route as AppProjectsIdRouteImport } from './routes/_app.projects.$id'
+import { Route as AppVendorsVendorIdIndexRouteImport } from './routes/_app.vendors.$vendorId.index'
 import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$id.index'
+import { Route as AppVendorsVendorIdEditRouteImport } from './routes/_app.vendors.$vendorId.edit'
 import { Route as AppProjectsIdProjectManagementRouteImport } from './routes/_app.projects.$id.project-management'
+import { Route as AppProjectsIdEditRouteImport } from './routes/_app.projects.$id.edit'
 import { Route as AppProjectsIdBenefitsRouteImport } from './routes/_app.projects.$id.benefits'
 import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
 import { Route as AppProjectsIdBeneficiariesIndexRouteImport } from './routes/_app.projects.$id.beneficiaries.index'
@@ -70,10 +76,25 @@ const AppFundManagementRoute = AppFundManagementRouteImport.update({
   path: '/fund-management',
   getParentRoute: () => AppRoute,
 } as any)
+const AppVendorsIndexRoute = AppVendorsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppVendorsRoute,
+} as any)
 const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppProjectsRoute,
+} as any)
+const AppVendorsAddRoute = AppVendorsAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => AppVendorsRoute,
+} as any)
+const AppVendorsVendorIdRoute = AppVendorsVendorIdRouteImport.update({
+  id: '/$vendorId',
+  path: '/$vendorId',
+  getParentRoute: () => AppVendorsRoute,
 } as any)
 const AppProjectsNewRoute = AppProjectsNewRouteImport.update({
   id: '/new',
@@ -85,10 +106,20 @@ const AppProjectsIdRoute = AppProjectsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppProjectsRoute,
 } as any)
+const AppVendorsVendorIdIndexRoute = AppVendorsVendorIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppVendorsVendorIdRoute,
+} as any)
 const AppProjectsIdIndexRoute = AppProjectsIdIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppProjectsIdRoute,
+} as any)
+const AppVendorsVendorIdEditRoute = AppVendorsVendorIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppVendorsVendorIdRoute,
 } as any)
 const AppProjectsIdProjectManagementRoute =
   AppProjectsIdProjectManagementRouteImport.update({
@@ -96,6 +127,11 @@ const AppProjectsIdProjectManagementRoute =
     path: '/project-management',
     getParentRoute: () => AppProjectsIdRoute,
   } as any)
+const AppProjectsIdEditRoute = AppProjectsIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => AppProjectsIdRoute,
+} as any)
 const AppProjectsIdBenefitsRoute = AppProjectsIdBenefitsRouteImport.update({
   id: '/benefits',
   path: '/benefits',
@@ -151,14 +187,20 @@ export interface FileRoutesByFullPath {
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRoute
-  '/vendors': typeof AppVendorsRoute
+  '/vendors': typeof AppVendorsRouteWithChildren
   '/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/projects/new': typeof AppProjectsNewRoute
+  '/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
+  '/vendors/add': typeof AppVendorsAddRoute
   '/projects/': typeof AppProjectsIndexRoute
+  '/vendors/': typeof AppVendorsIndexRoute
   '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRouteWithChildren
   '/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
+  '/projects/$id/edit': typeof AppProjectsIdEditRoute
   '/projects/$id/project-management': typeof AppProjectsIdProjectManagementRouteWithChildren
+  '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/projects/$id/': typeof AppProjectsIdIndexRoute
+  '/vendors/$vendorId/': typeof AppVendorsVendorIdIndexRoute
   '/projects/$id/beneficiaries/add': typeof AppProjectsIdBeneficiariesAddRoute
   '/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
@@ -171,13 +213,17 @@ export interface FileRoutesByTo {
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRoute
-  '/vendors': typeof AppVendorsRoute
   '/': typeof AppIndexRoute
   '/projects/new': typeof AppProjectsNewRoute
+  '/vendors/add': typeof AppVendorsAddRoute
   '/projects': typeof AppProjectsIndexRoute
+  '/vendors': typeof AppVendorsIndexRoute
   '/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
+  '/projects/$id/edit': typeof AppProjectsIdEditRoute
   '/projects/$id/project-management': typeof AppProjectsIdProjectManagementRouteWithChildren
+  '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/projects/$id': typeof AppProjectsIdIndexRoute
+  '/vendors/$vendorId': typeof AppVendorsVendorIdIndexRoute
   '/projects/$id/beneficiaries/add': typeof AppProjectsIdBeneficiariesAddRoute
   '/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
@@ -193,15 +239,21 @@ export interface FileRoutesById {
   '/_app/services': typeof AppServicesRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/users': typeof AppUsersRoute
-  '/_app/vendors': typeof AppVendorsRoute
+  '/_app/vendors': typeof AppVendorsRouteWithChildren
   '/_app/': typeof AppIndexRoute
   '/_app/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/_app/projects/new': typeof AppProjectsNewRoute
+  '/_app/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
+  '/_app/vendors/add': typeof AppVendorsAddRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
+  '/_app/vendors/': typeof AppVendorsIndexRoute
   '/_app/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRouteWithChildren
   '/_app/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
+  '/_app/projects/$id/edit': typeof AppProjectsIdEditRoute
   '/_app/projects/$id/project-management': typeof AppProjectsIdProjectManagementRouteWithChildren
+  '/_app/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/_app/projects/$id/': typeof AppProjectsIdIndexRoute
+  '/_app/vendors/$vendorId/': typeof AppVendorsVendorIdIndexRoute
   '/_app/projects/$id/beneficiaries/add': typeof AppProjectsIdBeneficiariesAddRoute
   '/_app/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/_app/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
@@ -221,11 +273,17 @@ export interface FileRouteTypes {
     | '/vendors'
     | '/projects/$id'
     | '/projects/new'
+    | '/vendors/$vendorId'
+    | '/vendors/add'
     | '/projects/'
+    | '/vendors/'
     | '/projects/$id/beneficiaries'
     | '/projects/$id/benefits'
+    | '/projects/$id/edit'
     | '/projects/$id/project-management'
+    | '/vendors/$vendorId/edit'
     | '/projects/$id/'
+    | '/vendors/$vendorId/'
     | '/projects/$id/beneficiaries/add'
     | '/projects/$id/beneficiaries/groups'
     | '/projects/$id/benefits/tokens'
@@ -238,13 +296,17 @@ export interface FileRouteTypes {
     | '/services'
     | '/settings'
     | '/users'
-    | '/vendors'
     | '/'
     | '/projects/new'
+    | '/vendors/add'
     | '/projects'
+    | '/vendors'
     | '/projects/$id/benefits'
+    | '/projects/$id/edit'
     | '/projects/$id/project-management'
+    | '/vendors/$vendorId/edit'
     | '/projects/$id'
+    | '/vendors/$vendorId'
     | '/projects/$id/beneficiaries/add'
     | '/projects/$id/beneficiaries/groups'
     | '/projects/$id/benefits/tokens'
@@ -263,11 +325,17 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/_app/projects/$id'
     | '/_app/projects/new'
+    | '/_app/vendors/$vendorId'
+    | '/_app/vendors/add'
     | '/_app/projects/'
+    | '/_app/vendors/'
     | '/_app/projects/$id/beneficiaries'
     | '/_app/projects/$id/benefits'
+    | '/_app/projects/$id/edit'
     | '/_app/projects/$id/project-management'
+    | '/_app/vendors/$vendorId/edit'
     | '/_app/projects/$id/'
+    | '/_app/vendors/$vendorId/'
     | '/_app/projects/$id/beneficiaries/add'
     | '/_app/projects/$id/beneficiaries/groups'
     | '/_app/projects/$id/benefits/tokens'
@@ -338,12 +406,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFundManagementRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/vendors/': {
+      id: '/_app/vendors/'
+      path: '/'
+      fullPath: '/vendors/'
+      preLoaderRoute: typeof AppVendorsIndexRouteImport
+      parentRoute: typeof AppVendorsRoute
+    }
     '/_app/projects/': {
       id: '/_app/projects/'
       path: '/'
       fullPath: '/projects/'
       preLoaderRoute: typeof AppProjectsIndexRouteImport
       parentRoute: typeof AppProjectsRoute
+    }
+    '/_app/vendors/add': {
+      id: '/_app/vendors/add'
+      path: '/add'
+      fullPath: '/vendors/add'
+      preLoaderRoute: typeof AppVendorsAddRouteImport
+      parentRoute: typeof AppVendorsRoute
+    }
+    '/_app/vendors/$vendorId': {
+      id: '/_app/vendors/$vendorId'
+      path: '/$vendorId'
+      fullPath: '/vendors/$vendorId'
+      preLoaderRoute: typeof AppVendorsVendorIdRouteImport
+      parentRoute: typeof AppVendorsRoute
     }
     '/_app/projects/new': {
       id: '/_app/projects/new'
@@ -359,6 +448,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdRouteImport
       parentRoute: typeof AppProjectsRoute
     }
+    '/_app/vendors/$vendorId/': {
+      id: '/_app/vendors/$vendorId/'
+      path: '/'
+      fullPath: '/vendors/$vendorId/'
+      preLoaderRoute: typeof AppVendorsVendorIdIndexRouteImport
+      parentRoute: typeof AppVendorsVendorIdRoute
+    }
     '/_app/projects/$id/': {
       id: '/_app/projects/$id/'
       path: '/'
@@ -366,11 +462,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdIndexRouteImport
       parentRoute: typeof AppProjectsIdRoute
     }
+    '/_app/vendors/$vendorId/edit': {
+      id: '/_app/vendors/$vendorId/edit'
+      path: '/edit'
+      fullPath: '/vendors/$vendorId/edit'
+      preLoaderRoute: typeof AppVendorsVendorIdEditRouteImport
+      parentRoute: typeof AppVendorsVendorIdRoute
+    }
     '/_app/projects/$id/project-management': {
       id: '/_app/projects/$id/project-management'
       path: '/project-management'
       fullPath: '/projects/$id/project-management'
       preLoaderRoute: typeof AppProjectsIdProjectManagementRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
+    '/_app/projects/$id/edit': {
+      id: '/_app/projects/$id/edit'
+      path: '/edit'
+      fullPath: '/projects/$id/edit'
+      preLoaderRoute: typeof AppProjectsIdEditRouteImport
       parentRoute: typeof AppProjectsIdRoute
     }
     '/_app/projects/$id/benefits': {
@@ -485,6 +595,7 @@ const AppProjectsIdProjectManagementRouteWithChildren =
 interface AppProjectsIdRouteChildren {
   AppProjectsIdBeneficiariesRoute: typeof AppProjectsIdBeneficiariesRouteWithChildren
   AppProjectsIdBenefitsRoute: typeof AppProjectsIdBenefitsRouteWithChildren
+  AppProjectsIdEditRoute: typeof AppProjectsIdEditRoute
   AppProjectsIdProjectManagementRoute: typeof AppProjectsIdProjectManagementRouteWithChildren
   AppProjectsIdIndexRoute: typeof AppProjectsIdIndexRoute
 }
@@ -492,6 +603,7 @@ interface AppProjectsIdRouteChildren {
 const AppProjectsIdRouteChildren: AppProjectsIdRouteChildren = {
   AppProjectsIdBeneficiariesRoute: AppProjectsIdBeneficiariesRouteWithChildren,
   AppProjectsIdBenefitsRoute: AppProjectsIdBenefitsRouteWithChildren,
+  AppProjectsIdEditRoute: AppProjectsIdEditRoute,
   AppProjectsIdProjectManagementRoute:
     AppProjectsIdProjectManagementRouteWithChildren,
   AppProjectsIdIndexRoute: AppProjectsIdIndexRoute,
@@ -517,13 +629,42 @@ const AppProjectsRouteWithChildren = AppProjectsRoute._addFileChildren(
   AppProjectsRouteChildren,
 )
 
+interface AppVendorsVendorIdRouteChildren {
+  AppVendorsVendorIdEditRoute: typeof AppVendorsVendorIdEditRoute
+  AppVendorsVendorIdIndexRoute: typeof AppVendorsVendorIdIndexRoute
+}
+
+const AppVendorsVendorIdRouteChildren: AppVendorsVendorIdRouteChildren = {
+  AppVendorsVendorIdEditRoute: AppVendorsVendorIdEditRoute,
+  AppVendorsVendorIdIndexRoute: AppVendorsVendorIdIndexRoute,
+}
+
+const AppVendorsVendorIdRouteWithChildren =
+  AppVendorsVendorIdRoute._addFileChildren(AppVendorsVendorIdRouteChildren)
+
+interface AppVendorsRouteChildren {
+  AppVendorsVendorIdRoute: typeof AppVendorsVendorIdRouteWithChildren
+  AppVendorsAddRoute: typeof AppVendorsAddRoute
+  AppVendorsIndexRoute: typeof AppVendorsIndexRoute
+}
+
+const AppVendorsRouteChildren: AppVendorsRouteChildren = {
+  AppVendorsVendorIdRoute: AppVendorsVendorIdRouteWithChildren,
+  AppVendorsAddRoute: AppVendorsAddRoute,
+  AppVendorsIndexRoute: AppVendorsIndexRoute,
+}
+
+const AppVendorsRouteWithChildren = AppVendorsRoute._addFileChildren(
+  AppVendorsRouteChildren,
+)
+
 interface AppRouteChildren {
   AppFundManagementRoute: typeof AppFundManagementRoute
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppServicesRoute: typeof AppServicesRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppUsersRoute: typeof AppUsersRoute
-  AppVendorsRoute: typeof AppVendorsRoute
+  AppVendorsRoute: typeof AppVendorsRouteWithChildren
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -533,7 +674,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppServicesRoute: AppServicesRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppUsersRoute: AppUsersRoute,
-  AppVendorsRoute: AppVendorsRoute,
+  AppVendorsRoute: AppVendorsRouteWithChildren,
   AppIndexRoute: AppIndexRoute,
 }
 

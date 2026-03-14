@@ -16,7 +16,7 @@ const statCardClassName =
 const panelCardClassName =
   'rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_18px_38px_-28px_rgba(15,23,42,0.45)]'
 
-export function MicrolearningDashboardPage({ project }: DashboardPageProps) {
+export function MicrolearningDashboardPage({ project, onEdit }: DashboardPageProps) {
   const totalEnrolled = project.beneficiaries
   const totalCompleted = Math.round(totalEnrolled * 0.64)
   const completionRate = Math.round((totalCompleted / totalEnrolled) * 100)
@@ -28,6 +28,7 @@ export function MicrolearningDashboardPage({ project }: DashboardPageProps) {
         project={project}
         projectTypeLabel="Microlearning"
         accentClassName="bg-indigo-500 text-white"
+        onEdit={onEdit}
       />
 
       <div className="flex-1 px-8 py-6 space-y-6">

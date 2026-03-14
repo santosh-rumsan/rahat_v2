@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ProjectManagementAddTaskPage } from '@rahataid/projects-shared'
-import projectsData from '../data/projects.json'
+import { ProjectManagementAddTaskPage, useProject } from '@rahataid/projects-shared'
 
 export const Route = createFileRoute('/_app/projects/$id/project-management/add-task')({
   component: ProjectManagementAddTaskRoute,
@@ -8,7 +7,15 @@ export const Route = createFileRoute('/_app/projects/$id/project-management/add-
 
 function ProjectManagementAddTaskRoute() {
   const { id } = Route.useParams()
-  const project = projectsData.find((item) => item.id === id)
+  const { data: project, isLoading } = useProject(id)
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-slate-500">
+        Loading…
+      </div>
+    )
+  }
 
   if (!project) {
     return (

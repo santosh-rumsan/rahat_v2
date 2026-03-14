@@ -1,8 +1,8 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Search, Plus } from 'lucide-react'
 import * as React from 'react'
-import projectsData from '../data/projects.json'
 import { getPlugin } from '../plugins'
+import { useProjects } from '@rahataid/projects-shared'
 
 export const Route = createFileRoute('/_app/projects/')({ component: Projects })
 
@@ -16,7 +16,8 @@ const STATUS_COLORS: Record<string, string> = {
 function Projects() {
   const [search, setSearch] = React.useState('')
   const navigate = useNavigate()
-  const filtered = projectsData.filter((p) =>
+  const { data: projects = [], isLoading } = useProjects()
+  const filtered = projects.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
 
@@ -26,7 +27,7 @@ function Projects() {
       <div className="px-8 pt-8 pb-6 border-b border-gray-100 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Projects</h1>
-          <p className="text-sm text-gray-500 mt-1">{projectsData.length} projects total</p>
+          <p className="text-sm text-gray-500 mt-1">{projects.length} projects total</p>
         </div>
         <button
           onClick={() => navigate({ to: '/projects/new' })}
@@ -53,7 +54,12 @@ function Projects() {
 
       {/* Grid */}
       <div className="flex-1 px-8 py-6 grid grid-cols-3 gap-5 content-start">
-        {filtered.map((p) => {
+        {isLoading && (
+          <div className="col-span-3 py-16 text-center text-gray-400 text-sm">
+            Loading projects…
+          </div>
+        )}
+        {!isLoading && filtered.map((p) => {
           const plugin = getPlugin(p.projectType)
           return (
             <div
@@ -68,7 +74,7 @@ function Projects() {
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <span
-                  className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[p.status]}`}
+                  className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[p.status] ?? 'bg-gray-100 text-gray-600'}`}
                 >
                   {p.status}
                 </span>
@@ -91,9 +97,9 @@ function Projects() {
             </div>
           )
         })}
-        {filtered.length === 0 && (
+        {!isLoading && filtered.length === 0 && (
           <div className="col-span-3 py-16 text-center text-gray-400 text-sm">
-            No projects found matching "{search}"
+            {search ? `No projects found matching "${search}"` : 'No projects yet. Create your first project.'}
           </div>
         )}
       </div>
