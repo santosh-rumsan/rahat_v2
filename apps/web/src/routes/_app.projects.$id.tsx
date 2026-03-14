@@ -32,6 +32,7 @@ function ProjectLayout() {
       <ProjectHeader
         projectId={id}
         projectName={isDashboardRoute ? undefined : project.name}
+        projectType={project.projectType}
         menuItems={plugin?.menuItems}
         onBack={onBack}
       />
