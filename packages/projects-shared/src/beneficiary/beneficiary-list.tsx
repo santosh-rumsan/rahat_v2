@@ -9,9 +9,13 @@ import {
   Users,
   MoreHorizontal,
   Pencil,
+  Trash2,
 } from 'lucide-react'
 import { cn } from '@rs/ui'
 import type { Beneficiary } from './types.js'
+import { loadBeneficiaries, saveBeneficiaries } from './beneficiary-form.js'
+
+// ─── mock seed data ───────────────────────────────────────────────────────────
 
 const MOCK_BENEFICIARIES: Beneficiary[] = [
   { id: '1', name: 'Gita Sharma', age: 34, gender: 'Female', location: 'Ward 5, Kathmandu', phone: '9841234567', status: 'Verified', enrolledDate: '2026-02-10', householdSize: 4 },
@@ -28,24 +32,44 @@ const MOCK_BENEFICIARIES: Beneficiary[] = [
   { id: '12', name: 'Mohan Khatri', age: 49, gender: 'Male', location: 'Ward 14, Kathmandu', phone: '9840123456', status: 'Inactive', enrolledDate: '2026-03-03', householdSize: 7 },
 ]
 
+// ─── constants ────────────────────────────────────────────────────────────────
+
 const STATUS_COLORS: Record<Beneficiary['status'], string> = {
   Verified: 'bg-green-100 text-green-700',
   Pending: 'bg-yellow-100 text-yellow-700',
   Inactive: 'bg-gray-100 text-gray-500',
 }
 
+// ─── component ───────────────────────────────────────────────────────────────
+
 export interface BeneficiaryListProps {
-  beneficiaries?: Beneficiary[]
+  projectId?: string
   onAdd?: () => void
+  onEdit?: (beneficiary: Beneficiary) => void
 }
 
-
-export function BeneficiaryList({
-  beneficiaries = MOCK_BENEFICIARIES,
-  onAdd,
-}: BeneficiaryListProps) {
+export function BeneficiaryList({ projectId = 'default', onAdd, onEdit }: BeneficiaryListProps) {
+  const [beneficiaries, setBeneficiaries] = React.useState<Beneficiary[]>(() => {
+    const stored = loadBeneficiaries(projectId)
+    if (stored.length > 0) return stored
+    saveBeneficiaries(projectId, MOCK_BENEFICIARIES)
+    return MOCK_BENEFICIARIES
+  })
   const [search, setSearch] = React.useState('')
   const [selectedId, setSelectedId] = React.useState<string>(beneficiaries[0]?.id ?? '')
+  const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null)
+  const menuRef = React.useRef<HTMLDivElement>(null)
+
+  // close menu on outside click
+  React.useEffect(() => {
+    function onOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setMenuOpenId(null)
+      }
+    }
+    if (menuOpenId) document.addEventListener('mousedown', onOutside)
+    return () => document.removeEventListener('mousedown', onOutside)
+  }, [menuOpenId])
 
   const filtered = beneficiaries.filter(
     (b) =>
@@ -55,6 +79,14 @@ export function BeneficiaryList({
   )
 
   const selected = beneficiaries.find((b) => b.id === selectedId) ?? beneficiaries[0]
+
+  function handleDelete(id: string) {
+    const next = beneficiaries.filter((b) => b.id !== id)
+    setBeneficiaries(next)
+    saveBeneficiaries(projectId, next)
+    if (selectedId === id) setSelectedId(next[0]?.id ?? '')
+    setMenuOpenId(null)
+  }
 
   return (
     <div className="flex h-full bg-[#f0f0f0] overflow-hidden">
@@ -68,15 +100,13 @@ export function BeneficiaryList({
               <button className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-white/50">
                 <SlidersHorizontal size={15} />
               </button>
-              {onAdd && (
-                <button
-                  onClick={onAdd}
-                  className="flex items-center gap-1 bg-[#1a1a1a] hover:bg-[#333] text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
-                >
-                  <Plus size={13} />
-                  Add
-                </button>
-              )}
+              <button
+                onClick={onAdd}
+                className="flex items-center gap-1 bg-[#1a1a1a] hover:bg-[#333] text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
+              >
+                <Plus size={13} />
+                Add
+              </button>
             </div>
           </div>
           <p className="text-xs text-gray-400">
@@ -134,7 +164,7 @@ export function BeneficiaryList({
       </div>
 
       {/* Right: beneficiary detail */}
-      {selected && (
+      {selected ? (
         <div className="flex-1 bg-white rounded-l-3xl overflow-hidden flex flex-col min-w-0">
           {/* Detail header */}
           <div className="px-8 pt-7 pb-5 border-b border-gray-100">
@@ -148,12 +178,7 @@ export function BeneficiaryList({
                 <div className="pt-1">
                   <h1 className="text-3xl font-black text-[#1a1a1a] leading-tight">{selected.name}</h1>
                   <div className="flex items-center gap-2 mt-1.5">
-                    <span
-                      className={cn(
-                        'text-xs px-2.5 py-1 rounded-full font-semibold',
-                        STATUS_COLORS[selected.status]
-                      )}
-                    >
+                    <span className={cn('text-xs px-2.5 py-1 rounded-full font-semibold', STATUS_COLORS[selected.status])}>
                       {selected.status}
                     </span>
                     <span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-gray-100 text-gray-600">
@@ -171,13 +196,39 @@ export function BeneficiaryList({
 
               {/* Actions */}
               <div className="flex items-center gap-2">
-                <button className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-xl transition-colors">
+                <button
+                  onClick={() => onEdit?.(selected)}
+                  className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-xl transition-colors"
+                >
                   <Pencil size={13} />
                   Edit
                 </button>
-                <button className="text-gray-400 hover:text-gray-700 p-2 rounded-xl hover:bg-gray-100">
-                  <MoreHorizontal size={16} />
-                </button>
+                <div className="relative" ref={menuOpenId === selected.id ? menuRef : undefined}>
+                  <button
+                    onClick={() => setMenuOpenId(menuOpenId === selected.id ? null : selected.id)}
+                    className="text-gray-400 hover:text-gray-700 p-2 rounded-xl hover:bg-gray-100"
+                  >
+                    <MoreHorizontal size={16} />
+                  </button>
+                  {menuOpenId === selected.id && (
+                    <div className="absolute right-0 top-full mt-1 w-40 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-10">
+                      <button
+                        onClick={() => { onEdit?.(selected); setMenuOpenId(null) }}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <Pencil size={13} />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(selected.id)}
+                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 size={13} />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -233,6 +284,16 @@ export function BeneficiaryList({
                 <p className="text-sm text-gray-500">{selected.notes}</p>
               </div>
             )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 bg-white rounded-l-3xl flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-3">
+              <Users size={24} className="text-gray-400" />
+            </div>
+            <p className="text-sm font-medium text-gray-500">No beneficiaries yet</p>
+            <p className="text-xs text-gray-400 mt-1">Add a beneficiary to get started</p>
           </div>
         </div>
       )}

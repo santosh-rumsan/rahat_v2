@@ -1,5 +1,7 @@
 export type { Beneficiary, BeneficiaryGroup } from './types.js'
 export { BeneficiaryList } from './beneficiary-list.js'
 export type { BeneficiaryListProps } from './beneficiary-list.js'
+export { BeneficiaryForm, loadBeneficiaries, saveBeneficiaries, beneficiaryStorageKey } from './beneficiary-form.js'
+export type { BeneficiaryFormProps } from './beneficiary-form.js'
 export { BeneficiaryGroups, storageKey, loadGroups } from './beneficiary-groups.js'
 export type { BeneficiaryGroupsProps } from './beneficiary-groups.js'
