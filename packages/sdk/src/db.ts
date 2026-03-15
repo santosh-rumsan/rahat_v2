@@ -1,5 +1,5 @@
 const DB_NAME = 'rahat-db'
-const DB_VERSION = 3
+const DB_VERSION = 4
 
 export function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -20,6 +20,10 @@ export function openDb(): Promise<IDBDatabase> {
 
       if (oldVersion < 3) {
         db.createObjectStore('vendors', { keyPath: 'id' })
+      }
+
+      if (oldVersion < 4) {
+        db.createObjectStore('users', { keyPath: 'id' })
       }
     }
 

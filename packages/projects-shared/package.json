@@ -8,7 +8,8 @@
     "./beneficiary": "./src/beneficiary/index.ts",
     "./benefits": "./src/benefits/index.ts",
     "./project": "./src/project/index.ts",
-    "./vendor": "./src/vendor/index.ts"
+    "./vendor": "./src/vendor/index.ts",
+    "./user": "./src/user/index.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",
