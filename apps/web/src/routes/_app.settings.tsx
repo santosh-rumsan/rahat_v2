@@ -14,6 +14,12 @@ import {
   loadColorTheme,
   saveColorTheme,
 } from '../lib/color-theme-store'
+import {
+  FONT_OPTIONS,
+  AppFont,
+  loadFont,
+  saveFont,
+} from '../lib/font-store'
 
 export const Route = createFileRoute('/_app/settings')({ component: SettingsPage })
 
@@ -113,10 +119,16 @@ function TabButton({
 
 function GeneralTab() {
   const [colorTheme, setColorThemeState] = React.useState<ColorTheme>(loadColorTheme)
+  const [font, setFontState] = React.useState<AppFont>(loadFont)
 
   function handleThemeChange(theme: ColorTheme) {
     setColorThemeState(theme)
     saveColorTheme(theme)
+  }
+
+  function handleFontChange(f: AppFont) {
+    setFontState(f)
+    saveFont(f)
   }
 
   return (
@@ -147,6 +159,32 @@ function GeneralTab() {
               >
                 {t.label}
               </span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-base font-semibold text-gray-900 mb-0.5">Font</h2>
+        <p className="text-sm text-gray-500 mb-4">Choose the interface font.</p>
+        <div className="flex flex-col gap-2">
+          {FONT_OPTIONS.map((f) => (
+            <button
+              key={f.id}
+              onClick={() => handleFontChange(f.id)}
+              className={`flex items-center justify-between px-4 py-3 rounded-xl border transition-colors text-left ${
+                font === f.id
+                  ? 'border-brand-500 bg-brand-50'
+                  : 'border-gray-200 hover:border-brand-300 hover:bg-brand-50'
+              }`}
+            >
+              <span
+                className="text-sm text-gray-900"
+                style={{ fontFamily: `'${f.family}', sans-serif` }}
+              >
+                {f.label}
+              </span>
+              {font === f.id && <Check size={16} className="text-brand-600" strokeWidth={3} />}
             </button>
           ))}
         </div>

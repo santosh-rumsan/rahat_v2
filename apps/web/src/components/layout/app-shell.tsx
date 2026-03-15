@@ -21,7 +21,7 @@ export function AppShell({ sidebar, panel, children, className }: AppShellProps)
   return (
     <div
       className={cn(
-        'flex h-screen bg-[#f0f0f0] font-[Inter,sans-serif] overflow-hidden',
+        'flex h-screen bg-[#f0f0f0] overflow-hidden',
         className
       )}
     >

@@ -1,7 +1,11 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "@fontsource-variable/outfit";
 @import "@fontsource-variable/inter";
+@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource-variable/josefin-sans";
+@import "@fontsource-variable/lora";
 
 @source "../../../packages/ui/src/*.{ts,tsx}";
 @source "../../../packages/projects-shared/src/**/*.{ts,tsx}";
@@ -42,6 +46,8 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+    /* App font — default: Outfit */
+    --app-font: 'Outfit Variable', sans-serif;
     /* Brand/accent color scale — default: orange */
     --brand-50: oklch(0.98 0.016 73.74);
     --brand-100: oklch(0.954 0.038 75.16);
@@ -102,6 +108,22 @@
     --brand-700: oklch(0.518 0.253 323.95);
 }
 
+[data-font="inter"] {
+    --app-font: 'Inter Variable', sans-serif;
+}
+
+[data-font="plus-jakarta-sans"] {
+    --app-font: 'Plus Jakarta Sans Variable', sans-serif;
+}
+
+[data-font="josefin-sans"] {
+    --app-font: 'Josefin Sans Variable', sans-serif;
+}
+
+[data-font="lora"] {
+    --app-font: 'Lora Variable', serif;
+}
+
 .dark {
     --background: oklch(0.145 0 0);
     --foreground: oklch(0.985 0 0);
@@ -137,7 +159,7 @@
 }
 
 @theme inline {
-    --font-sans: 'Inter Variable', sans-serif;
+    --font-sans: var(--app-font);
     --color-brand-50: var(--brand-50);
     --color-brand-100: var(--brand-100);
     --color-brand-300: var(--brand-300);

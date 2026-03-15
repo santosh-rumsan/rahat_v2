@@ -4,8 +4,6 @@ import {
   Plus,
   SlidersHorizontal,
   MapPin,
-  Phone,
-  Calendar,
   Users,
   MoreHorizontal,
   Pencil,
@@ -14,6 +12,7 @@ import {
 import { cn } from '@rs/ui'
 import type { Beneficiary } from './types.js'
 import { useBeneficiaries, useDeleteBeneficiary } from './queries.js'
+import { BeneficiaryDetail } from './beneficiary-detail.js'
 
 // ─── constants ────────────────────────────────────────────────────────────────
 
@@ -165,7 +164,7 @@ export function BeneficiaryList({ projectId = 'default', onAdd, onEdit }: Benefi
       {selected ? (
         <div className="flex-1 bg-white rounded-l-3xl overflow-hidden flex flex-col min-w-0">
           {/* Detail header */}
-          <div className="px-8 pt-7 pb-5 border-b border-gray-100">
+          <div className="px-8 pt-7 pb-8">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-5">
                 <div className="w-24 h-24 rounded-2xl bg-orange-100 flex items-center justify-center flex-shrink-0">
@@ -231,58 +230,7 @@ export function BeneficiaryList({ projectId = 'default', onAdd, onEdit }: Benefi
             </div>
           </div>
 
-          {/* Detail body */}
-          <div className="flex-1 overflow-y-auto px-8 py-6">
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <p className="text-xs text-gray-400 mb-1">Enrolled</p>
-                <div className="flex items-center gap-1.5">
-                  <Calendar size={13} className="text-gray-400" />
-                  <p className="text-sm font-semibold text-[#1a1a1a]">{selected.enrolledDate}</p>
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <p className="text-xs text-gray-400 mb-1">Household size</p>
-                <div className="flex items-center gap-1.5">
-                  <Users size={13} className="text-gray-400" />
-                  <p className="text-sm font-semibold text-[#1a1a1a]">
-                    {selected.householdSize ?? '—'} members
-                  </p>
-                </div>
-              </div>
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <p className="text-xs text-gray-400 mb-1">Phone</p>
-                <div className="flex items-center gap-1.5">
-                  <Phone size={13} className="text-gray-400" />
-                  <p className="text-sm font-semibold text-[#1a1a1a]">{selected.phone ?? '—'}</p>
-                </div>
-              </div>
-            </div>
-
-            <h3 className="text-base font-bold text-[#1a1a1a] mb-4">Profile details</h3>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
-              {[
-                { label: 'Full name', value: selected.name },
-                { label: 'Age', value: String(selected.age) },
-                { label: 'Gender', value: selected.gender },
-                { label: 'Phone', value: selected.phone ?? '—' },
-                { label: 'Location', value: selected.location },
-                { label: 'Status', value: selected.status },
-              ].map((field) => (
-                <div key={field.label}>
-                  <p className="text-xs text-gray-400 mb-1">{field.label}</p>
-                  <p className="text-sm font-semibold text-[#1a1a1a]">{field.value}</p>
-                </div>
-              ))}
-            </div>
-
-            {selected.notes && (
-              <div className="mt-8">
-                <h3 className="text-base font-bold text-[#1a1a1a] mb-2">Notes</h3>
-                <p className="text-sm text-gray-500">{selected.notes}</p>
-              </div>
-            )}
-          </div>
+          <BeneficiaryDetail beneficiary={selected} hideHeader />
         </div>
       ) : (
         <div className="flex-1 bg-white rounded-l-3xl flex items-center justify-center">

@@ -17,6 +17,7 @@
     "./label": "./src/label.tsx",
     "./select": "./src/select.tsx",
     "./separator": "./src/separator.tsx",
+    "./tabs": "./src/tabs.tsx",
     "./textarea": "./src/textarea.tsx",
     "./theme": "./src/theme.tsx",
     "./toast": "./src/toast.tsx"

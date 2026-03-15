@@ -9,6 +9,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { configureSDK } from '@rahataid/sdk'
 import { colorThemeScript } from '../lib/color-theme-store'
+import { fontScript } from '../lib/font-store'
 
 import appCss from '../styles.css?url'
 
@@ -48,6 +49,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: colorThemeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: fontScript }} />
       </head>
       <body>
         <QueryClientProvider client={queryClient}>
