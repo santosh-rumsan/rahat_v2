@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import * as React from 'react'
 import { cn } from '@rs/ui'
-import { useUsers, useDeleteUser } from '@rahataid/projects-shared/user'
+import { useUsers, useDeleteUser } from '../lib/user/queries.js'
 
 export const Route = createFileRoute('/_app/users/')({ component: Users })
 

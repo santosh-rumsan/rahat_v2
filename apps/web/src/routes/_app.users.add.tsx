@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { UserForm } from '@rahataid/projects-shared/user'
+import { UserForm } from '../lib/user/user-form.js'
 
 export const Route = createFileRoute('/_app/users/add')({ component: UserAddPage })
 
