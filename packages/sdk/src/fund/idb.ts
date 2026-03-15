@@ -65,7 +65,7 @@ export const idbFundService: FundService = {
       type: 'deposit',
       refId: fund.id,
       amount: fund.amount,
-      currency: fund.currency,
+      token: fund.token,
       label: `${fund.name} — ${fund.source}`,
       createdAt: nowIso(),
     })
@@ -140,7 +140,7 @@ export const idbFundService: FundService = {
       refId: allocation.id,
       projectId: allocation.projectId,
       amount: allocation.amount,
-      currency: allocation.currency,
+      token: allocation.token,
       label: `Allocation → project ${allocation.projectId}`,
       createdAt: nowIso(),
     })

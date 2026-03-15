@@ -1,4 +1,6 @@
-export type FundCurrency = 'USD' | 'EUR' | 'NPR'
+export type TreasuryToken = 'cUSD' | 'cEUR' | 'cNPR'
+
+export const TREASURY_TOKENS: TreasuryToken[] = ['cUSD', 'cEUR', 'cNPR']
 
 // A deposit / source of funds into the treasury
 export interface Fund {
@@ -6,7 +8,7 @@ export interface Fund {
   name: string
   source: string
   amount: number
-  currency: FundCurrency
+  token: TreasuryToken
   date: string
   notes?: string
 }
@@ -19,7 +21,7 @@ export interface FundAllocation {
   id: string
   projectId: string
   amount: number
-  currency: FundCurrency
+  token: TreasuryToken
   allocatedAt: string
   notes?: string
 }
@@ -33,7 +35,7 @@ export interface AllocationLog {
   refId: string      // Fund.id or FundAllocation.id
   projectId?: string
   amount: number
-  currency: FundCurrency
+  token: TreasuryToken
   label: string
   createdAt: string
 }

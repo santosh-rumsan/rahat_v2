@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Plus, Trash2, X, Pencil, Package, Banknote, Droplets, Box, Briefcase, CheckCircle2, XCircle } from 'lucide-react'
+import { Plus, Trash2, Pencil, Package, Banknote, Droplets, Box, Briefcase, CheckCircle2, XCircle, Users } from 'lucide-react'
 import { cn } from '@rs/ui'
 import type { Benefit, BenefitType } from './types.js'
 
@@ -14,8 +14,6 @@ const SEED_BENEFITS: Benefit[] = [
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
-const BENEFIT_TYPES: BenefitType[] = ['Cash', 'Food', 'WASH', 'NFI', 'Service']
-
 const TYPE_META: Record<BenefitType, { icon: React.ReactNode; color: string; bg: string }> = {
   Cash:    { icon: <Banknote size={16} />,   color: 'text-green-600',  bg: 'bg-green-100' },
   Food:    { icon: <Package size={16} />,    color: 'text-orange-500', bg: 'bg-orange-100' },
@@ -29,30 +27,22 @@ function benefitStorageKey(projectId: string) {
 }
 
 function loadBenefits(projectId: string): Benefit[] {
+  if (typeof window === 'undefined') return SEED_BENEFITS
   try {
-    const raw = localStorage.getItem(benefitStorageKey(projectId))
+    const raw = window.localStorage.getItem(benefitStorageKey(projectId))
     if (raw) return JSON.parse(raw) as Benefit[]
   } catch {}
   return SEED_BENEFITS
 }
 
 function saveBenefits(projectId: string, benefits: Benefit[]) {
-  localStorage.setItem(benefitStorageKey(projectId), JSON.stringify(benefits))
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(benefitStorageKey(projectId), JSON.stringify(benefits))
+  } catch {}
 }
 
-export { benefitStorageKey, loadBenefits }
-
-// ─── blank form state ─────────────────────────────────────────────────────────
-
-interface BenefitForm {
-  name: string
-  type: BenefitType
-  description: string
-  unit: string
-  valuePerUnit: string
-}
-
-const emptyForm: BenefitForm = { name: '', type: 'Cash', description: '', unit: '', valuePerUnit: '' }
+export { benefitStorageKey, loadBenefits, saveBenefits }
 
 // ─── component ───────────────────────────────────────────────────────────────
 
@@ -60,62 +50,23 @@ export interface BenefitListProps {
   projectId?: string
   initialBenefitId?: string
   onBenefitSelect?: (benefitId: string | undefined) => void
+  onAssign?: (benefitId: string) => void
+  onAdd?: () => void
+  onEdit?: (benefitId: string) => void
 }
 
-export function BenefitList({ projectId = 'default', initialBenefitId, onBenefitSelect }: BenefitListProps) {
-  const [benefits, setBenefits] = React.useState<Benefit[]>(() => loadBenefits(projectId))
-  const [showModal, setShowModal] = React.useState(false)
-  const [editTarget, setEditTarget] = React.useState<Benefit | null>(null)
-  const [form, setForm] = React.useState<BenefitForm>(emptyForm)
+export function BenefitList({ projectId = 'default', initialBenefitId, onBenefitSelect, onAssign, onAdd, onEdit }: BenefitListProps) {
+  const [benefits, setBenefits] = React.useState<Benefit[]>([])
+
+  React.useEffect(() => {
+    setBenefits(loadBenefits(projectId))
+  }, [projectId])
 
   const selected = initialBenefitId ? benefits.find((b) => b.id === initialBenefitId) : undefined
 
   const persist = (next: Benefit[]) => {
     setBenefits(next)
     saveBenefits(projectId, next)
-  }
-
-  function openCreate() {
-    setEditTarget(null)
-    setForm(emptyForm)
-    setShowModal(true)
-  }
-
-  function openEdit(b: Benefit, e: React.MouseEvent) {
-    e.stopPropagation()
-    setEditTarget(b)
-    setForm({ name: b.name, type: b.type, description: b.description ?? '', unit: b.unit, valuePerUnit: String(b.valuePerUnit) })
-    setShowModal(true)
-  }
-
-  function closeModal() {
-    setShowModal(false)
-    setEditTarget(null)
-    setForm(emptyForm)
-  }
-
-  function handleSave() {
-    if (!form.name.trim() || !form.unit.trim() || !form.valuePerUnit) return
-    if (editTarget) {
-      persist(benefits.map((b) =>
-        b.id === editTarget.id
-          ? { ...b, name: form.name.trim(), type: form.type, description: form.description.trim() || undefined, unit: form.unit.trim(), valuePerUnit: Number(form.valuePerUnit) } as Benefit
-          : b
-      ))
-    } else {
-      const next: Benefit = {
-        id: `b${Date.now()}`,
-        name: form.name.trim(),
-        type: form.type,
-        description: form.description.trim() || undefined,
-        unit: form.unit.trim(),
-        valuePerUnit: Number(form.valuePerUnit),
-        isActive: true,
-        createdAt: new Date().toISOString().split('T')[0]!,
-      }
-      persist([...benefits, next])
-    }
-    closeModal()
   }
 
   function handleDelete(id: string, e: React.MouseEvent) {
@@ -128,9 +79,6 @@ export function BenefitList({ projectId = 'default', initialBenefitId, onBenefit
     e.stopPropagation()
     persist(benefits.map((b) => (b.id === id ? { ...b, isActive: !b.isActive } : b)))
   }
-
-  const setField = <K extends keyof BenefitForm>(k: K, v: BenefitForm[K]) =>
-    setForm((f) => ({ ...f, [k]: v }))
 
   // ── detail view ──────────────────────────────────────────────────────────
   if (selected) {
@@ -185,7 +133,7 @@ export function BenefitList({ projectId = 'default', initialBenefitId, onBenefit
           <p className="text-sm text-gray-400 mt-1">{benefits.length} benefit{benefits.length !== 1 ? 's' : ''}</p>
         </div>
         <button
-          onClick={openCreate}
+          onClick={onAdd}
           className="flex items-center gap-1.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
         >
           <Plus size={14} />
@@ -198,23 +146,28 @@ export function BenefitList({ projectId = 'default', initialBenefitId, onBenefit
         {benefits.map((b) => {
           const meta = TYPE_META[b.type]
           return (
-            <button
+            <div
               key={b.id}
+              role="button"
+              tabIndex={0}
               onClick={() => onBenefitSelect?.(b.id)}
-              className="text-left p-5 rounded-2xl border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all group"
+              onKeyDown={(e) => e.key === 'Enter' && onBenefitSelect?.(b.id)}
+              className="text-left p-5 rounded-2xl border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all group cursor-pointer"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', meta.bg)}>
                   <span className={meta.color}>{meta.icon}</span>
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                  <button
-                    onClick={(e) => openEdit(b, e)}
-                    className="p-1.5 text-gray-400 hover:text-blue-500 rounded-lg hover:bg-blue-50 transition-all"
-                    title="Edit"
-                  >
-                    <Pencil size={12} />
-                  </button>
+                  {onEdit && (
+                    <button
+                      onClick={(e) => { e.stopPropagation(); onEdit(b.id) }}
+                      className="p-1.5 text-gray-400 hover:text-blue-500 rounded-lg hover:bg-blue-50 transition-all"
+                      title="Edit"
+                    >
+                      <Pencil size={12} />
+                    </button>
+                  )}
                   <button
                     onClick={(e) => handleToggleActive(b.id, e)}
                     className="p-1.5 text-gray-400 hover:text-green-500 rounded-lg hover:bg-green-50 transition-all"
@@ -243,15 +196,27 @@ export function BenefitList({ projectId = 'default', initialBenefitId, onBenefit
               {b.description && (
                 <p className="text-xs text-gray-400 mb-2 line-clamp-2">{b.description}</p>
               )}
-              <div className="flex items-center gap-2 mt-2">
-                <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-semibold', meta.bg, meta.color)}>
-                  {b.type}
-                </span>
-                <span className="text-[10px] text-gray-400">
-                  {b.valuePerUnit} {b.unit} / token
-                </span>
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex items-center gap-2">
+                  <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full font-semibold', meta.bg, meta.color)}>
+                    {b.type}
+                  </span>
+                  <span className="text-[10px] text-gray-400">
+                    {b.valuePerUnit} {b.unit} / token
+                  </span>
+                </div>
+                {onAssign && b.isActive && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onAssign(b.id) }}
+                    className="flex items-center gap-1 text-[10px] font-semibold text-orange-600 bg-orange-50 hover:bg-orange-100 px-2 py-0.5 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                    title="Assign to beneficiaries"
+                  >
+                    <Users size={10} />
+                    Assign
+                  </button>
+                )}
               </div>
-            </button>
+            </div>
           )
         })}
 
@@ -265,114 +230,6 @@ export function BenefitList({ projectId = 'default', initialBenefitId, onBenefit
           </div>
         )}
       </div>
-
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-          <div className="bg-white rounded-2xl shadow-xl p-6 w-[420px]">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-base font-bold text-[#1a1a1a]">{editTarget ? 'Edit Benefit' : 'New Benefit'}</h2>
-              <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100">
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="space-y-3">
-              {/* Name */}
-              <div>
-                <label className="text-xs font-medium text-gray-500 block mb-1">Name *</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Monthly Cash Transfer"
-                  value={form.name}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setField('name', e.currentTarget.value)}
-                  autoFocus
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                />
-              </div>
-
-              {/* Type */}
-              <div>
-                <label className="text-xs font-medium text-gray-500 block mb-1">Type *</label>
-                <div className="grid grid-cols-5 gap-1.5">
-                  {BENEFIT_TYPES.map((t) => {
-                    const m = TYPE_META[t]
-                    return (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => setField('type', t)}
-                        className={cn(
-                          'flex flex-col items-center gap-1 py-2 rounded-xl border text-xs font-medium transition-all',
-                          form.type === t
-                            ? 'border-orange-400 bg-orange-50 text-orange-600'
-                            : 'border-gray-200 text-gray-500 hover:border-gray-300'
-                        )}
-                      >
-                        <span className={form.type === t ? 'text-orange-500' : m.color}>{m.icon}</span>
-                        {t}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              {/* Unit + Value */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-medium text-gray-500 block mb-1">Unit *</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. NPR, KG, Kit"
-                    value={form.unit}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setField('unit', e.currentTarget.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-gray-500 block mb-1">Value per token *</label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 5000"
-                    min={0}
-                    value={form.valuePerUnit}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setField('valuePerUnit', e.currentTarget.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="text-xs font-medium text-gray-500 block mb-1">Description</label>
-                <textarea
-                  placeholder="Optional description…"
-                  value={form.description}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setField('description', e.currentTarget.value)}
-                  rows={2}
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 mt-5">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={!form.name.trim() || !form.unit.trim() || !form.valuePerUnit}
-                className="px-4 py-2 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-              >
-                {editTarget ? 'Save changes' : 'Create benefit'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

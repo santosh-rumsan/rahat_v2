@@ -49,15 +49,19 @@ function tokenStorageKey(projectId: string) {
 }
 
 function loadTokens(projectId: string): Token[] {
+  if (typeof window === 'undefined') return SEED_TOKENS
   try {
-    const raw = localStorage.getItem(tokenStorageKey(projectId))
+    const raw = window.localStorage.getItem(tokenStorageKey(projectId))
     if (raw) return JSON.parse(raw) as Token[]
   } catch {}
   return SEED_TOKENS
 }
 
-function saveTokens(projectId: string, tokens: Token[]) {
-  localStorage.setItem(tokenStorageKey(projectId), JSON.stringify(tokens))
+export function saveTokens(projectId: string, tokens: Token[]) {
+  if (typeof window === 'undefined') return
+  try {
+    window.localStorage.setItem(tokenStorageKey(projectId), JSON.stringify(tokens))
+  } catch {}
 }
 
 function generateCode(tokens: Token[]): string {
@@ -83,8 +87,8 @@ export function TokenAssignment({
   projectId = 'default',
   beneficiaries = MOCK_BENEFICIARIES,
 }: TokenAssignmentProps) {
-  const [tokens, setTokens] = React.useState<Token[]>(() => loadTokens(projectId))
-  const [benefits, setBenefits] = React.useState<Benefit[]>(() => loadBenefits(projectId))
+  const [tokens, setTokens] = React.useState<Token[]>([])
+  const [benefits, setBenefits] = React.useState<Benefit[]>([])
   const [tab, setTab] = React.useState<Tab>('tokens')
 
   // filters
@@ -101,6 +105,7 @@ export function TokenAssignment({
 
   // update benefits if storage changes between renders
   React.useEffect(() => {
+    setTokens(loadTokens(projectId))
     setBenefits(loadBenefits(projectId))
   }, [projectId])
 

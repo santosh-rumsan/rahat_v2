@@ -1,16 +1,15 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 import * as React from 'react'
+import { TREASURY_TOKENS } from '@rahataid/sdk'
 import { cn } from '@rs/ui'
 import { useProjects } from '@rahataid/projects-shared/project'
-import { useCreateFund, useCreateAllocation } from '../lib/fund/queries.js'
-import type { FundCurrency } from '@rahataid/sdk'
+import { useCreateAllocation, useCreateFund, useFundAllocations, useFunds } from '../lib/fund/queries.js'
+import type { TreasuryToken } from '@rahataid/sdk'
 
 export const Route = createFileRoute('/_app/fund-management/allocate')({ component: AllocatePage })
 
 type Tab = 'deposit' | 'allocate'
-
-const CURRENCIES: FundCurrency[] = ['USD', 'EUR', 'NPR']
 
 // ── Deposit Form ────────────────────────────────────────────────────────────
 
@@ -18,7 +17,7 @@ interface DepositForm {
   name: string
   source: string
   amount: string
-  currency: FundCurrency
+  token: TreasuryToken
   date: string
   notes: string
 }
@@ -27,7 +26,7 @@ const emptyDeposit: DepositForm = {
   name: '',
   source: '',
   amount: '',
-  currency: 'USD',
+  token: 'cUSD',
   date: new Date().toISOString().slice(0, 10),
   notes: '',
 }
@@ -36,7 +35,7 @@ function DepositSection({ onDone }: { onDone: () => void }) {
   const [form, setForm] = React.useState<DepositForm>(emptyDeposit)
   const createFund = useCreateFund()
 
-  const setField = <K extends keyof DepositForm>(k: K, v: DepositForm[K]) =>
+  const setField = <TField extends keyof DepositForm>(k: TField, v: DepositForm[TField]) =>
     setForm((f) => ({ ...f, [k]: v }))
 
   const isValid = form.name.trim() && form.source.trim() && Number(form.amount) > 0 && form.date
@@ -48,7 +47,7 @@ function DepositSection({ onDone }: { onDone: () => void }) {
       name: form.name.trim(),
       source: form.source.trim(),
       amount: Number(form.amount),
-      currency: form.currency,
+      token: form.token,
       date: form.date,
       notes: form.notes.trim() || undefined,
     })
@@ -95,21 +94,21 @@ function DepositSection({ onDone }: { onDone: () => void }) {
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1.5">Currency *</label>
+          <label className="text-sm font-medium text-gray-700 block mb-1.5">Token *</label>
           <div className="flex gap-2">
-            {CURRENCIES.map((c) => (
+            {TREASURY_TOKENS.map((t) => (
               <button
-                key={c}
+                key={t}
                 type="button"
-                onClick={() => setField('currency', c)}
+                onClick={() => setField('token', t)}
                 className={cn(
                   'px-4 py-2.5 rounded-xl border text-sm font-medium transition-all',
-                  form.currency === c
+                  form.token === t
                     ? 'border-orange-400 bg-orange-50 text-orange-600'
                     : 'border-gray-200 text-gray-500 hover:border-gray-300',
                 )}
               >
-                {c}
+                {t}
               </button>
             ))}
           </div>
@@ -162,36 +161,63 @@ function DepositSection({ onDone }: { onDone: () => void }) {
 interface AllocationForm {
   projectId: string
   amount: string
-  currency: FundCurrency
+  token: TreasuryToken
   notes: string
 }
 
 const emptyAllocation: AllocationForm = {
   projectId: '',
   amount: '',
-  currency: 'USD',
+  token: 'cUSD',
   notes: '',
+}
+
+function isTreasuryToken(token: string): token is TreasuryToken {
+  return TREASURY_TOKENS.includes(token as TreasuryToken)
+}
+
+function fmtToken(amount: number, token: TreasuryToken) {
+  return `${new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(amount)} ${token}`
 }
 
 function AllocationSection({ onDone }: { onDone: () => void }) {
   const [form, setForm] = React.useState<AllocationForm>(emptyAllocation)
   const { data: projects = [], isLoading } = useProjects()
+  const { data: funds = [] } = useFunds()
+  const { data: allocations = [] } = useFundAllocations()
   const createAllocation = useCreateAllocation()
 
-  const activeProjects = projects.filter((p) => p.status === 'Active')
+  const availableProjects = projects.filter((p) => p.status !== 'Completed' && p.status !== 'Suspended')
 
-  const setField = <K extends keyof AllocationForm>(k: K, v: AllocationForm[K]) =>
+  // Compute available balance per token
+  const tokenBalances = React.useMemo(() => {
+    const deposited: Record<TreasuryToken, number> = { cUSD: 0, cEUR: 0, cNPR: 0 }
+    const allocated: Record<TreasuryToken, number> = { cUSD: 0, cEUR: 0, cNPR: 0 }
+    for (const f of funds) {
+      if (isTreasuryToken(f.token)) deposited[f.token] += f.amount
+    }
+    for (const a of allocations) {
+      if (isTreasuryToken(a.token)) allocated[a.token] += a.amount
+    }
+    const available: Record<TreasuryToken, number> = { cUSD: 0, cEUR: 0, cNPR: 0 }
+    for (const t of TREASURY_TOKENS) available[t] = deposited[t] - allocated[t]
+    return available
+  }, [funds, allocations])
+
+  const setField = <TField extends keyof AllocationForm>(k: TField, v: AllocationForm[TField]) =>
     setForm((f) => ({ ...f, [k]: v }))
 
-  const isValid = form.projectId && Number(form.amount) > 0
+  const availableForToken = tokenBalances[form.token]
+  const requestedAmount = Number(form.amount)
+  const isValid = form.projectId && requestedAmount > 0 && requestedAmount <= availableForToken
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
     if (!isValid) return
     await createAllocation.mutateAsync({
       projectId: form.projectId,
-      amount: Number(form.amount),
-      currency: form.currency,
+      amount: requestedAmount,
+      token: form.token,
       notes: form.notes.trim() || undefined,
     })
     onDone()
@@ -203,8 +229,8 @@ function AllocationSection({ onDone }: { onDone: () => void }) {
         <label className="text-sm font-medium text-gray-700 block mb-1.5">Project *</label>
         {isLoading ? (
           <p className="text-sm text-gray-400">Loading projects…</p>
-        ) : activeProjects.length === 0 ? (
-          <p className="text-sm text-gray-400">No active projects found.</p>
+        ) : availableProjects.length === 0 ? (
+          <p className="text-sm text-gray-400">No projects found.</p>
         ) : (
           <select
             value={form.projectId}
@@ -212,7 +238,7 @@ function AllocationSection({ onDone }: { onDone: () => void }) {
             className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-white"
           >
             <option value="">Select a project…</option>
-            {activeProjects.map((p) => (
+            {availableProjects.map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
@@ -221,9 +247,33 @@ function AllocationSection({ onDone }: { onDone: () => void }) {
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-5">
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1.5">Amount *</label>
+      <div>
+        <label className="text-sm font-medium text-gray-700 block mb-1.5">Token *</label>
+        <div className="flex gap-2">
+          {TREASURY_TOKENS.map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setField('token', t)}
+              className={cn(
+                'flex flex-col items-start px-4 py-2.5 rounded-xl border text-sm font-medium transition-all',
+                form.token === t
+                  ? 'border-orange-400 bg-orange-50 text-orange-600'
+                  : 'border-gray-200 text-gray-500 hover:border-gray-300',
+              )}
+            >
+              <span>{t}</span>
+              <span className={cn('text-xs font-normal mt-0.5', form.token === t ? 'text-orange-400' : 'text-gray-400')}>
+                {fmtToken(tokenBalances[t], t)} avail.
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="text-sm font-medium text-gray-700 block mb-1.5">Amount *</label>
+        <div className="relative">
           <input
             type="number"
             min="1"
@@ -231,29 +281,22 @@ function AllocationSection({ onDone }: { onDone: () => void }) {
             placeholder="100000"
             value={form.amount}
             onChange={(e) => setField('amount', e.currentTarget.value)}
-            className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+            className={cn(
+              'w-full px-3 py-2.5 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:border-transparent',
+              requestedAmount > availableForToken && requestedAmount > 0
+                ? 'border-red-300 focus:ring-red-400'
+                : 'border-gray-200 focus:ring-orange-400',
+            )}
           />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">
+            {form.token}
+          </span>
         </div>
-        <div>
-          <label className="text-sm font-medium text-gray-700 block mb-1.5">Currency *</label>
-          <div className="flex gap-2">
-            {CURRENCIES.map((c) => (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setField('currency', c)}
-                className={cn(
-                  'px-4 py-2.5 rounded-xl border text-sm font-medium transition-all',
-                  form.currency === c
-                    ? 'border-orange-400 bg-orange-50 text-orange-600'
-                    : 'border-gray-200 text-gray-500 hover:border-gray-300',
-                )}
-              >
-                {c}
-              </button>
-            ))}
-          </div>
-        </div>
+        {requestedAmount > availableForToken && requestedAmount > 0 && (
+          <p className="text-xs text-red-500 mt-1">
+            Exceeds available balance of {fmtToken(availableForToken, form.token)}
+          </p>
+        )}
       </div>
 
       <div>
@@ -315,7 +358,7 @@ function AllocatePage() {
       <div className="px-8 py-8">
         {/* Tab switcher */}
         <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-8">
-          {([['allocate', 'Allocate to Project'], ['deposit', 'Record Deposit']] as [Tab, string][]).map(
+          {([['allocate', 'Allocate to Project'], ['deposit', 'Record Deposit']] as Array<[Tab, string]>).map(
             ([t, label]) => (
               <button
                 key={t}

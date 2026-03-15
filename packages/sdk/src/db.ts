@@ -1,5 +1,5 @@
 const DB_NAME = 'rahat-db'
-const DB_VERSION = 5
+const DB_VERSION = 6
 
 export function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -30,6 +30,17 @@ export function openDb(): Promise<IDBDatabase> {
         db.createObjectStore('funds', { keyPath: 'id' })
         const allocStore = db.createObjectStore('fund_allocations', { keyPath: 'id' })
         allocStore.createIndex('by_project', 'projectId', { unique: false })
+        db.createObjectStore('allocation_logs', { keyPath: 'id' })
+      }
+
+      if (oldVersion < 6) {
+        // Migrate: currency field replaced by token — clear existing fund data
+        db.deleteObjectStore('funds')
+        db.deleteObjectStore('fund_allocations')
+        db.deleteObjectStore('allocation_logs')
+        db.createObjectStore('funds', { keyPath: 'id' })
+        const allocStore2 = db.createObjectStore('fund_allocations', { keyPath: 'id' })
+        allocStore2.createIndex('by_project', 'projectId', { unique: false })
         db.createObjectStore('allocation_logs', { keyPath: 'id' })
       }
     }

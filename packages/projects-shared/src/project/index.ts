@@ -4,5 +4,6 @@ export {
   useCreateProject,
   useUpdateProject,
   useDeleteProject,
+  useProjectAllocations,
   projectKeys,
 } from './queries.js'

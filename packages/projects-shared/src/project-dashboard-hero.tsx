@@ -1,6 +1,7 @@
 import * as React from 'react'
 import type { ProjectSummary } from '@rahataid/plugin-sdk'
-import { MoreHorizontal, Pencil } from 'lucide-react'
+import { MoreHorizontal, Pencil, Coins } from 'lucide-react'
+import { useProjectAllocations } from './project/index.js'
 
 interface ProjectDashboardHeroProps {
   project: ProjectSummary
@@ -15,9 +16,30 @@ const statusClassNames: Record<string, string> = {
   Completed: 'bg-slate-400 text-white',
 }
 
+const TOKEN_COLORS: Record<string, { bg: string; text: string; bar: string }> = {
+  cUSD: { bg: 'bg-emerald-50', text: 'text-emerald-600', bar: 'bg-emerald-400' },
+  cEUR: { bg: 'bg-blue-50',    text: 'text-blue-600',    bar: 'bg-blue-400'    },
+  cNPR: { bg: 'bg-purple-50',  text: 'text-purple-600',  bar: 'bg-purple-400'  },
+}
+const FALLBACK_COLORS = { bg: 'bg-gray-100', text: 'text-gray-600', bar: 'bg-gray-400' }
+
+function fmtAmount(n: number) {
+  return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(n)
+}
+
 export function ProjectDashboardHero({ project, projectTypeLabel, accentClassName, onEdit }: ProjectDashboardHeroProps) {
   const [open, setOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
+  const { data: allocations = [] } = useProjectAllocations(project.id)
+
+  // Aggregate per token
+  const tokenTotals = React.useMemo(() => {
+    const map = new Map<string, number>()
+    for (const a of allocations) {
+      map.set(a.token, (map.get(a.token) ?? 0) + a.amount)
+    }
+    return Array.from(map.entries()).map(([token, amount]) => ({ token, amount }))
+  }, [allocations])
 
   React.useEffect(() => {
     if (!open) return
@@ -78,6 +100,26 @@ export function ProjectDashboardHero({ project, projectTypeLabel, accentClassNam
           {project.status}
         </span>
       </div>
+
+      {tokenTotals.length > 0 && (
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+            <Coins size={13} />
+            Allocated funds:
+          </span>
+          {tokenTotals.map(({ token, amount }) => {
+            const c = TOKEN_COLORS[token] ?? FALLBACK_COLORS
+            return (
+              <span
+                key={token}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${c.bg} ${c.text}`}
+              >
+                {fmtAmount(amount)} {token}
+              </span>
+            )
+          })}
+        </div>
+      )}
     </section>
   )
 }

@@ -1,9 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { createProjectService, getSDKApiUrl } from '@rahataid/sdk'
-import type { CreateProjectInput, UpdateProjectInput } from '@rahataid/sdk'
+import { createProjectService, createFundService, getSDKApiUrl } from '@rahataid/sdk'
+import type { CreateProjectInput, UpdateProjectInput, FundAllocation } from '@rahataid/sdk'
 
 function service() {
   return createProjectService(getSDKApiUrl())
+}
+
+function fundService() {
+  return createFundService(getSDKApiUrl())
 }
 
 export const projectKeys = {
@@ -51,5 +55,16 @@ export function useDeleteProject() {
   return useMutation({
     mutationFn: (id: string) => service().delete(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: projectKeys.all }),
+  })
+}
+
+export function useProjectAllocations(projectId: string) {
+  return useQuery<FundAllocation[]>({
+    queryKey: ['fund-allocations', 'by-project', projectId],
+    queryFn: async () => {
+      const all = await fundService().listAllocations()
+      return all.filter((a) => a.projectId === projectId)
+    },
+    enabled: !!projectId,
   })
 }

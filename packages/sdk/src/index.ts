@@ -18,12 +18,13 @@ export { createUserService, idbUserService, createApiUserService } from './user/
 export type { UserService } from './user/index.js'
 export type {
   Fund,
-  FundCurrency,
+  TreasuryToken,
   CreateFundInput,
   UpdateFundInput,
   FundAllocation,
   CreateFundAllocationInput,
   AllocationLog,
 } from './types/index.js'
+export { TREASURY_TOKENS } from './types/index.js'
 export { createFundService, idbFundService, createApiFundService } from './fund/index.js'
 export type { FundService } from './fund/index.js'
