@@ -16,3 +16,14 @@ export type { VendorService } from './vendor/index.js'
 export type { User, CreateUserInput, UpdateUserInput } from './types/index.js'
 export { createUserService, idbUserService, createApiUserService } from './user/index.js'
 export type { UserService } from './user/index.js'
+export type {
+  Fund,
+  FundCurrency,
+  CreateFundInput,
+  UpdateFundInput,
+  FundAllocation,
+  CreateFundAllocationInput,
+  AllocationLog,
+} from './types/index.js'
+export { createFundService, idbFundService, createApiFundService } from './fund/index.js'
+export type { FundService } from './fund/index.js'

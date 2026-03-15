@@ -20,11 +20,13 @@ import { Route as AppFundManagementRouteImport } from './routes/_app.fund-manage
 import { Route as AppVendorsIndexRouteImport } from './routes/_app.vendors.index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app.users.index'
 import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.index'
+import { Route as AppFundManagementIndexRouteImport } from './routes/_app.fund-management.index'
 import { Route as AppVendorsAddRouteImport } from './routes/_app.vendors.add'
 import { Route as AppVendorsVendorIdRouteImport } from './routes/_app.vendors.$vendorId'
 import { Route as AppUsersAddRouteImport } from './routes/_app.users.add'
 import { Route as AppProjectsNewRouteImport } from './routes/_app.projects.new'
 import { Route as AppProjectsIdRouteImport } from './routes/_app.projects.$id'
+import { Route as AppFundManagementAllocateRouteImport } from './routes/_app.fund-management.allocate'
 import { Route as AppVendorsVendorIdIndexRouteImport } from './routes/_app.vendors.$vendorId.index'
 import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$id.index'
 import { Route as AppVendorsVendorIdEditRouteImport } from './routes/_app.vendors.$vendorId.edit'
@@ -94,6 +96,11 @@ const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppProjectsRoute,
 } as any)
+const AppFundManagementIndexRoute = AppFundManagementIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppFundManagementRoute,
+} as any)
 const AppVendorsAddRoute = AppVendorsAddRouteImport.update({
   id: '/add',
   path: '/add',
@@ -119,6 +126,12 @@ const AppProjectsIdRoute = AppProjectsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AppProjectsRoute,
 } as any)
+const AppFundManagementAllocateRoute =
+  AppFundManagementAllocateRouteImport.update({
+    id: '/allocate',
+    path: '/allocate',
+    getParentRoute: () => AppFundManagementRoute,
+  } as any)
 const AppVendorsVendorIdIndexRoute = AppVendorsVendorIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -200,17 +213,19 @@ const AppProjectsIdBeneficiariesBeneficiaryIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
-  '/fund-management': typeof AppFundManagementRoute
+  '/fund-management': typeof AppFundManagementRouteWithChildren
   '/projects': typeof AppProjectsRouteWithChildren
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRouteWithChildren
   '/vendors': typeof AppVendorsRouteWithChildren
+  '/fund-management/allocate': typeof AppFundManagementAllocateRoute
   '/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/projects/new': typeof AppProjectsNewRoute
   '/users/add': typeof AppUsersAddRoute
   '/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
   '/vendors/add': typeof AppVendorsAddRoute
+  '/fund-management/': typeof AppFundManagementIndexRoute
   '/projects/': typeof AppProjectsIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/vendors/': typeof AppVendorsIndexRoute
@@ -230,13 +245,14 @@ export interface FileRoutesByFullPath {
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
 }
 export interface FileRoutesByTo {
-  '/fund-management': typeof AppFundManagementRoute
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
+  '/fund-management/allocate': typeof AppFundManagementAllocateRoute
   '/projects/new': typeof AppProjectsNewRoute
   '/users/add': typeof AppUsersAddRoute
   '/vendors/add': typeof AppVendorsAddRoute
+  '/fund-management': typeof AppFundManagementIndexRoute
   '/projects': typeof AppProjectsIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/vendors': typeof AppVendorsIndexRoute
@@ -257,18 +273,20 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
-  '/_app/fund-management': typeof AppFundManagementRoute
+  '/_app/fund-management': typeof AppFundManagementRouteWithChildren
   '/_app/projects': typeof AppProjectsRouteWithChildren
   '/_app/services': typeof AppServicesRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/users': typeof AppUsersRouteWithChildren
   '/_app/vendors': typeof AppVendorsRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/_app/fund-management/allocate': typeof AppFundManagementAllocateRoute
   '/_app/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/_app/projects/new': typeof AppProjectsNewRoute
   '/_app/users/add': typeof AppUsersAddRoute
   '/_app/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
   '/_app/vendors/add': typeof AppVendorsAddRoute
+  '/_app/fund-management/': typeof AppFundManagementIndexRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_app/vendors/': typeof AppVendorsIndexRoute
@@ -297,11 +315,13 @@ export interface FileRouteTypes {
     | '/settings'
     | '/users'
     | '/vendors'
+    | '/fund-management/allocate'
     | '/projects/$id'
     | '/projects/new'
     | '/users/add'
     | '/vendors/$vendorId'
     | '/vendors/add'
+    | '/fund-management/'
     | '/projects/'
     | '/users/'
     | '/vendors/'
@@ -321,13 +341,14 @@ export interface FileRouteTypes {
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/fund-management'
     | '/services'
     | '/settings'
     | '/'
+    | '/fund-management/allocate'
     | '/projects/new'
     | '/users/add'
     | '/vendors/add'
+    | '/fund-management'
     | '/projects'
     | '/users'
     | '/vendors'
@@ -354,11 +375,13 @@ export interface FileRouteTypes {
     | '/_app/users'
     | '/_app/vendors'
     | '/_app/'
+    | '/_app/fund-management/allocate'
     | '/_app/projects/$id'
     | '/_app/projects/new'
     | '/_app/users/add'
     | '/_app/vendors/$vendorId'
     | '/_app/vendors/add'
+    | '/_app/fund-management/'
     | '/_app/projects/'
     | '/_app/users/'
     | '/_app/vendors/'
@@ -461,6 +484,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIndexRouteImport
       parentRoute: typeof AppProjectsRoute
     }
+    '/_app/fund-management/': {
+      id: '/_app/fund-management/'
+      path: '/'
+      fullPath: '/fund-management/'
+      preLoaderRoute: typeof AppFundManagementIndexRouteImport
+      parentRoute: typeof AppFundManagementRoute
+    }
     '/_app/vendors/add': {
       id: '/_app/vendors/add'
       path: '/add'
@@ -495,6 +525,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/$id'
       preLoaderRoute: typeof AppProjectsIdRouteImport
       parentRoute: typeof AppProjectsRoute
+    }
+    '/_app/fund-management/allocate': {
+      id: '/_app/fund-management/allocate'
+      path: '/allocate'
+      fullPath: '/fund-management/allocate'
+      preLoaderRoute: typeof AppFundManagementAllocateRouteImport
+      parentRoute: typeof AppFundManagementRoute
     }
     '/_app/vendors/$vendorId/': {
       id: '/_app/vendors/$vendorId/'
@@ -596,6 +633,19 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AppFundManagementRouteChildren {
+  AppFundManagementAllocateRoute: typeof AppFundManagementAllocateRoute
+  AppFundManagementIndexRoute: typeof AppFundManagementIndexRoute
+}
+
+const AppFundManagementRouteChildren: AppFundManagementRouteChildren = {
+  AppFundManagementAllocateRoute: AppFundManagementAllocateRoute,
+  AppFundManagementIndexRoute: AppFundManagementIndexRoute,
+}
+
+const AppFundManagementRouteWithChildren =
+  AppFundManagementRoute._addFileChildren(AppFundManagementRouteChildren)
 
 interface AppProjectsIdBeneficiariesRouteChildren {
   AppProjectsIdBeneficiariesAddRoute: typeof AppProjectsIdBeneficiariesAddRoute
@@ -730,7 +780,7 @@ const AppVendorsRouteWithChildren = AppVendorsRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
-  AppFundManagementRoute: typeof AppFundManagementRoute
+  AppFundManagementRoute: typeof AppFundManagementRouteWithChildren
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppServicesRoute: typeof AppServicesRoute
   AppSettingsRoute: typeof AppSettingsRoute
@@ -740,7 +790,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
-  AppFundManagementRoute: AppFundManagementRoute,
+  AppFundManagementRoute: AppFundManagementRouteWithChildren,
   AppProjectsRoute: AppProjectsRouteWithChildren,
   AppServicesRoute: AppServicesRoute,
   AppSettingsRoute: AppSettingsRoute,

@@ -1,5 +1,5 @@
 const DB_NAME = 'rahat-db'
-const DB_VERSION = 4
+const DB_VERSION = 5
 
 export function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -24,6 +24,13 @@ export function openDb(): Promise<IDBDatabase> {
 
       if (oldVersion < 4) {
         db.createObjectStore('users', { keyPath: 'id' })
+      }
+
+      if (oldVersion < 5) {
+        db.createObjectStore('funds', { keyPath: 'id' })
+        const allocStore = db.createObjectStore('fund_allocations', { keyPath: 'id' })
+        allocStore.createIndex('by_project', 'projectId', { unique: false })
+        db.createObjectStore('allocation_logs', { keyPath: 'id' })
       }
     }
 
