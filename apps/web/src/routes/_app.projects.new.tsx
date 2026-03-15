@@ -73,10 +73,10 @@ function NewProject() {
               <button
                 key={p.projectType}
                 onClick={() => handleSelectType(p.projectType)}
-                className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-orange-400 hover:bg-orange-50 transition-colors text-left group"
+                className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 hover:border-brand-400 hover:bg-brand-50 transition-colors text-left group"
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 group-hover:text-orange-700">
+                  <p className="text-sm font-medium text-gray-900 group-hover:text-brand-700">
                     {p.label}
                   </p>
                   {p.description && (

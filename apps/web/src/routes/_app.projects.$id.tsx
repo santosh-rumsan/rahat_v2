@@ -25,7 +25,7 @@ function ProjectLayout() {
     return (
       <div className="flex flex-col items-center justify-center h-full text-gray-400">
         <p className="text-lg font-medium">Project not found</p>
-        <button onClick={onBack} className="mt-4 text-sm text-orange-500 hover:underline">
+        <button onClick={onBack} className="mt-4 text-sm text-brand-500 hover:underline">
           Back to projects
         </button>
       </div>

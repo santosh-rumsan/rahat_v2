@@ -20,7 +20,7 @@ export interface IconSidebarProps {
   className?: string
 }
 
-const activeClass = 'text-white bg-orange-500'
+const activeClass = 'text-white bg-brand-500'
 const inactiveClass = 'text-gray-400 hover:text-white'
 
 function RahatLogo(props: React.SVGProps<SVGSVGElement>) {
@@ -75,7 +75,7 @@ export function IconSidebar({
           >
             {item.icon}
             {item.badge != null && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 border border-[#1a1a1a] rounded-full text-[10px] flex items-center justify-center text-white">
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-500 border border-[#1a1a1a] rounded-full text-[10px] flex items-center justify-center text-white">
                 {item.badge}
               </span>
             )}
@@ -88,7 +88,7 @@ export function IconSidebar({
           >
             {item.icon}
             {item.badge != null && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 border border-[#1a1a1a] rounded-full text-[10px] flex items-center justify-center text-white">
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-500 border border-[#1a1a1a] rounded-full text-[10px] flex items-center justify-center text-white">
                 {item.badge}
               </span>
             )}

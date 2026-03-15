@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import * as React from 'react'
+import { Check } from 'lucide-react'
 import { getRegisteredPlugins } from '../plugins'
 import {
   ALL_BLOCKCHAINS,
@@ -7,13 +8,19 @@ import {
   loadSettings,
   saveSettings,
 } from '../lib/settings-store'
+import {
+  COLOR_THEMES,
+  ColorTheme,
+  loadColorTheme,
+  saveColorTheme,
+} from '../lib/color-theme-store'
 
 export const Route = createFileRoute('/_app/settings')({ component: SettingsPage })
 
 type Tab = 'general' | 'project'
 
 function SettingsPage() {
-  const [activeTab, setActiveTab] = React.useState<Tab>('project')
+  const [activeTab, setActiveTab] = React.useState<Tab>('general')
   const [settings, setSettings] = React.useState<AppSettings>(loadSettings)
   const plugins = getRegisteredPlugins()
 
@@ -27,7 +34,6 @@ function SettingsPage() {
     const next = current.includes(projectType)
       ? current.filter((t) => t !== projectType)
       : [...current, projectType]
-    // null when all enabled
     update({
       ...settings,
       enabledProjectTypes: next.length === plugins.length ? null : next,
@@ -96,7 +102,7 @@ function TabButton({
       onClick={onClick}
       className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
         active
-          ? 'bg-orange-50 text-orange-700'
+          ? 'bg-brand-50 text-brand-700'
           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
       }`}
     >
@@ -106,10 +112,45 @@ function TabButton({
 }
 
 function GeneralTab() {
+  const [colorTheme, setColorThemeState] = React.useState<ColorTheme>(loadColorTheme)
+
+  function handleThemeChange(theme: ColorTheme) {
+    setColorThemeState(theme)
+    saveColorTheme(theme)
+  }
+
   return (
-    <div className="max-w-lg">
-      <h2 className="text-base font-semibold text-gray-900 mb-1">General</h2>
-      <p className="text-sm text-gray-500">General application settings will appear here.</p>
+    <div className="max-w-lg flex flex-col gap-8">
+      <section>
+        <h2 className="text-base font-semibold text-gray-900 mb-0.5">Appearance</h2>
+        <p className="text-sm text-gray-500 mb-4">Choose an accent color for the interface.</p>
+        <div className="flex flex-wrap gap-3">
+          {COLOR_THEMES.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => handleThemeChange(t.id)}
+              title={t.label}
+              className="flex flex-col items-center gap-1.5 group"
+            >
+              <span
+                className="relative w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:scale-110"
+                style={{ backgroundColor: t.swatch }}
+              >
+                {colorTheme === t.id && (
+                  <Check size={16} className="text-white" strokeWidth={3} />
+                )}
+              </span>
+              <span
+                className={`text-xs font-medium ${
+                  colorTheme === t.id ? 'text-gray-900' : 'text-gray-400'
+                }`}
+              >
+                {t.label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
@@ -139,11 +180,11 @@ function ProjectSettingsTab({
           {plugins.map((p) => (
             <label
               key={p.projectType}
-              className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-orange-300 hover:bg-orange-50 transition-colors"
+              className="flex items-start gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-brand-300 hover:bg-brand-50 transition-colors"
             >
               <input
                 type="checkbox"
-                className="mt-0.5 accent-orange-500"
+                className="mt-0.5 accent-brand-500"
                 checked={isProjectTypeEnabled(p.projectType)}
                 onChange={() => onToggleProjectType(p.projectType)}
               />
@@ -168,11 +209,11 @@ function ProjectSettingsTab({
           {ALL_BLOCKCHAINS.map((chain) => (
             <label
               key={chain}
-              className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-orange-300 hover:bg-orange-50 transition-colors"
+              className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-brand-300 hover:bg-brand-50 transition-colors"
             >
               <input
                 type="checkbox"
-                className="accent-orange-500"
+                className="accent-brand-500"
                 checked={settings.enabledBlockchains.includes(chain)}
                 onChange={() => onToggleBlockchain(chain)}
               />

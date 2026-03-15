@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_app/users/')({ component: Users })
 const ROLE_COLORS: Record<string, string> = {
   Admin: 'bg-purple-100 text-purple-700',
   Manager: 'bg-blue-100 text-blue-700',
-  Field: 'bg-orange-100 text-orange-700',
+  Field: 'bg-brand-100 text-brand-700',
   Finance: 'bg-green-100 text-green-700',
   Viewer: 'bg-gray-100 text-gray-600',
 }
@@ -82,7 +82,7 @@ function Users() {
               placeholder="Search users…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-8 pr-3 py-2 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+              className="w-full pl-8 pr-3 py-2 text-xs bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-transparent"
             />
           </div>
         </div>
@@ -101,8 +101,8 @@ function Users() {
                 {u.avatar ? (
                   <img src={u.avatar} alt={u.name} className="w-9 h-9 rounded-full object-cover" />
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center">
-                    <User size={16} className="text-orange-500" />
+                  <div className="w-9 h-9 rounded-full bg-brand-100 flex items-center justify-center">
+                    <User size={16} className="text-brand-500" />
                   </div>
                 )}
                 <span
@@ -140,11 +140,11 @@ function Users() {
           <div className="px-8 pt-7 pb-5 border-b border-gray-100">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-5">
-                <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-orange-100 flex items-center justify-center">
+                <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-brand-100 flex items-center justify-center">
                   {selected.avatar ? (
                     <img src={selected.avatar} alt={selected.name} className="w-full h-full object-cover" />
                   ) : (
-                    <User size={36} className="text-orange-400" />
+                    <User size={36} className="text-brand-400" />
                   )}
                 </div>
                 <div className="pt-1">
@@ -261,7 +261,7 @@ function Users() {
           No users yet.{' '}
           <button
             onClick={() => navigate({ to: '/users/add' })}
-            className="ml-1 text-orange-500 hover:underline"
+            className="ml-1 text-brand-500 hover:underline"
           >
             Add one
           </button>
