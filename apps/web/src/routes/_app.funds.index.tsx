@@ -6,7 +6,7 @@ import { useProjects } from '@rahataid/projects-shared/project'
 import { useAllocationLogs, useDeleteAllocation, useDeleteFund, useFundAllocations, useFunds } from '../lib/fund/queries.js'
 import type { TreasuryToken } from '@rahataid/sdk'
 
-export const Route = createFileRoute('/_app/fund-management/')({ component: FundManagementPage })
+export const Route = createFileRoute('/_app/funds/')({ component: FundManagementPage })
 
 function fmtAmount(n: number) {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Math.abs(n))
@@ -78,7 +78,7 @@ function FundManagementPage() {
           <p className="text-sm text-gray-400 mt-1">Manage treasury funds and allocate to projects.</p>
         </div>
         <button
-          onClick={() => navigate({ to: '/fund-management/allocate' })}
+          onClick={() => navigate({ to: '/funds/allocate' })}
           className="flex items-center gap-1.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
         >
           <Plus size={14} />
@@ -135,7 +135,7 @@ function FundManagementPage() {
               <p className="text-xs text-gray-400 py-6 text-center">
                 No allocations yet.{' '}
                 <button
-                  onClick={() => navigate({ to: '/fund-management/allocate' })}
+                  onClick={() => navigate({ to: '/funds/allocate' })}
                   className="text-orange-500 hover:underline"
                 >
                   Allocate funds
@@ -224,7 +224,7 @@ function FundManagementPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-gray-800">Fund Sources</h2>
             <button
-              onClick={() => navigate({ to: '/fund-management/allocate' })}
+              onClick={() => navigate({ to: '/funds/allocate' })}
               className="text-xs text-gray-500 hover:text-gray-900 bg-white border border-gray-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1"
             >
               <Plus size={12} />

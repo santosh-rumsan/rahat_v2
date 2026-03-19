@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_app')({
 const NAV_ITEMS = [
   { icon: <LayoutDashboard size={18} />, to: '/' },
   { icon: <FolderKanban size={18} />, to: '/projects' },
-  { icon: <Wallet size={18} />, to: '/fund-management' },
+  { icon: <Wallet size={18} />, to: '/funds' },
   { icon: <Building2 size={18} />, to: '/vendors' },
   { icon: <Users size={18} />, to: '/users' },
 ]

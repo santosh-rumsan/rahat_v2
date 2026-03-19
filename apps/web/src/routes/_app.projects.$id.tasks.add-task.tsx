@@ -1,11 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { ProjectManagementModule, useProject } from '@rahataid/projects-shared'
+import { TaskManagementAddTaskPage, useProject } from '@rahataid/projects-shared'
 
-export const Route = createFileRoute('/_app/projects/$id/project-management')({
-  component: ProjectManagementPage,
+export const Route = createFileRoute('/_app/projects/$id/tasks/add-task')({
+  component: TaskManagementAddTaskRoute,
 })
 
-function ProjectManagementPage() {
+function TaskManagementAddTaskRoute() {
   const { id } = Route.useParams()
   const { data: project, isLoading } = useProject(id)
 
@@ -25,5 +25,5 @@ function ProjectManagementPage() {
     )
   }
 
-  return <ProjectManagementModule project={project} />
+  return <TaskManagementAddTaskPage project={project} />
 }

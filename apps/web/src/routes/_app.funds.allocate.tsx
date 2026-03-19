@@ -7,7 +7,7 @@ import { useProjects } from '@rahataid/projects-shared/project'
 import { useCreateAllocation, useCreateFund, useFundAllocations, useFunds } from '../lib/fund/queries.js'
 import type { TreasuryToken } from '@rahataid/sdk'
 
-export const Route = createFileRoute('/_app/fund-management/allocate')({ component: AllocatePage })
+export const Route = createFileRoute('/_app/funds/allocate')({ component: AllocatePage })
 
 type Tab = 'deposit' | 'allocate'
 
@@ -337,7 +337,7 @@ function AllocatePage() {
   const [tab, setTab] = React.useState<Tab>('allocate')
 
   function done() {
-    navigate({ to: '/fund-management' })
+    navigate({ to: '/funds' })
   }
 
   return (

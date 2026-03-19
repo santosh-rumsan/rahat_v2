@@ -17,3 +17,4 @@ export type {
   AllocationLog,
 } from './fund.js'
 export { TREASURY_TOKENS } from './fund.js'
+export type { Task, TaskStatus, TaskPriority, TaskStatusLog, CreateTaskInput, UpdateTaskInput } from './task.js'

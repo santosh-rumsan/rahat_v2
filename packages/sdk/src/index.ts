@@ -28,3 +28,6 @@ export type {
 export { TREASURY_TOKENS } from './types/index.js'
 export { createFundService, idbFundService, createApiFundService } from './fund/index.js'
 export type { FundService } from './fund/index.js'
+export type { Task, TaskStatus, TaskPriority, TaskStatusLog, CreateTaskInput, UpdateTaskInput } from './types/index.js'
+export { createTaskService, idbTaskService, createApiTaskService } from './task/index.js'
+export type { TaskService } from './task/index.js'

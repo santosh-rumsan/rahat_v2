@@ -9,7 +9,7 @@ export const AaFrontendPlugin: ProjectFrontendPlugin = {
   description: 'Take anticipatory actions before disasters strike',
   icon: 'Shield',
   menuItems: [
-    { type: 'link', label: 'Tasks', href: '/projects/:projectId/project-management' },
+    { type: 'link', label: 'Tasks', href: '/projects/:projectId/tasks' },
   ],
   SetupPage: AaSetupPage,
   DashboardPage: AaDashboardPage,
