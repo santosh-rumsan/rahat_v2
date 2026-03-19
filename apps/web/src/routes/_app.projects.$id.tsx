@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, useLocation, useNavigate } from '@tanstack/react-router'
+import { Outlet, createFileRoute, useLocation, useRouter } from '@tanstack/react-router'
 import { getPlugin } from '../plugins'
 import { ProjectHeader } from '../components/layout/project-header'
 import { useProject } from '@rahataid/projects-shared'
@@ -7,9 +7,9 @@ export const Route = createFileRoute('/_app/projects/$id')({ component: ProjectL
 
 function ProjectLayout() {
   const { id } = Route.useParams()
-  const navigate = useNavigate()
+  const router = useRouter()
   const location = useLocation()
-  const onBack = () => navigate({ to: '/projects' })
+  const onBack = () => router.history.back()
 
   const { data: project, isLoading } = useProject(id)
 
@@ -40,7 +40,6 @@ function ProjectLayout() {
       <ProjectHeader
         projectId={id}
         projectName={isDashboardRoute ? undefined : project.name}
-        projectType={project.projectType}
         menuItems={plugin?.menuItems}
         onBack={onBack}
       />

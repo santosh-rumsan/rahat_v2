@@ -14,7 +14,11 @@ function BenefitsPage() {
   const navigate = useNavigate()
 
   function handleBenefitSelect(benefitId: string | undefined) {
-    navigate({ to: '/projects/$id/benefits/', params: { id }, search: { benefit: benefitId } })
+    if (benefitId) {
+      navigate({ to: '/projects/$id/benefits/$benefitId', params: { id, benefitId } })
+    } else {
+      navigate({ to: '/projects/$id/benefits/', params: { id }, search: { benefit: undefined } })
+    }
   }
 
   function handleAssign(benefitId: string) {

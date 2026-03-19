@@ -1,4 +1,4 @@
-export type { Benefit, BenefitType, Token, TokenStatus } from './types.js'
+export type { Benefit, BenefitType, PackageItem, Token, TokenStatus } from './types.js'
 export { BenefitList, benefitStorageKey, loadBenefits, saveBenefits } from './benefit-list.js'
 export type { BenefitListProps } from './benefit-list.js'
 export { BenefitFormPage } from './benefit-form-page.js'

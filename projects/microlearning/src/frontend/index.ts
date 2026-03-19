@@ -8,6 +8,9 @@ export const MicrolearningFrontendPlugin: ProjectFrontendPlugin = {
   label: 'Microlearning',
   description: 'Deliver learning content to beneficiaries',
   icon: 'BookOpen',
+  menuItems: [
+    { type: 'link', label: 'Tasks', href: '/projects/:projectId/project-management' },
+  ],
   SetupPage: MicrolearningSetupPage,
   DashboardPage: MicrolearningDashboardPage,
 }

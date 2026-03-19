@@ -1,6 +1,8 @@
 import * as React from 'react'
 import type { SetupPageProps } from '@rahataid/plugin-sdk'
 
+const TOKENS = ['cUSD', 'cEUR', 'cNPR'] as const
+
 export function CvaSetupPage({ onSubmit }: SetupPageProps) {
   const [name, setName] = React.useState('')
   const [location, setLocation] = React.useState('')
@@ -8,15 +10,16 @@ export function CvaSetupPage({ onSubmit }: SetupPageProps) {
   const [startDate, setStartDate] = React.useState('')
   const [endDate, setEndDate] = React.useState('')
   const [projectOwner, setProjectOwner] = React.useState('')
+  const [primaryToken, setPrimaryToken] = React.useState<string>('')
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (name.trim() && location.trim() && image.trim() && startDate && endDate && projectOwner.trim()) {
-      onSubmit({ name: name.trim(), location: location.trim(), image: image.trim(), startDate, endDate, projectOwner: projectOwner.trim() })
+    if (name.trim() && location.trim() && image.trim() && startDate && endDate && projectOwner.trim() && primaryToken) {
+      onSubmit({ name: name.trim(), location: location.trim(), image: image.trim(), startDate, endDate, projectOwner: projectOwner.trim(), primaryToken })
     }
   }
 
-  const isValid = name.trim() && location.trim() && image.trim() && startDate && endDate && projectOwner.trim()
+  const isValid = name.trim() && location.trim() && image.trim() && startDate && endDate && projectOwner.trim() && primaryToken
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -96,6 +99,28 @@ export function CvaSetupPage({ onSubmit }: SetupPageProps) {
           onChange={(e) => setProjectOwner(e.target.value)}
           className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent bg-gray-50"
         />
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-sm font-medium text-gray-700">
+          Primary Token *
+        </label>
+        <p className="text-xs text-gray-400 -mt-1">Used to calculate rates for non-cash benefits.</p>
+        <div className="flex gap-2">
+          {TOKENS.map((token) => (
+            <button
+              key={token}
+              type="button"
+              onClick={() => setPrimaryToken(token)}
+              className={
+                primaryToken === token
+                  ? 'flex-1 py-2 text-sm font-semibold rounded-lg border border-orange-400 bg-orange-50 text-orange-600 transition-colors'
+                  : 'flex-1 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-500 hover:border-gray-300 transition-colors'
+              }
+            >
+              {token}
+            </button>
+          ))}
+        </div>
       </div>
       <button
         type="submit"

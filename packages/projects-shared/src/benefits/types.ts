@@ -1,5 +1,12 @@
 export type BenefitType = 'Cash' | 'Food' | 'WASH' | 'NFI' | 'Service'
 
+export interface PackageItem {
+  id: string
+  name: string
+  quantity: number
+  costPerItem: number
+}
+
 export interface Benefit {
   id: string
   name: string
@@ -9,6 +16,11 @@ export interface Benefit {
   valuePerUnit: number
   isActive: boolean
   createdAt: string
+  totalAmount?: number
+  token?: string
+  amountPerBeneficiary?: number
+  packageItems?: PackageItem[]
+  beneficiaryIds?: string[]
 }
 
 export type TokenStatus = 'Issued' | 'Redeemed' | 'Expired' | 'Voided'

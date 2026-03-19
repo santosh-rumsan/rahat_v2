@@ -9,8 +9,10 @@ export const CvaFrontendPlugin: ProjectFrontendPlugin = {
   description: 'Distribute cash vouchers to beneficiaries',
   icon: 'Wallet',
   menuItems: [
-    { type: 'link', label: 'Vouchers', href: '#vouchers' },
-    { type: 'link', label: 'Reports', href: '#reports' },
+    { type: 'link', label: 'Benefits', href: '/projects/:projectId/benefits' },
+    { type: 'link', label: 'Tasks', href: '/projects/:projectId/project-management' },
+    { type: 'link', label: 'Funds', href: '/projects/:projectId/fund-management' },
+    { type: 'link', label: 'Reports', href: '/projects/:projectId/reports' },
   ],
   SetupPage: CvaSetupPage,
   DashboardPage: CvaDashboardPage,

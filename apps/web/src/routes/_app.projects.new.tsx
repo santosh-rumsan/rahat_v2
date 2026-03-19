@@ -36,6 +36,7 @@ function NewProject() {
         startDate: data.startDate as string,
         endDate: data.endDate as string,
         projectOwner: data.projectOwner as string,
+        primaryToken: data.primaryToken as string | undefined,
       },
       { onSuccess: () => navigate({ to: '/projects' }) }
     )

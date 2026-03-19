@@ -8,6 +8,9 @@ export const MicroloansFrontendPlugin: ProjectFrontendPlugin = {
   label: 'Microloans',
   description: 'Provide small loans to beneficiaries',
   icon: 'CreditCard',
+  menuItems: [
+    { type: 'link', label: 'Tasks', href: '/projects/:projectId/project-management' },
+  ],
   SetupPage: MicroloansSetupPage,
   DashboardPage: MicroloansDashboardPage,
 }

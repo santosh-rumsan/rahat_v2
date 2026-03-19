@@ -10,6 +10,7 @@ export interface Project {
   status: string
   beneficiaries: number
   budget: string
+  primaryToken?: string
 }
 
 export type CreateProjectInput = {
@@ -23,6 +24,7 @@ export type CreateProjectInput = {
   status?: string
   beneficiaries?: number
   budget?: string
+  primaryToken?: string
 }
 
 export type UpdateProjectInput = Partial<Omit<Project, 'id'>>

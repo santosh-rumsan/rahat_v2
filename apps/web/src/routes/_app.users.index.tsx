@@ -10,9 +10,11 @@ import {
   SlidersHorizontal,
   KeyRound,
   Pencil,
+  Calendar,
 } from 'lucide-react'
 import * as React from 'react'
 import { cn } from '@rs/ui'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@rs/ui/tabs'
 import { useUsers, useDeleteUser } from '../lib/user/queries.js'
 
 export const Route = createFileRoute('/_app/users/')({ component: Users })
@@ -137,7 +139,8 @@ function Users() {
       {/* Right: user detail */}
       {selected ? (
         <div className="flex-1 bg-white rounded-l-3xl overflow-hidden flex flex-col min-w-0">
-          <div className="px-8 pt-7 pb-5 border-b border-gray-100">
+            {/* Detail header */}
+          <div className="px-8 pt-7 pb-8">
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-5">
                 <div className="w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 bg-brand-100 flex items-center justify-center">
@@ -216,45 +219,106 @@ function Users() {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-8 py-6">
-            <div className="grid grid-cols-2 gap-4 mb-8">
-              {selected.lastLogin && (
+          {/* Tabs */}
+          <Tabs defaultValue="basic-info" className="flex flex-col flex-1 min-h-0">
+            <TabsList>
+              <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
+              <TabsTrigger value="access-control">Access Control</TabsTrigger>
+              <TabsTrigger value="activity-logs">Activity Logs</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="basic-info" className="flex-1 overflow-y-auto px-8 py-6">
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                {selected.lastLogin && (
+                  <div className="bg-gray-50 rounded-2xl p-4">
+                    <p className="text-xs text-gray-400 mb-1">Last login</p>
+                    <div className="flex items-center gap-1.5">
+                      <Clock size={13} className="text-gray-400" />
+                      <p className="text-sm font-semibold text-[#1a1a1a]">{selected.lastLogin}</p>
+                    </div>
+                  </div>
+                )}
                 <div className="bg-gray-50 rounded-2xl p-4">
-                  <p className="text-xs text-gray-400 mb-1">Last login</p>
+                  <p className="text-xs text-gray-400 mb-1">Joined</p>
                   <div className="flex items-center gap-1.5">
-                    <Clock size={13} className="text-gray-400" />
-                    <p className="text-sm font-semibold text-[#1a1a1a]">{selected.lastLogin}</p>
+                    <Calendar size={13} className="text-gray-400" />
+                    <p className="text-sm font-semibold text-[#1a1a1a]">{selected.joinedDate}</p>
                   </div>
                 </div>
-              )}
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <p className="text-xs text-gray-400 mb-1">Joined</p>
-                <p className="text-sm font-semibold text-[#1a1a1a]">{selected.joinedDate}</p>
               </div>
-            </div>
 
-            <h3 className="text-base font-bold text-[#1a1a1a] mb-4">Account details</h3>
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5">
-              {[
-                { label: 'Full name', value: selected.name },
-                { label: 'Email address', value: selected.email },
-                { label: 'Phone', value: selected.phone },
-                { label: 'Role', value: selected.role },
-                { label: 'Status', value: selected.status },
-              ].map((field) => (
-                <div key={field.label}>
-                  <p className="text-xs text-gray-400 mb-1">{field.label}</p>
-                  <p className="text-sm font-semibold text-[#1a1a1a]">{field.value}</p>
+              <h3 className="text-base font-bold text-[#1a1a1a] mb-4">Account details</h3>
+              <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+                {[
+                  { label: 'Full name', value: selected.name },
+                  { label: 'Email address', value: selected.email },
+                  { label: 'Phone', value: selected.phone },
+                  { label: 'Role', value: selected.role },
+                  { label: 'Status', value: selected.status },
+                ].map((field) => (
+                  <div key={field.label}>
+                    <p className="text-xs text-gray-400 mb-1">{field.label}</p>
+                    <p className="text-sm font-semibold text-[#1a1a1a]">{field.value}</p>
+                  </div>
+                ))}
+                {selected.notes && (
+                  <div className="col-span-2">
+                    <p className="text-xs text-gray-400 mb-1">Notes</p>
+                    <p className="text-sm text-[#1a1a1a]">{selected.notes}</p>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+
+            <TabsContent value="access-control" className="flex-1 overflow-y-auto px-8 py-6">
+              <div className="mb-6">
+                <h3 className="text-base font-bold text-[#1a1a1a] mb-4">Role & Permissions</h3>
+                <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl mb-6">
+                  <div className={cn('p-2.5 rounded-xl', ROLE_COLORS[selected.role])}>
+                    <ShieldCheck size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#1a1a1a]">{selected.role}</p>
+                    <p className="text-xs text-gray-400">Current role</p>
+                  </div>
                 </div>
-              ))}
-              {selected.notes && (
-                <div className="col-span-2">
-                  <p className="text-xs text-gray-400 mb-1">Notes</p>
-                  <p className="text-sm text-[#1a1a1a]">{selected.notes}</p>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-5">
+                  {[
+                    { label: 'Role', value: selected.role },
+                    { label: 'Status', value: selected.status },
+                  ].map((field) => (
+                    <div key={field.label}>
+                      <p className="text-xs text-gray-400 mb-1">{field.label}</p>
+                      <p className="text-sm font-semibold text-[#1a1a1a]">{field.value}</p>
+                    </div>
+                  ))}
                 </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="activity-logs" className="flex-1 overflow-y-auto px-8 py-6">
+              {selected.lastLogin ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
+                    <Clock size={14} className="text-gray-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-[#1a1a1a]">Last login</p>
+                      <p className="text-xs text-gray-400">{selected.lastLogin}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-2xl">
+                    <Calendar size={14} className="text-gray-400 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-[#1a1a1a]">Account created</p>
+                      <p className="text-xs text-gray-400">{selected.joinedDate}</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400 text-center py-12">No activity recorded.</p>
               )}
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </div>
       ) : (
         <div className="flex-1 bg-white rounded-l-3xl flex items-center justify-center text-sm text-gray-400">
