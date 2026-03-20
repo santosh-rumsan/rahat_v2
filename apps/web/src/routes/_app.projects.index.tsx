@@ -1,8 +1,11 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Search, Plus } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
+import { Search, Plus, Upload } from 'lucide-react'
 import * as React from 'react'
 import { getPlugin } from '../plugins'
 import { useProjects } from '@rahataid/projects-shared'
+import { createIndexedDbProjectImportAdapter, importProjectDump } from '@rahataid/sdk'
+import { toast } from '@rs/ui/toast'
 
 export const Route = createFileRoute('/_app/projects/')({ component: Projects })
 
@@ -15,11 +18,42 @@ const STATUS_COLORS: Record<string, string> = {
 
 function Projects() {
   const [search, setSearch] = React.useState('')
+  const [isImporting, setIsImporting] = React.useState(false)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data: projects = [], isLoading } = useProjects()
   const filtered = projects.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
+
+  async function handleImportFile(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setIsImporting(true)
+    try {
+      const fileText = await file.text()
+      const includeActivities = window.confirm(
+        'Import all activities and logs for this project? Select Cancel to import core data only.'
+      )
+
+      const result = await importProjectDump(
+        fileText,
+        createIndexedDbProjectImportAdapter(),
+        { includeActivities }
+      )
+
+      await queryClient.invalidateQueries()
+      toast.success(`Imported ${result.projectName}`)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to import project dump'
+      toast.error(message)
+    } finally {
+      event.target.value = ''
+      setIsImporting(false)
+    }
+  }
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-white">
@@ -29,13 +63,31 @@ function Projects() {
           <h1 className="text-2xl font-semibold text-gray-900">Projects</h1>
           <p className="text-sm text-gray-500 mt-1">{projects.length} projects total</p>
         </div>
-        <button
-          onClick={() => navigate({ to: '/projects/new' })}
-          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors"
-        >
-          <Plus size={16} />
-          Add New Project
-        </button>
+        <div className="flex items-center gap-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json,application/json"
+            className="hidden"
+            onChange={handleImportFile}
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isImporting}
+            className="flex items-center gap-2 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-sm font-medium px-4 py-2 rounded-md transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <Upload size={16} />
+            {isImporting ? 'Importing…' : 'Import Project'}
+          </button>
+          <button
+            onClick={() => navigate({ to: '/projects/new' })}
+            className="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors"
+          >
+            <Plus size={16} />
+            Add New Project
+          </button>
+        </div>
       </div>
 
       {/* Search */}

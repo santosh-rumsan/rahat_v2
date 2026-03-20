@@ -67,3 +67,29 @@ export { createCampaignService, idbCampaignService, createApiCampaignService } f
 export type { CampaignService } from './campaign/index.js'
 export { createTransmissionLogService, idbTransmissionLogService, createApiTransmissionLogService } from './campaign/index.js'
 export type { TransmissionLogService } from './campaign/index.js'
+export type {
+  ProjectModuleLog,
+  ImportedProject,
+  ImportedBeneficiary,
+  ImportedBeneficiaryGroup,
+  ImportedBenefit,
+  ImportedToken,
+  ImportedTask,
+  ImportedCampaign,
+  ImportedTransmissionLog,
+  ImportedFund,
+  ImportedFundAllocation,
+  ImportedAllocationLog,
+  ProjectImportPayload,
+  NormalizedProjectImportPayload,
+  ProjectImportResult,
+  ProjectImportOptions,
+  ProjectImportAdapter,
+  ProjectImportApiHandlers,
+} from './project-import.js'
+export {
+  parseProjectImportPayload,
+  importProjectDump,
+  createIndexedDbProjectImportAdapter,
+  createApiProjectImportAdapter,
+} from './project-import.js'
