@@ -2,8 +2,10 @@ import * as React from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ChevronLeft, Search } from 'lucide-react'
 import { cn } from '@rs/ui'
-import { loadBenefits, saveBenefits } from '@rahataid/projects-shared/benefits'
+import { loadBenefits } from '@rahataid/projects-shared/benefits'
+import type { Benefit } from '@rahataid/projects-shared/benefits'
 import { useBeneficiaries } from '@rahataid/projects-shared/beneficiary'
+import { idbBenefitService } from '@rahataid/sdk'
 
 export const Route = createFileRoute('/_app/projects/$id/benefits/$benefitId/beneficiaries/add')({ component: AddBeneficiariesToBenefitPage })
 
@@ -13,15 +15,21 @@ function AddBeneficiariesToBenefitPage() {
 
   const { data: allBeneficiaries = [] } = useBeneficiaries(projectId)
   const [search, setSearch] = React.useState('')
-  const benefit = React.useMemo(() => {
-    const benefits = loadBenefits(projectId)
-    return benefits.find((b) => b.id === benefitId)
+  const [benefit, setBenefit] = React.useState<Benefit | undefined>(undefined)
+  const [selected, setSelected] = React.useState<Set<string>>(new Set())
+
+  React.useEffect(() => {
+    loadBenefits(projectId)
+      .then((benefits) => {
+        const matched = benefits.find((b) => b.id === benefitId)
+        setBenefit(matched)
+        setSelected(new Set(matched?.beneficiaryIds ?? []))
+      })
+      .catch(() => {
+        setBenefit(undefined)
+        setSelected(new Set())
+      })
   }, [projectId, benefitId])
-  const [selected, setSelected] = React.useState<Set<string>>(() => {
-    const benefits = loadBenefits(projectId)
-    const b = benefits.find((b) => b.id === benefitId)
-    return new Set(b?.beneficiaryIds ?? [])
-  })
 
   const maxBeneficiaries = React.useMemo(() => {
     if (!benefit?.totalAmount) return null
@@ -55,12 +63,11 @@ function AddBeneficiariesToBenefitPage() {
     })
   }
 
-  function handleSave() {
-    const benefits = loadBenefits(projectId)
-    const updated = benefits.map((b) =>
-      b.id === benefitId ? { ...b, beneficiaryIds: Array.from(selected) } : b
-    )
-    saveBenefits(projectId, updated)
+  async function handleSave() {
+    if (!benefit) return
+    await idbBenefitService.update(projectId, benefitId, {
+      beneficiaryIds: Array.from(selected),
+    })
     navigate({ to: '/projects/$id/benefits/$benefitId', params: { id: projectId, benefitId } })
   }
 
@@ -167,7 +174,7 @@ function AddBeneficiariesToBenefitPage() {
             Cancel
           </button>
           <button
-            onClick={handleSave}
+            onClick={() => { void handleSave() }}
             className="px-5 py-2.5 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] transition-colors"
           >
             Save ({selected.size})

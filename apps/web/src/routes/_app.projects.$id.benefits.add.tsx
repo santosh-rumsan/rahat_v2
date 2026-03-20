@@ -4,8 +4,9 @@ import { ChevronRight, ChevronLeft, Plus, Trash2, Search, AlertCircle, Coins } f
 import { cn } from '@rs/ui'
 import { useProjectAllocations } from '@rahataid/projects-shared/project'
 import { useBeneficiaries } from '@rahataid/projects-shared/beneficiary'
-import { loadBenefits, loadTokens, saveTokens } from '@rahataid/projects-shared/benefits'
+import { loadBenefits, loadTokens } from '@rahataid/projects-shared/benefits'
 import type { Benefit, Token } from '@rahataid/projects-shared/benefits'
+import { idbTokenService } from '@rahataid/sdk'
 import type { TreasuryToken } from '@rahataid/sdk'
 
 export const Route = createFileRoute('/_app/projects/$id/benefits/add')({
@@ -61,9 +62,12 @@ function AddBenefitAssignmentPage() {
 
   const { data: allocations = [] } = useProjectAllocations(projectId)
   const { data: beneficiaries = [] } = useBeneficiaries(projectId)
-
-  const benefits = React.useMemo(() => loadBenefits(projectId), [projectId])
+  const [benefits, setBenefits] = React.useState<Benefit[]>([])
   const activeBenefits = benefits.filter((b) => b.isActive)
+
+  React.useEffect(() => {
+    loadBenefits(projectId).then(setBenefits).catch(() => setBenefits([]))
+  }, [projectId])
 
   const [step, setStep] = React.useState(1)
 
@@ -180,10 +184,10 @@ function AddBenefitAssignmentPage() {
 
   // ── submit ─────────────────────────────────────────────────────────────────
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!selectedBenefit) return
 
-    const existingTokens = loadTokens(projectId)
+    const existingTokens = await loadTokens(projectId)
     let running = [...existingTokens]
     const today = new Date().toISOString().split('T')[0]!
 
@@ -193,21 +197,17 @@ function AddBenefitAssignmentPage() {
         : (typeof sel.amount === 'number' ? sel.amount : 0)
 
       const code = generateTokenCode(running)
-      running = [
-        ...running,
-        {
-          id: `t${Date.now()}-${sel.id}`,
-          code,
-          beneficiaryId: sel.id,
-          benefitId: selectedBenefit.id,
-          amount,
-          status: 'Issued',
-          issuedDate: today,
-        } satisfies Token,
-      ]
+      const token = await idbTokenService.create(projectId, {
+        code,
+        beneficiaryId: sel.id,
+        benefitId: selectedBenefit.id,
+        amount,
+        status: 'Issued',
+        issuedDate: today,
+      })
+      running = [...running, token]
     }
 
-    saveTokens(projectId, running)
     navigate({
       to: '/projects/$id/benefits',
       params: { id: projectId },
@@ -247,7 +247,7 @@ function AddBenefitAssignmentPage() {
                   <div
                     className={cn(
                       'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0',
-                      isActive ? 'bg-[#1a1a1a] text-white' : isDone ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400'
+                      isActive ? 'bg-brand-500 text-white' : isDone ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400'
                     )}
                   >
                     {stepNum}
@@ -255,7 +255,7 @@ function AddBenefitAssignmentPage() {
                   <span
                     className={cn(
                       'text-xs font-semibold',
-                      isActive ? 'text-[#1a1a1a]' : isDone ? 'text-orange-500' : 'text-gray-400'
+                      isActive ? 'text-brand-700' : isDone ? 'text-orange-500' : 'text-gray-400'
                     )}
                   >
                     {label}
@@ -669,14 +669,14 @@ function AddBenefitAssignmentPage() {
             <button
               disabled={step === 1 ? !step1Valid : !step2Valid}
               onClick={() => setStep((s) => s + 1)}
-              className="flex items-center gap-1.5 px-5 py-2 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 px-5 py-2 text-sm font-semibold bg-brand-500 text-white rounded-xl hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Next
               <ChevronRight size={14} />
             </button>
           ) : (
             <button
-              onClick={handleSubmit}
+              onClick={() => { void handleSubmit() }}
               disabled={!step2Valid}
               className="flex items-center gap-1.5 px-5 py-2 text-sm font-semibold bg-orange-500 text-white rounded-xl hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >

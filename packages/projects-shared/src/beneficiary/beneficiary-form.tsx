@@ -238,14 +238,14 @@ export function BeneficiaryForm({ projectId, beneficiary, onSave, onCancel }: Be
           <button
             type="submit"
             disabled={!isValid || isPending}
-            className="px-6 py-2.5 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="px-6 py-2.5 text-sm font-medium bg-brand-500 text-white rounded-md hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {isPending ? 'Saving…' : isEditing ? 'Save changes' : 'Add beneficiary'}
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2.5 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+            className="px-6 py-2.5 text-sm text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
           >
             Cancel
           </button>

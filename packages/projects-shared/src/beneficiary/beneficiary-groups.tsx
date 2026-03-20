@@ -1,52 +1,18 @@
 import * as React from 'react'
 import { Search, Plus, Trash2, UserMinus, UserPlus, Users, X, ArrowLeft } from 'lucide-react'
 import { cn } from '@rs/ui'
+import { idbBeneficiaryGroupService } from '@rahataid/sdk'
 import type { Beneficiary, BeneficiaryGroup } from './types.js'
 
-const MOCK_BENEFICIARIES: Beneficiary[] = [
-  { id: '1', name: 'Gita Sharma', age: 34, gender: 'Female', location: 'Ward 5, Kathmandu', phone: '9841234567', status: 'Verified', enrolledDate: '2026-02-10', householdSize: 4 },
-  { id: '2', name: 'Raju Tamang', age: 45, gender: 'Male', location: 'Ward 2, Lalitpur', phone: '9852345678', status: 'Pending', enrolledDate: '2026-02-12', householdSize: 6 },
-  { id: '3', name: 'Sunita Rai', age: 28, gender: 'Female', location: 'Ward 8, Bhaktapur', phone: '9863456789', status: 'Verified', enrolledDate: '2026-02-14', householdSize: 3 },
-  { id: '4', name: 'Dipak Magar', age: 52, gender: 'Male', location: 'Ward 1, Kathmandu', status: 'Inactive', enrolledDate: '2026-02-15', householdSize: 5 },
-  { id: '5', name: 'Kamala Thapa', age: 39, gender: 'Female', location: 'Ward 3, Lalitpur', phone: '9874567890', status: 'Verified', enrolledDate: '2026-02-18', householdSize: 2 },
-  { id: '6', name: 'Bikram Gurung', age: 31, gender: 'Male', location: 'Ward 6, Kathmandu', phone: '9885678901', status: 'Pending', enrolledDate: '2026-02-20', householdSize: 4 },
-  { id: '7', name: 'Saraswati Limbu', age: 44, gender: 'Female', location: 'Ward 9, Bhaktapur', phone: '9896789012', status: 'Verified', enrolledDate: '2026-02-22', householdSize: 5 },
-  { id: '8', name: 'Hari Prasad Oli', age: 58, gender: 'Male', location: 'Ward 4, Lalitpur', status: 'Inactive', enrolledDate: '2026-02-24', householdSize: 3, notes: 'Relocated to another district' },
-  { id: '9', name: 'Anita Shrestha', age: 26, gender: 'Female', location: 'Ward 7, Kathmandu', phone: '9807890123', status: 'Verified', enrolledDate: '2026-02-26', householdSize: 2 },
-  { id: '10', name: 'Narayan Bista', age: 37, gender: 'Male', location: 'Ward 11, Lalitpur', phone: '9818901234', status: 'Pending', enrolledDate: '2026-02-28', householdSize: 6 },
-  { id: '11', name: 'Puja Karki', age: 22, gender: 'Female', location: 'Ward 2, Bhaktapur', phone: '9829012345', status: 'Verified', enrolledDate: '2026-03-01', householdSize: 4 },
-  { id: '12', name: 'Mohan Khatri', age: 49, gender: 'Male', location: 'Ward 14, Kathmandu', phone: '9840123456', status: 'Inactive', enrolledDate: '2026-03-03', householdSize: 7 },
-]
-
-const SEED_GROUPS: BeneficiaryGroup[] = [
-  { id: 'g1', name: 'Displaced Households', description: 'Families displaced due to natural disaster', beneficiaryIds: ['1', '3', '5'], createdAt: '2026-02-10' },
-  { id: 'g2', name: 'Women-led Households', description: 'Households headed by women', beneficiaryIds: ['1', '7', '9', '11'], createdAt: '2026-02-12' },
-  { id: 'g3', name: 'Elderly & Vulnerable', description: 'Older persons and persons with disabilities', beneficiaryIds: ['4', '8'], createdAt: '2026-02-15' },
-]
+export function loadGroups(projectId: string): Promise<BeneficiaryGroup[]> {
+  return idbBeneficiaryGroupService.list(projectId)
+}
 
 const STATUS_COLORS: Record<Beneficiary['status'], string> = {
   Verified: 'bg-green-100 text-green-700',
   Pending: 'bg-yellow-100 text-yellow-700',
   Inactive: 'bg-gray-100 text-gray-500',
 }
-
-function storageKey(projectId: string) {
-  return `rahat-beneficiary-groups:${projectId}`
-}
-
-function loadGroups(projectId: string): BeneficiaryGroup[] {
-  try {
-    const raw = localStorage.getItem(storageKey(projectId))
-    if (raw) return JSON.parse(raw) as BeneficiaryGroup[]
-  } catch {}
-  return SEED_GROUPS
-}
-
-function saveGroups(projectId: string, groups: BeneficiaryGroup[]) {
-  localStorage.setItem(storageKey(projectId), JSON.stringify(groups))
-}
-
-export { storageKey, loadGroups }
 
 export interface BeneficiaryGroupsProps {
   projectId?: string
@@ -57,37 +23,36 @@ export interface BeneficiaryGroupsProps {
 
 export function BeneficiaryGroups({
   projectId = 'default',
-  beneficiaries = MOCK_BENEFICIARIES,
+  beneficiaries = [],
   initialGroupId,
   onGroupSelect,
 }: BeneficiaryGroupsProps) {
-  const [groups, setGroups] = React.useState<BeneficiaryGroup[]>(() => loadGroups(projectId))
+  const [groups, setGroups] = React.useState<BeneficiaryGroup[]>([])
   const [showAddGroup, setShowAddGroup] = React.useState(false)
   const [newGroupName, setNewGroupName] = React.useState('')
   const [newGroupDescription, setNewGroupDescription] = React.useState('')
 
-  const persist = (next: BeneficiaryGroup[]) => {
-    setGroups(next)
-    saveGroups(projectId, next)
-  }
+  React.useEffect(() => {
+    loadGroups(projectId).then(setGroups).catch(() => {})
+  }, [projectId])
 
-  function handleAddGroup() {
+  async function handleAddGroup() {
     if (!newGroupName.trim()) return
-    const group: BeneficiaryGroup = {
-      id: `g${Date.now()}`,
+    const group = await idbBeneficiaryGroupService.create(projectId, {
       name: newGroupName.trim(),
       description: newGroupDescription.trim() || undefined,
       beneficiaryIds: [],
       createdAt: new Date().toISOString().split('T')[0]!,
-    }
-    persist([...groups, group])
+    })
+    setGroups((prev) => [...prev, group])
     setNewGroupName('')
     setNewGroupDescription('')
     setShowAddGroup(false)
   }
 
-  function handleDeleteGroup(id: string) {
-    persist(groups.filter((g) => g.id !== id))
+  async function handleDeleteGroup(id: string) {
+    setGroups((prev) => prev.filter((g) => g.id !== id))
+    await idbBeneficiaryGroupService.delete(projectId, id).catch(() => {})
     if (initialGroupId === id) onGroupSelect?.(undefined)
   }
 
@@ -98,9 +63,10 @@ export function BeneficiaryGroups({
       <GroupDetail
         group={selectedGroup}
         groups={groups}
+        projectId={projectId}
         beneficiaries={beneficiaries}
         onBack={() => onGroupSelect?.(undefined)}
-        onPersist={persist}
+        onGroupsChange={setGroups}
       />
     )
   }
@@ -114,7 +80,7 @@ export function BeneficiaryGroups({
         </div>
         <button
           onClick={() => setShowAddGroup(true)}
-          className="flex items-center gap-1.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          className="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium px-4 py-2 rounded-md transition-colors"
         >
           <Plus size={14} />
           New Group
@@ -133,7 +99,7 @@ export function BeneficiaryGroups({
                 <Users size={18} className="text-orange-500" />
               </div>
               <button
-                onClick={(e) => { e.stopPropagation(); handleDeleteGroup(g.id) }}
+                onClick={(e) => { e.stopPropagation(); void handleDeleteGroup(g.id) }}
                 className="opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-all"
                 title="Delete group"
               >
@@ -180,7 +146,7 @@ export function BeneficiaryGroups({
                   placeholder="e.g. Displaced Households"
                   value={newGroupName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewGroupName(e.currentTarget.value)}
-                  onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') handleAddGroup() }}
+                  onKeyDown={(e: React.KeyboardEvent) => { if (e.key === 'Enter') void handleAddGroup() }}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
                   autoFocus
                 />
@@ -204,9 +170,9 @@ export function BeneficiaryGroups({
                 Cancel
               </button>
               <button
-                onClick={handleAddGroup}
+                onClick={() => { void handleAddGroup() }}
                 disabled={!newGroupName.trim()}
-                className="px-4 py-2 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-brand-500 text-white rounded-md hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Create group
               </button>
@@ -221,12 +187,13 @@ export function BeneficiaryGroups({
 interface GroupDetailProps {
   group: BeneficiaryGroup
   groups: BeneficiaryGroup[]
+  projectId: string
   beneficiaries: Beneficiary[]
   onBack: () => void
-  onPersist: (groups: BeneficiaryGroup[]) => void
+  onGroupsChange: (groups: BeneficiaryGroup[]) => void
 }
 
-function GroupDetail({ group, groups, beneficiaries, onBack, onPersist }: GroupDetailProps) {
+function GroupDetail({ group, groups, projectId, beneficiaries, onBack, onGroupsChange }: GroupDetailProps) {
   const [memberSearch, setMemberSearch] = React.useState('')
   const [addMemberSearch, setAddMemberSearch] = React.useState('')
   const [showAddMember, setShowAddMember] = React.useState(false)
@@ -245,16 +212,16 @@ function GroupDetail({ group, groups, beneficiaries, onBack, onPersist }: GroupD
       b.location.toLowerCase().includes(addMemberSearch.toLowerCase())
   )
 
-  function handleAddMember(beneficiaryId: string) {
-    onPersist(groups.map((g) =>
-      g.id === group.id ? { ...g, beneficiaryIds: [...g.beneficiaryIds, beneficiaryId] } : g
-    ))
+  async function handleAddMember(beneficiaryId: string) {
+    const newIds = [...group.beneficiaryIds, beneficiaryId]
+    const updated = await idbBeneficiaryGroupService.update(projectId, group.id, { beneficiaryIds: newIds })
+    onGroupsChange(groups.map((g) => (g.id === group.id ? updated : g)))
   }
 
-  function handleRemoveMember(beneficiaryId: string) {
-    onPersist(groups.map((g) =>
-      g.id === group.id ? { ...g, beneficiaryIds: g.beneficiaryIds.filter((id) => id !== beneficiaryId) } : g
-    ))
+  async function handleRemoveMember(beneficiaryId: string) {
+    const newIds = group.beneficiaryIds.filter((id) => id !== beneficiaryId)
+    const updated = await idbBeneficiaryGroupService.update(projectId, group.id, { beneficiaryIds: newIds })
+    onGroupsChange(groups.map((g) => (g.id === group.id ? updated : g)))
   }
 
   return (
@@ -285,7 +252,7 @@ function GroupDetail({ group, groups, beneficiaries, onBack, onPersist }: GroupD
           </div>
           <button
             onClick={() => { setShowAddMember((v) => !v); setAddMemberSearch('') }}
-            className="flex items-center gap-1.5 text-xs font-semibold bg-[#1a1a1a] hover:bg-[#333] text-white px-3 py-2 rounded-xl transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium bg-brand-500 hover:bg-brand-600 text-white px-3 py-2 rounded-md transition-colors"
           >
             <UserPlus size={13} />
             Add members
@@ -328,7 +295,7 @@ function GroupDetail({ group, groups, beneficiaries, onBack, onPersist }: GroupD
                   </div>
                 </div>
                 <button
-                  onClick={() => handleAddMember(b.id)}
+                  onClick={() => { void handleAddMember(b.id) }}
                   className="flex items-center gap-1 text-xs font-medium text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100 px-2.5 py-1 rounded-lg transition-colors"
                 >
                   <Plus size={11} />
@@ -398,7 +365,7 @@ function GroupDetail({ group, groups, beneficiaries, onBack, onPersist }: GroupD
                   <span>{b.age}y</span>
                 </div>
                 <button
-                  onClick={() => handleRemoveMember(b.id)}
+                  onClick={() => { void handleRemoveMember(b.id) }}
                   className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-xs font-medium text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg transition-all"
                 >
                   <UserMinus size={11} />

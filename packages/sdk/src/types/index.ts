@@ -18,3 +18,28 @@ export type {
 } from './fund.js'
 export { TREASURY_TOKENS } from './fund.js'
 export type { Task, TaskStatus, TaskPriority, TaskStatusLog, CreateTaskInput, UpdateTaskInput } from './task.js'
+export type {
+  Benefit,
+  BenefitType,
+  PackageItem,
+  CreateBenefitInput,
+  UpdateBenefitInput,
+  Token,
+  TokenStatus,
+  CreateTokenInput,
+  UpdateTokenInput,
+} from './benefit.js'
+export type {
+  CommunicationType,
+  CampaignStatus,
+  TransmissionStatus,
+  SmsDetails,
+  WhatsappDetails,
+  VoiceDetails,
+  CampaignDetails,
+  Campaign,
+  CreateCampaignInput,
+  UpdateCampaignInput,
+  TransmissionLog,
+  CreateTransmissionLogInput,
+} from './campaign.js'

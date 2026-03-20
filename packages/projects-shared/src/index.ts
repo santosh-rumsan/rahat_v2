@@ -1,5 +1,6 @@
 export * from './beneficiary/index.js'
 export * from './benefits/index.js'
+export * from './communication/index.js'
 export * from './fund-management/index.js'
 export * from './project-dashboard-hero.js'
 export * from './task-management/index.js'

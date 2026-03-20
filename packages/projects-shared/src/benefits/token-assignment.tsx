@@ -1,33 +1,13 @@
 import * as React from 'react'
 import { Search, Ticket, CheckCircle2, Clock, XCircle, Ban, ChevronDown, Plus, X } from 'lucide-react'
 import { cn } from '@rs/ui'
+import { idbBenefitService, idbTokenService } from '@rahataid/sdk'
 import type { Benefit, Token, TokenStatus } from './types.js'
 import type { Beneficiary } from '../beneficiary/types.js'
-import { loadBenefits } from './benefit-list.js'
 
-// ─── mock data ───────────────────────────────────────────────────────────────
-
-const MOCK_BENEFICIARIES: Beneficiary[] = [
-  { id: '1', name: 'Gita Sharma',    age: 34, gender: 'Female', location: 'Ward 5, Kathmandu',  phone: '9841234567', status: 'Verified', enrolledDate: '2026-02-10', householdSize: 4 },
-  { id: '2', name: 'Raju Tamang',    age: 45, gender: 'Male',   location: 'Ward 2, Lalitpur',   phone: '9852345678', status: 'Pending',  enrolledDate: '2026-02-12', householdSize: 6 },
-  { id: '3', name: 'Sunita Rai',     age: 28, gender: 'Female', location: 'Ward 8, Bhaktapur',  phone: '9863456789', status: 'Verified', enrolledDate: '2026-02-14', householdSize: 3 },
-  { id: '4', name: 'Dipak Magar',    age: 52, gender: 'Male',   location: 'Ward 1, Kathmandu',  status: 'Inactive',  enrolledDate: '2026-02-15', householdSize: 5 },
-  { id: '5', name: 'Kamala Thapa',   age: 39, gender: 'Female', location: 'Ward 3, Lalitpur',   phone: '9874567890', status: 'Verified', enrolledDate: '2026-02-18', householdSize: 2 },
-  { id: '6', name: 'Bikram Gurung',  age: 31, gender: 'Male',   location: 'Ward 6, Kathmandu',  phone: '9885678901', status: 'Pending',  enrolledDate: '2026-02-20', householdSize: 4 },
-  { id: '7', name: 'Saraswati Limbu',age: 44, gender: 'Female', location: 'Ward 9, Bhaktapur',  phone: '9896789012', status: 'Verified', enrolledDate: '2026-02-22', householdSize: 5 },
-  { id: '8', name: 'Hari Prasad Oli',age: 58, gender: 'Male',   location: 'Ward 4, Lalitpur',   status: 'Inactive',  enrolledDate: '2026-02-24', householdSize: 3 },
-  { id: '9', name: 'Anita Shrestha', age: 26, gender: 'Female', location: 'Ward 7, Kathmandu',  phone: '9807890123', status: 'Verified', enrolledDate: '2026-02-26', householdSize: 2 },
-  { id: '10', name: 'Narayan Bista', age: 37, gender: 'Male',   location: 'Ward 11, Lalitpur',  phone: '9818901234', status: 'Pending',  enrolledDate: '2026-02-28', householdSize: 6 },
-]
-
-const SEED_TOKENS: Token[] = [
-  { id: 't1', code: 'TKN-0001', beneficiaryId: '1', benefitId: 'b1', amount: 5000, status: 'Redeemed', issuedDate: '2026-02-15', redeemedDate: '2026-02-20' },
-  { id: 't2', code: 'TKN-0002', beneficiaryId: '3', benefitId: 'b1', amount: 5000, status: 'Issued',   issuedDate: '2026-02-15' },
-  { id: 't3', code: 'TKN-0003', beneficiaryId: '5', benefitId: 'b2', amount: 25,   status: 'Issued',   issuedDate: '2026-02-20' },
-  { id: 't4', code: 'TKN-0004', beneficiaryId: '7', benefitId: 'b3', amount: 1,    status: 'Issued',   issuedDate: '2026-02-22' },
-  { id: 't5', code: 'TKN-0005', beneficiaryId: '9', benefitId: 'b1', amount: 5000, status: 'Expired',  issuedDate: '2026-01-10' },
-  { id: 't6', code: 'TKN-0006', beneficiaryId: '2', benefitId: 'b2', amount: 25,   status: 'Voided',   issuedDate: '2026-02-12', notes: 'Duplicate issuance' },
-]
+export function loadTokens(projectId: string): Promise<Token[]> {
+  return idbTokenService.list(projectId)
+}
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -44,26 +24,6 @@ const BENEFICIARY_STATUS_COLORS: Record<Beneficiary['status'], string> = {
   Inactive: 'bg-gray-100 text-gray-500',
 }
 
-function tokenStorageKey(projectId: string) {
-  return `rahat-tokens:${projectId}`
-}
-
-function loadTokens(projectId: string): Token[] {
-  if (typeof window === 'undefined') return SEED_TOKENS
-  try {
-    const raw = window.localStorage.getItem(tokenStorageKey(projectId))
-    if (raw) return JSON.parse(raw) as Token[]
-  } catch {}
-  return SEED_TOKENS
-}
-
-export function saveTokens(projectId: string, tokens: Token[]) {
-  if (typeof window === 'undefined') return
-  try {
-    window.localStorage.setItem(tokenStorageKey(projectId), JSON.stringify(tokens))
-  } catch {}
-}
-
 function generateCode(tokens: Token[]): string {
   const max = tokens.reduce((n, t) => {
     const num = parseInt(t.code.replace('TKN-', ''), 10)
@@ -71,8 +31,6 @@ function generateCode(tokens: Token[]): string {
   }, 0)
   return `TKN-${String(max + 1).padStart(4, '0')}`
 }
-
-export { tokenStorageKey, loadTokens }
 
 // ─── component ───────────────────────────────────────────────────────────────
 
@@ -85,7 +43,7 @@ export interface TokenAssignmentProps {
 
 export function TokenAssignment({
   projectId = 'default',
-  beneficiaries = MOCK_BENEFICIARIES,
+  beneficiaries = [],
 }: TokenAssignmentProps) {
   const [tokens, setTokens] = React.useState<Token[]>([])
   const [benefits, setBenefits] = React.useState<Benefit[]>([])
@@ -103,16 +61,10 @@ export function TokenAssignment({
   const [customAmount, setCustomAmount] = React.useState('')
   const [showConfirm, setShowConfirm] = React.useState(false)
 
-  // update benefits if storage changes between renders
   React.useEffect(() => {
-    setTokens(loadTokens(projectId))
-    setBenefits(loadBenefits(projectId))
+    loadTokens(projectId).then(setTokens).catch(() => {})
+    idbBenefitService.list(projectId).then(setBenefits).catch(() => {})
   }, [projectId])
-
-  const persist = (next: Token[]) => {
-    setTokens(next)
-    saveTokens(projectId, next)
-  }
 
   // ── derived ──────────────────────────────────────────────────────────────
   const filtered = tokens.filter((t) => {
@@ -143,28 +95,28 @@ export function TokenAssignment({
     })
   }
 
-  function handleIssueTokens() {
+  async function handleIssueTokens() {
     if (!selectedBenefit || selectedBeneficiaryIds.size === 0) return
     const amount = customAmount ? Number(customAmount) : selectedBenefit.valuePerUnit
     const today = new Date().toISOString().split('T')[0]!
 
+    const newTokens: Token[] = []
     let running = [...tokens]
     for (const beneficiaryId of selectedBeneficiaryIds) {
       const code = generateCode(running)
-      running = [
-        ...running,
-        {
-          id: `t${Date.now()}-${beneficiaryId}`,
-          code,
-          beneficiaryId,
-          benefitId: selectedBenefit.id,
-          amount,
-          status: 'Issued',
-          issuedDate: today,
-        } satisfies Token,
-      ]
+      const token = await idbTokenService.create(projectId, {
+        code,
+        beneficiaryId,
+        benefitId: selectedBenefit.id,
+        amount,
+        status: 'Issued',
+        issuedDate: today,
+      })
+      newTokens.push(token)
+      running = [...running, token]
     }
-    persist(running)
+
+    setTokens((prev) => [...prev, ...newTokens])
     setSelectedBeneficiaryIds(new Set())
     setSelectedBenefitId('')
     setCustomAmount('')
@@ -174,15 +126,12 @@ export function TokenAssignment({
   }
 
   function handleUpdateStatus(tokenId: string, status: TokenStatus) {
-    persist(tokens.map((t) =>
-      t.id === tokenId
-        ? {
-            ...t,
-            status,
-            redeemedDate: status === 'Redeemed' ? new Date().toISOString().split('T')[0] : t.redeemedDate,
-          }
-        : t
-    ))
+    const update = {
+      status,
+      redeemedDate: status === 'Redeemed' ? new Date().toISOString().split('T')[0] : undefined,
+    }
+    setTokens((prev) => prev.map((t) => t.id === tokenId ? { ...t, ...update } : t))
+    idbTokenService.update(projectId, tokenId, update).catch(() => {})
   }
 
   // ── stats ────────────────────────────────────────────────────────────────
@@ -202,7 +151,7 @@ export function TokenAssignment({
           </div>
           <button
             onClick={() => setTab('assign')}
-            className="flex items-center gap-1.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+            className="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
           >
             <Plus size={14} />
             Assign Tokens
@@ -498,7 +447,7 @@ export function TokenAssignment({
             <button
               onClick={() => setShowConfirm(true)}
               disabled={!selectedBenefit || selectedBeneficiaryIds.size === 0}
-              className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 px-5 py-2.5 text-sm font-semibold bg-brand-500 text-white rounded-xl hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <Ticket size={14} />
               Issue {selectedBeneficiaryIds.size > 0 ? `${selectedBeneficiaryIds.size} ` : ''}token{selectedBeneficiaryIds.size !== 1 ? 's' : ''}
@@ -537,8 +486,8 @@ export function TokenAssignment({
                 Cancel
               </button>
               <button
-                onClick={handleIssueTokens}
-                className="px-4 py-2 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] transition-colors"
+                onClick={() => { void handleIssueTokens() }}
+                className="px-4 py-2 text-sm font-semibold bg-brand-500 text-white rounded-xl hover:bg-brand-600 transition-colors"
               >
                 Issue tokens
               </button>

@@ -4,12 +4,14 @@ export function FormSelect({
   label,
   value,
   options,
+  labels,
   onChange,
   required,
 }: {
   label: string
   value: string
   options: string[]
+  labels?: Record<string, string>
   onChange: (value: string) => void
   required?: boolean
 }) {
@@ -27,7 +29,7 @@ export function FormSelect({
       >
         {options.map((option) => (
           <option key={option} value={option}>
-            {option}
+            {labels?.[option] ?? option}
           </option>
         ))}
       </select>

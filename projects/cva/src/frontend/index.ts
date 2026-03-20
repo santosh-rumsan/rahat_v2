@@ -12,6 +12,7 @@ export const CvaFrontendPlugin: ProjectFrontendPlugin = {
     { type: 'link', label: 'Benefits', href: '/projects/:projectId/benefits' },
     { type: 'link', label: 'Tasks', href: '/projects/:projectId/tasks' },
     { type: 'link', label: 'Funds', href: '/projects/:projectId/funds' },
+    { type: 'link', label: 'Communication', href: '/projects/:projectId/communication' },
     { type: 'link', label: 'Reports', href: '/projects/:projectId/reports' },
   ],
   SetupPage: CvaSetupPage,

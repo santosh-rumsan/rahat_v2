@@ -1,8 +1,8 @@
-import type { ProjectSummary } from '@rahataid/plugin-sdk'
-
 export type TaskView = 'list' | 'kanban'
 export type TaskPriority = 'low' | 'normal' | 'high' | 'critical'
 export type TaskStatus = 'Not Started' | 'In Progress' | 'Completed' | 'Delayed'
+export type TaskType = 'default' | 'sms' | 'voice' | 'benefit-distribution'
+export type TriggerType = 'manual' | 'automated'
 
 export interface StatusLog {
   id: string
@@ -10,6 +10,13 @@ export interface StatusLog {
   notes: string
   fileName?: string
   timestamp: string
+}
+
+export interface TaskDocument {
+  id: string
+  name: string
+  dataUrl: string
+  uploadedAt: string
 }
 
 export interface ProjectTask {
@@ -21,7 +28,11 @@ export interface ProjectTask {
   dueDate: string
   status: TaskStatus
   priority: TaskPriority
+  taskType: TaskType
+  triggerType: TriggerType
+  designerData?: Record<string, unknown>
   statusLogs?: StatusLog[]
+  documents?: TaskDocument[]
 }
 
 export interface TaskDraft {
@@ -32,9 +43,9 @@ export interface TaskDraft {
   dueDate: string
   status: TaskStatus
   priority: TaskPriority
+  taskType: TaskType
+  triggerType: TriggerType
 }
-
-export const TASK_STORAGE_PREFIX = 'rahat-project-tasks-v3'
 
 export const TASK_STATUSES: TaskStatus[] = ['Not Started', 'In Progress', 'Completed', 'Delayed']
 export const PRIORITIES: TaskPriority[] = ['low', 'normal', 'high', 'critical']
@@ -71,10 +82,6 @@ export const priorityLabel: Record<TaskPriority, string> = {
   low: 'Low',
 }
 
-export function getTaskStorageKey(projectId: string): string {
-  return `${TASK_STORAGE_PREFIX}:${projectId}`
-}
-
 export function getDefaultTaskDraft(): TaskDraft {
   return {
     title: '',
@@ -84,60 +91,7 @@ export function getDefaultTaskDraft(): TaskDraft {
     dueDate: '',
     status: 'Not Started',
     priority: 'normal',
+    taskType: 'default',
+    triggerType: 'manual',
   }
-}
-
-export function createInitialTasks(project: ProjectSummary): ProjectTask[] {
-  return [
-    {
-      id: `${project.id}-task-1`,
-      title: 'Validate community needs assessment',
-      assignedTo: 'Assessment Lead',
-      category: 'Assessment',
-      description: 'Confirm priority gaps with field teams and municipality focal points before finalizing the response package.',
-      dueDate: '2026-03-25',
-      status: 'In Progress',
-      priority: 'critical',
-    },
-    {
-      id: `${project.id}-task-2`,
-      title: 'Prepare first-round distribution plan',
-      assignedTo: 'Logistics Officer',
-      category: 'Distribution',
-      description: 'Align commodity quantities, transport windows, and ward-level coverage targets for the initial distribution cycle.',
-      dueDate: '2026-03-28',
-      status: 'Not Started',
-      priority: 'high',
-    },
-    {
-      id: `${project.id}-task-3`,
-      title: 'Conduct post-distribution monitoring',
-      assignedTo: 'MEAL Officer',
-      category: 'Monitoring',
-      description: 'Track coverage, complaints, and inclusion risks after the first assistance round.',
-      dueDate: '2026-04-05',
-      status: 'Not Started',
-      priority: 'normal',
-    },
-    {
-      id: `${project.id}-task-4`,
-      title: 'Submit municipal coordination update',
-      assignedTo: 'Project Manager',
-      category: 'Coordination',
-      description: 'Share implemented activities, reach, and outstanding pipeline constraints with coordination partners.',
-      dueDate: '2026-03-10',
-      status: 'Completed',
-      priority: 'low',
-    },
-    {
-      id: `${project.id}-task-5`,
-      title: 'Beneficiary registration data cleaning',
-      assignedTo: 'Data Officer',
-      category: 'Field Operations',
-      description: 'Reconcile duplicate entries and validate ID numbers across the beneficiary database.',
-      dueDate: '2026-03-20',
-      status: 'Delayed',
-      priority: 'high',
-    },
-  ]
 }

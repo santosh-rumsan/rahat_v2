@@ -1,4 +1,5 @@
 export { configureSDK, getSDKApiUrl, getSDKIsDev } from './config.js'
+export { openDb } from './db.js'
 export type {
   Beneficiary,
   BeneficiaryGroup,
@@ -31,3 +32,38 @@ export type { FundService } from './fund/index.js'
 export type { Task, TaskStatus, TaskPriority, TaskStatusLog, CreateTaskInput, UpdateTaskInput } from './types/index.js'
 export { createTaskService, idbTaskService, createApiTaskService } from './task/index.js'
 export type { TaskService } from './task/index.js'
+export type {
+  Benefit,
+  BenefitType,
+  PackageItem,
+  CreateBenefitInput,
+  UpdateBenefitInput,
+  Token,
+  TokenStatus,
+  CreateTokenInput,
+  UpdateTokenInput,
+} from './types/index.js'
+export { createBenefitService, idbBenefitService, createApiBenefitService } from './benefit/index.js'
+export type { BenefitService } from './benefit/index.js'
+export { createTokenService, idbTokenService, createApiTokenService } from './token/index.js'
+export type { TokenService } from './token/index.js'
+export { createBeneficiaryGroupService, idbBeneficiaryGroupService, createApiBeneficiaryGroupService } from './beneficiary-group/index.js'
+export type { BeneficiaryGroupService, CreateBeneficiaryGroupInput, UpdateBeneficiaryGroupInput } from './beneficiary-group/index.js'
+export type {
+  CommunicationType,
+  CampaignStatus,
+  TransmissionStatus,
+  SmsDetails,
+  WhatsappDetails,
+  VoiceDetails,
+  CampaignDetails,
+  Campaign,
+  CreateCampaignInput,
+  UpdateCampaignInput,
+  TransmissionLog,
+  CreateTransmissionLogInput,
+} from './types/index.js'
+export { createCampaignService, idbCampaignService, createApiCampaignService } from './campaign/index.js'
+export type { CampaignService } from './campaign/index.js'
+export { createTransmissionLogService, idbTransmissionLogService, createApiTransmissionLogService } from './campaign/index.js'
+export type { TransmissionLogService } from './campaign/index.js'

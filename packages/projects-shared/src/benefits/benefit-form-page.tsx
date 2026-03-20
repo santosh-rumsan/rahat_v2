@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { ChevronLeft, ChevronRight, Banknote, Package, Droplets, Box, Briefcase, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@rs/ui'
+import { idbBenefitService } from '@rahataid/sdk'
 import type { Benefit, BenefitType, PackageItem } from './types.js'
-import { loadBenefits, saveBenefits } from './benefit-list.js'
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -52,26 +52,23 @@ const DEFAULT_TOKENS = ['cUSD', 'cEUR', 'cNPR']
 
 export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEFAULT_TOKENS, benefitId, onDone, onCancel }: BenefitFormPageProps) {
   const isEdit = !!benefitId
-  const [benefits, setBenefits] = React.useState<Benefit[]>([])
-  const existing = benefitId ? benefits.find((b) => b.id === benefitId) : undefined
+  const [existing, setExisting] = React.useState<Benefit | undefined>(undefined)
 
   const [step, setStep] = React.useState(1)
   const [step1, setStep1] = React.useState<Step1Form>({ name: '', type: 'Cash', description: '' })
   const [step2, setStep2] = React.useState<Step2Form>({ totalAmount: '', amountPerBeneficiary: '', token: primaryToken, packageItems: [] })
 
   React.useEffect(() => {
-    setBenefits(loadBenefits(projectId))
-  }, [projectId])
-
-  React.useEffect(() => {
-    if (existing) {
-      setStep1({ name: existing.name, type: existing.type, description: existing.description ?? '' })
-      setStep2({ totalAmount: existing.totalAmount ?? '', amountPerBeneficiary: existing.amountPerBeneficiary ?? '', token: existing.token ?? primaryToken, packageItems: existing.packageItems ?? [] })
-    } else {
-      setStep1({ name: '', type: 'Cash', description: '' })
-      setStep2({ totalAmount: '', amountPerBeneficiary: '', token: primaryToken, packageItems: [] })
+    if (benefitId) {
+      idbBenefitService.get(projectId, benefitId).then((b) => {
+        setExisting(b)
+        if (b) {
+          setStep1({ name: b.name, type: b.type, description: b.description ?? '' })
+          setStep2({ totalAmount: b.totalAmount ?? '', amountPerBeneficiary: b.amountPerBeneficiary ?? '', token: b.token ?? primaryToken, packageItems: b.packageItems ?? [] })
+        }
+      }).catch(() => {})
     }
-  }, [existing, benefitId])
+  }, [projectId, benefitId, primaryToken])
 
   // ── derived ────────────────────────────────────────────────────────────────
 
@@ -126,31 +123,22 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
 
   // ── save ───────────────────────────────────────────────────────────────────
 
-  function handleSave() {
+  async function handleSave() {
     if (!step2Valid) return
 
-    const allBenefits = loadBenefits(projectId)
-
     if (isEdit && existing) {
-      const updated = allBenefits.map((b) =>
-        b.id === existing.id
-          ? {
-              ...b,
-              name: step1.name.trim(),
-              type: step1.type,
-              description: step1.description.trim() || undefined,
-              totalAmount: totalAmountNum,
-              token: !isNonCash ? step2.token : primaryToken,
-              amountPerBeneficiary: !isNonCash ? amountPerBeneficiaryNum : undefined,
-              packageItems: isNonCash ? step2.packageItems : undefined,
-            }
-          : b
-      )
-      saveBenefits(projectId, updated)
+      await idbBenefitService.update(projectId, existing.id, {
+        name: step1.name.trim(),
+        type: step1.type,
+        description: step1.description.trim() || undefined,
+        totalAmount: totalAmountNum,
+        token: !isNonCash ? step2.token : primaryToken,
+        amountPerBeneficiary: !isNonCash ? amountPerBeneficiaryNum : undefined,
+        packageItems: isNonCash ? step2.packageItems : undefined,
+      })
       onDone(existing.id)
     } else {
-      const next: Benefit = {
-        id: `b${Date.now()}`,
+      const newBenefit = await idbBenefitService.create(projectId, {
         name: step1.name.trim(),
         type: step1.type,
         description: step1.description.trim() || undefined,
@@ -163,9 +151,8 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
         amountPerBeneficiary: !isNonCash ? amountPerBeneficiaryNum : undefined,
         packageItems: isNonCash ? step2.packageItems : undefined,
         beneficiaryIds: [],
-      }
-      saveBenefits(projectId, [...allBenefits, next])
-      onDone(next.id)
+      })
+      onDone(newBenefit.id)
     }
   }
 
@@ -203,7 +190,7 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
                   <div
                     className={cn(
                       'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0',
-                      isActive ? 'bg-[#1a1a1a] text-white' : isDone ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400'
+                      isActive ? 'bg-brand-500 text-white' : isDone ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-400'
                     )}
                   >
                     {stepNum}
@@ -211,7 +198,7 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
                   <span
                     className={cn(
                       'text-xs font-semibold',
-                      isActive ? 'text-[#1a1a1a]' : isDone ? 'text-orange-500' : 'text-gray-400'
+                      isActive ? 'text-brand-700' : isDone ? 'text-orange-500' : 'text-gray-400'
                     )}
                   >
                     {label}
@@ -509,14 +496,14 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
             <button
               disabled={!step1Valid}
               onClick={() => setStep(2)}
-              className="flex items-center gap-1.5 px-5 py-2 text-sm font-semibold bg-[#1a1a1a] text-white rounded-xl hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="flex items-center gap-1.5 px-5 py-2 text-sm font-semibold bg-brand-500 text-white rounded-xl hover:bg-brand-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Next
               <ChevronRight size={14} />
             </button>
           ) : (
             <button
-              onClick={handleSave}
+              onClick={() => { void handleSave() }}
               disabled={!step2Valid}
               className="px-5 py-2 text-sm font-semibold bg-orange-500 text-white rounded-xl hover:bg-orange-600 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >

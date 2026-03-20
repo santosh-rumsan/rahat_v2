@@ -4,9 +4,10 @@ import { Banknote, Package, Droplets, Box, Briefcase, Users, Plus, Ticket, Penci
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@rs/ui/tabs'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@rs/ui/dropdown-menu'
 import { cn } from '@rs/ui'
-import { loadBenefits, saveBenefits, loadTokens } from '@rahataid/projects-shared/benefits'
-import type { Benefit, BenefitType } from '@rahataid/projects-shared/benefits'
+import { loadBenefits, loadTokens } from '@rahataid/projects-shared/benefits'
+import type { Benefit, BenefitType, Token } from '@rahataid/projects-shared/benefits'
 import { useBeneficiaries } from '@rahataid/projects-shared/beneficiary'
+import { idbBenefitService } from '@rahataid/sdk'
 
 export const Route = createFileRoute('/_app/projects/$id/benefits/$benefitId/')({ component: BenefitDetailPage })
 
@@ -30,25 +31,27 @@ function BenefitDetailPage() {
   const navigate = useNavigate()
 
   const [benefit, setBenefit] = React.useState<Benefit | undefined>(undefined)
+  const [tokens, setTokens] = React.useState<Token[]>([])
 
   React.useEffect(() => {
-    const benefits = loadBenefits(projectId)
-    setBenefit(benefits.find((b) => b.id === benefitId))
+    loadBenefits(projectId)
+      .then((benefits) => setBenefit(benefits.find((b) => b.id === benefitId)))
+      .catch(() => setBenefit(undefined))
   }, [projectId, benefitId])
 
-  function handleDelete() {
+  React.useEffect(() => {
+    loadTokens(projectId)
+      .then((all) => setTokens(all.filter((t) => t.benefitId === benefitId)))
+      .catch(() => setTokens([]))
+  }, [projectId, benefitId])
+
+  async function handleDelete() {
     if (!confirm('Delete this benefit? This cannot be undone.')) return
-    const benefits = loadBenefits(projectId)
-    saveBenefits(projectId, benefits.filter((b) => b.id !== benefitId))
+    await idbBenefitService.delete(projectId, benefitId)
     navigate({ to: '/projects/$id/benefits', params: { id: projectId }, search: { benefit: undefined } })
   }
 
   const { data: allBeneficiaries = [] } = useBeneficiaries(projectId)
-
-  const tokens = React.useMemo(() => {
-    const all = loadTokens(projectId)
-    return all.filter((t) => t.benefitId === benefitId)
-  }, [projectId, benefitId])
 
   const assignedBeneficiaries = React.useMemo(() => {
     if (!benefit?.beneficiaryIds) return []
@@ -114,7 +117,7 @@ function BenefitDetailPage() {
                 <Plus size={13} className="mr-2" />
                 Add Beneficiaries
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDelete} className="text-red-600 focus:text-red-600">
+              <DropdownMenuItem onClick={() => { void handleDelete() }} className="text-red-600 focus:text-red-600">
                 <Trash2 size={13} className="mr-2" />
                 Delete
               </DropdownMenuItem>

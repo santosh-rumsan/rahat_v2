@@ -3,8 +3,6 @@ import { createFundService, getSDKApiUrl, TREASURY_TOKENS } from '@rahataid/sdk'
 import type { FundAllocation, AllocationLog, TreasuryToken } from '@rahataid/sdk'
 import type { Benefit } from '../benefits/types.js'
 import type { Token } from '../benefits/types.js'
-import { loadBenefits } from '../benefits/benefit-list.js'
-import { loadTokens } from '../benefits/token-assignment.js'
 
 function service() {
   return createFundService(getSDKApiUrl())
@@ -78,9 +76,10 @@ export interface ProjectActivity {
 // ─── derived data helpers ─────────────────────────────────────────────────────
 
 export function computeProjectFundData(
-  projectId: string,
   allocations: FundAllocation[],
   logs: AllocationLog[],
+  benefits: Benefit[],
+  tokens: Token[],
   primaryToken?: string,
 ): {
   balances: ProjectTokenBalance[]
@@ -91,10 +90,6 @@ export function computeProjectFundData(
   for (const a of allocations) {
     if (isTreasuryToken(a.token)) received[a.token] += a.amount
   }
-
-  // Token stats from localStorage
-  const benefits = loadBenefits(projectId)
-  const tokens = loadTokens(projectId)
 
   const reserved: Record<TreasuryToken, number> = { cUSD: 0, cEUR: 0, cNPR: 0 }
   const disbursed: Record<TreasuryToken, number> = { cUSD: 0, cEUR: 0, cNPR: 0 }
@@ -135,10 +130,9 @@ export function computeProjectFundData(
 }
 
 export function deriveTokenActivities(
-  projectId: string,
+  benefits: Benefit[],
+  tokens: Token[],
 ): ProjectActivity[] {
-  const benefits = loadBenefits(projectId)
-  const tokens = loadTokens(projectId)
   const activities: ProjectActivity[] = []
 
   for (const tkn of tokens) {

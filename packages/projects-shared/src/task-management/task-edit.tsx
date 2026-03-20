@@ -25,6 +25,8 @@ export function TaskManagementEditTaskPage({ project, taskId }: { project: Proje
     dueDate: task.dueDate,
     status: task.status,
     priority: task.priority,
+    taskType: task.taskType ?? 'default',
+    triggerType: task.triggerType ?? 'manual',
   }
 
   function handleSave(draft: TaskDraft) {
@@ -37,6 +39,9 @@ export function TaskManagementEditTaskPage({ project, taskId }: { project: Proje
       dueDate: draft.dueDate,
       status: draft.status,
       priority: draft.priority,
+      taskType: draft.taskType,
+      triggerType: draft.triggerType,
+      designerData: task!.designerData,
     }
     setTasks((current) => current.map((t) => (t.id === taskId ? updated : t)))
     window.location.href = `/projects/${project.id}/tasks/${taskId}`

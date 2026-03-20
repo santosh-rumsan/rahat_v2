@@ -1,16 +1,12 @@
 import * as React from 'react'
 import { Plus, Trash2, Pencil, Package, Banknote, Droplets, Box, Briefcase, CheckCircle2, XCircle, Users } from 'lucide-react'
 import { cn } from '@rs/ui'
+import { idbBenefitService } from '@rahataid/sdk'
 import type { Benefit, BenefitType } from './types.js'
 
-// ─── mock data ───────────────────────────────────────────────────────────────
-
-const SEED_BENEFITS: Benefit[] = [
-  { id: 'b1', name: 'Cash Transfer', type: 'Cash', description: 'Monthly cash assistance in local currency', unit: 'NPR', valuePerUnit: 5000, isActive: true, createdAt: '2026-02-10' },
-  { id: 'b2', name: 'Food Package', type: 'Food', description: 'Monthly rice and lentil package per household', unit: 'KG', valuePerUnit: 25, isActive: true, createdAt: '2026-02-10' },
-  { id: 'b3', name: 'Hygiene Kit', type: 'WASH', description: 'Basic hygiene supplies including soap and sanitary items', unit: 'Kit', valuePerUnit: 1, isActive: true, createdAt: '2026-02-12' },
-  { id: 'b4', name: 'Non-Food Items', type: 'NFI', description: 'Blankets, cooking utensils and shelter materials', unit: 'Set', valuePerUnit: 1, isActive: false, createdAt: '2026-02-15' },
-]
+export function loadBenefits(projectId: string): Promise<Benefit[]> {
+  return idbBenefitService.list(projectId)
+}
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
 
@@ -21,28 +17,6 @@ const TYPE_META: Record<BenefitType, { icon: React.ReactNode; color: string; bg:
   NFI:     { icon: <Box size={16} />,        color: 'text-purple-500', bg: 'bg-purple-100' },
   Service: { icon: <Briefcase size={16} />,  color: 'text-rose-500',   bg: 'bg-rose-100' },
 }
-
-function benefitStorageKey(projectId: string) {
-  return `rahat-benefits:${projectId}`
-}
-
-function loadBenefits(projectId: string): Benefit[] {
-  if (typeof window === 'undefined') return SEED_BENEFITS
-  try {
-    const raw = window.localStorage.getItem(benefitStorageKey(projectId))
-    if (raw) return JSON.parse(raw) as Benefit[]
-  } catch {}
-  return SEED_BENEFITS
-}
-
-function saveBenefits(projectId: string, benefits: Benefit[]) {
-  if (typeof window === 'undefined') return
-  try {
-    window.localStorage.setItem(benefitStorageKey(projectId), JSON.stringify(benefits))
-  } catch {}
-}
-
-export { benefitStorageKey, loadBenefits, saveBenefits }
 
 // ─── component ───────────────────────────────────────────────────────────────
 
@@ -59,25 +33,25 @@ export function BenefitList({ projectId = 'default', initialBenefitId, onBenefit
   const [benefits, setBenefits] = React.useState<Benefit[]>([])
 
   React.useEffect(() => {
-    setBenefits(loadBenefits(projectId))
+    loadBenefits(projectId).then(setBenefits).catch(() => {})
   }, [projectId])
 
   const selected = initialBenefitId ? benefits.find((b) => b.id === initialBenefitId) : undefined
 
-  const persist = (next: Benefit[]) => {
-    setBenefits(next)
-    saveBenefits(projectId, next)
-  }
-
   function handleDelete(id: string, e: React.MouseEvent) {
     e.stopPropagation()
-    persist(benefits.filter((b) => b.id !== id))
+    setBenefits((prev) => prev.filter((b) => b.id !== id))
+    idbBenefitService.delete(projectId, id).catch(() => {})
     if (initialBenefitId === id) onBenefitSelect?.(undefined)
   }
 
   function handleToggleActive(id: string, e: React.MouseEvent) {
     e.stopPropagation()
-    persist(benefits.map((b) => (b.id === id ? { ...b, isActive: !b.isActive } : b)))
+    const benefit = benefits.find((b) => b.id === id)
+    if (!benefit) return
+    const next = !benefit.isActive
+    setBenefits((prev) => prev.map((b) => (b.id === id ? { ...b, isActive: next } : b)))
+    idbBenefitService.update(projectId, id, { isActive: next }).catch(() => {})
   }
 
   // ── detail view ──────────────────────────────────────────────────────────
@@ -134,7 +108,7 @@ export function BenefitList({ projectId = 'default', initialBenefitId, onBenefit
         </div>
         <button
           onClick={onAdd}
-          className="flex items-center gap-1.5 bg-[#1a1a1a] hover:bg-[#333] text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
+          className="flex items-center gap-1.5 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
         >
           <Plus size={14} />
           New Benefit

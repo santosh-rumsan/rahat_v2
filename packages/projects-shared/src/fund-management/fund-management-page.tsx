@@ -3,6 +3,9 @@ import { Coins, ArrowDownLeft, ArrowUpRight, Lock, Ban } from 'lucide-react'
 import { cn } from '@rs/ui'
 import { TREASURY_TOKENS } from '@rahataid/sdk'
 import type { TreasuryToken } from '@rahataid/sdk'
+import { loadBenefits } from '../benefits/benefit-list.js'
+import { loadTokens } from '../benefits/token-assignment.js'
+import type { Benefit, Token } from '../benefits/types.js'
 import { useProject } from '../project/queries.js'
 import {
   useProjectFundAllocations,
@@ -218,24 +221,21 @@ export function FundManagementPage({ projectId }: FundManagementPageProps) {
   const { data: project } = useProject(projectId)
   const { data: allocations = [], isLoading: loadingAlloc } = useProjectFundAllocations(projectId)
   const { data: logs = [], isLoading: loadingLogs } = useProjectFundLogs(projectId)
-
-  // Re-read localStorage-derived data on every render (benefits + tokens are mutated in place)
-  const [localKey, setLocalKey] = React.useState(0)
+  const [benefits, setBenefits] = React.useState<Benefit[]>([])
+  const [tokens, setTokens] = React.useState<Token[]>([])
   React.useEffect(() => {
-    // Re-derive whenever projectId changes
-    setLocalKey((k) => k + 1)
+    loadBenefits(projectId).then(setBenefits).catch(() => setBenefits([]))
+    loadTokens(projectId).then(setTokens).catch(() => setTokens([]))
   }, [projectId])
 
   const { balances, serverActivities } = React.useMemo(
-    () => computeProjectFundData(projectId, allocations, logs, project?.primaryToken),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [projectId, allocations, logs, localKey, project?.primaryToken],
+    () => computeProjectFundData(allocations, logs, benefits, tokens, project?.primaryToken),
+    [allocations, logs, benefits, tokens, project?.primaryToken],
   )
 
   const localActivities = React.useMemo(
-    () => deriveTokenActivities(projectId),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [projectId, localKey],
+    () => deriveTokenActivities(benefits, tokens),
+    [benefits, tokens],
   )
 
   const allActivities = [...serverActivities, ...localActivities]

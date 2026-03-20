@@ -3,7 +3,7 @@ export { BeneficiaryList } from './beneficiary-list.js'
 export type { BeneficiaryListProps } from './beneficiary-list.js'
 export { BeneficiaryForm } from './beneficiary-form.js'
 export type { BeneficiaryFormProps } from './beneficiary-form.js'
-export { BeneficiaryGroups, storageKey, loadGroups } from './beneficiary-groups.js'
+export { BeneficiaryGroups } from './beneficiary-groups.js'
 export type { BeneficiaryGroupsProps } from './beneficiary-groups.js'
 export {
   useBeneficiaries,

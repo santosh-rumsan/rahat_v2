@@ -99,7 +99,7 @@ export function BeneficiaryList({ projectId = 'default', onAdd, onEdit }: Benefi
               </button>
               <button
                 onClick={onAdd}
-                className="flex items-center gap-1 bg-[#1a1a1a] hover:bg-[#333] text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
+                className="flex items-center gap-1 bg-brand-500 hover:bg-brand-600 text-white text-xs font-medium px-3 py-1.5 rounded-md transition-colors"
               >
                 <Plus size={13} />
                 Add
@@ -195,7 +195,7 @@ export function BeneficiaryList({ projectId = 'default', onAdd, onEdit }: Benefi
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => onEdit?.(selected)}
-                  className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-xl transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-md transition-colors"
                 >
                   <Pencil size={13} />
                   Edit

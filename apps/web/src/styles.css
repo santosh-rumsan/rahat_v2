@@ -218,3 +218,86 @@
     @apply font-sans;
     }
 }
+
+@layer utilities {
+  button[class*="bg-brand-"],
+  button[class*="bg-orange-"],
+  button[class*="bg-[#1a1a1a]"],
+  button[class*="bg-slate-900"] {
+    border-radius: var(--radius-md);
+    box-shadow: none;
+    font-weight: 500;
+  }
+
+  .bg-orange-50 {
+    background-color: var(--color-brand-50);
+  }
+
+  .bg-orange-100 {
+    background-color: var(--color-brand-100);
+  }
+
+  .bg-orange-200 {
+    background-color: color-mix(in oklch, var(--color-brand-100) 60%, white);
+  }
+
+  .bg-orange-400 {
+    background-color: var(--color-brand-400);
+  }
+
+  .bg-orange-500 {
+    background-color: var(--color-brand-500);
+  }
+
+  .text-orange-400 {
+    color: var(--color-brand-400);
+  }
+
+  .text-orange-500 {
+    color: var(--color-brand-500);
+  }
+
+  .text-orange-600 {
+    color: var(--color-brand-600);
+  }
+
+  .text-orange-700 {
+    color: var(--color-brand-700);
+  }
+
+  .border-orange-200 {
+    border-color: color-mix(in oklch, var(--color-brand-100) 70%, white);
+  }
+
+  .border-orange-300 {
+    border-color: var(--color-brand-300);
+  }
+
+  .border-orange-400 {
+    border-color: var(--color-brand-400);
+  }
+
+  .accent-orange-500 {
+    accent-color: var(--color-brand-500);
+  }
+
+  .border-t-orange-500 {
+    border-top-color: var(--color-brand-500);
+  }
+
+  .ring-orange-400 {
+    --tw-ring-color: var(--color-brand-400);
+  }
+
+  .focus\:ring-orange-400:focus {
+    --tw-ring-color: var(--color-brand-400);
+  }
+
+  .hover\:bg-orange-600:hover {
+    background-color: var(--color-brand-600);
+  }
+
+  .hover\:text-orange-600:hover {
+    color: var(--color-brand-600);
+  }
+}

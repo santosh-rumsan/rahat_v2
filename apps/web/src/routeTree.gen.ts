@@ -38,10 +38,13 @@ import { Route as AppProjectsIdBenefitsRouteImport } from './routes/_app.project
 import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
 import { Route as AppProjectsIdTasksIndexRouteImport } from './routes/_app.projects.$id.tasks.index'
 import { Route as AppProjectsIdFundsIndexRouteImport } from './routes/_app.projects.$id.funds.index'
+import { Route as AppProjectsIdCommunicationIndexRouteImport } from './routes/_app.projects.$id.communication.index'
 import { Route as AppProjectsIdBenefitsIndexRouteImport } from './routes/_app.projects.$id.benefits.index'
 import { Route as AppProjectsIdBeneficiariesIndexRouteImport } from './routes/_app.projects.$id.beneficiaries.index'
 import { Route as AppProjectsIdTasksAddTaskRouteImport } from './routes/_app.projects.$id.tasks.add-task'
 import { Route as AppProjectsIdTasksTaskIdRouteImport } from './routes/_app.projects.$id.tasks.$taskId'
+import { Route as AppProjectsIdCommunicationAddRouteImport } from './routes/_app.projects.$id.communication.add'
+import { Route as AppProjectsIdCommunicationCampaignIdRouteImport } from './routes/_app.projects.$id.communication.$campaignId'
 import { Route as AppProjectsIdBenefitsTokensRouteImport } from './routes/_app.projects.$id.benefits.tokens'
 import { Route as AppProjectsIdBenefitsNewRouteImport } from './routes/_app.projects.$id.benefits.new'
 import { Route as AppProjectsIdBenefitsAddRouteImport } from './routes/_app.projects.$id.benefits.add'
@@ -199,6 +202,12 @@ const AppProjectsIdFundsIndexRoute = AppProjectsIdFundsIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppProjectsIdFundsRoute,
 } as any)
+const AppProjectsIdCommunicationIndexRoute =
+  AppProjectsIdCommunicationIndexRouteImport.update({
+    id: '/communication/',
+    path: '/communication/',
+    getParentRoute: () => AppProjectsIdRoute,
+  } as any)
 const AppProjectsIdBenefitsIndexRoute =
   AppProjectsIdBenefitsIndexRouteImport.update({
     id: '/',
@@ -222,6 +231,18 @@ const AppProjectsIdTasksTaskIdRoute =
     id: '/$taskId',
     path: '/$taskId',
     getParentRoute: () => AppProjectsIdTasksRoute,
+  } as any)
+const AppProjectsIdCommunicationAddRoute =
+  AppProjectsIdCommunicationAddRouteImport.update({
+    id: '/communication/add',
+    path: '/communication/add',
+    getParentRoute: () => AppProjectsIdRoute,
+  } as any)
+const AppProjectsIdCommunicationCampaignIdRoute =
+  AppProjectsIdCommunicationCampaignIdRouteImport.update({
+    id: '/communication/$campaignId',
+    path: '/communication/$campaignId',
+    getParentRoute: () => AppProjectsIdRoute,
   } as any)
 const AppProjectsIdBenefitsTokensRoute =
   AppProjectsIdBenefitsTokensRouteImport.update({
@@ -322,10 +343,13 @@ export interface FileRoutesByFullPath {
   '/projects/$id/benefits/add': typeof AppProjectsIdBenefitsAddRoute
   '/projects/$id/benefits/new': typeof AppProjectsIdBenefitsNewRoute
   '/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
+  '/projects/$id/communication/$campaignId': typeof AppProjectsIdCommunicationCampaignIdRoute
+  '/projects/$id/communication/add': typeof AppProjectsIdCommunicationAddRoute
   '/projects/$id/tasks/$taskId': typeof AppProjectsIdTasksTaskIdRouteWithChildren
   '/projects/$id/tasks/add-task': typeof AppProjectsIdTasksAddTaskRoute
   '/projects/$id/beneficiaries/': typeof AppProjectsIdBeneficiariesIndexRoute
   '/projects/$id/benefits/': typeof AppProjectsIdBenefitsIndexRoute
+  '/projects/$id/communication/': typeof AppProjectsIdCommunicationIndexRoute
   '/projects/$id/funds/': typeof AppProjectsIdFundsIndexRoute
   '/projects/$id/tasks/': typeof AppProjectsIdTasksIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
@@ -357,9 +381,12 @@ export interface FileRoutesByTo {
   '/projects/$id/benefits/add': typeof AppProjectsIdBenefitsAddRoute
   '/projects/$id/benefits/new': typeof AppProjectsIdBenefitsNewRoute
   '/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
+  '/projects/$id/communication/$campaignId': typeof AppProjectsIdCommunicationCampaignIdRoute
+  '/projects/$id/communication/add': typeof AppProjectsIdCommunicationAddRoute
   '/projects/$id/tasks/add-task': typeof AppProjectsIdTasksAddTaskRoute
   '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesIndexRoute
   '/projects/$id/benefits': typeof AppProjectsIdBenefitsIndexRoute
+  '/projects/$id/communication': typeof AppProjectsIdCommunicationIndexRoute
   '/projects/$id/funds': typeof AppProjectsIdFundsIndexRoute
   '/projects/$id/tasks': typeof AppProjectsIdTasksIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
@@ -403,10 +430,13 @@ export interface FileRoutesById {
   '/_app/projects/$id/benefits/add': typeof AppProjectsIdBenefitsAddRoute
   '/_app/projects/$id/benefits/new': typeof AppProjectsIdBenefitsNewRoute
   '/_app/projects/$id/benefits/tokens': typeof AppProjectsIdBenefitsTokensRoute
+  '/_app/projects/$id/communication/$campaignId': typeof AppProjectsIdCommunicationCampaignIdRoute
+  '/_app/projects/$id/communication/add': typeof AppProjectsIdCommunicationAddRoute
   '/_app/projects/$id/tasks/$taskId': typeof AppProjectsIdTasksTaskIdRouteWithChildren
   '/_app/projects/$id/tasks/add-task': typeof AppProjectsIdTasksAddTaskRoute
   '/_app/projects/$id/beneficiaries/': typeof AppProjectsIdBeneficiariesIndexRoute
   '/_app/projects/$id/benefits/': typeof AppProjectsIdBenefitsIndexRoute
+  '/_app/projects/$id/communication/': typeof AppProjectsIdCommunicationIndexRoute
   '/_app/projects/$id/funds/': typeof AppProjectsIdFundsIndexRoute
   '/_app/projects/$id/tasks/': typeof AppProjectsIdTasksIndexRoute
   '/_app/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
@@ -450,10 +480,13 @@ export interface FileRouteTypes {
     | '/projects/$id/benefits/add'
     | '/projects/$id/benefits/new'
     | '/projects/$id/benefits/tokens'
+    | '/projects/$id/communication/$campaignId'
+    | '/projects/$id/communication/add'
     | '/projects/$id/tasks/$taskId'
     | '/projects/$id/tasks/add-task'
     | '/projects/$id/beneficiaries/'
     | '/projects/$id/benefits/'
+    | '/projects/$id/communication/'
     | '/projects/$id/funds/'
     | '/projects/$id/tasks/'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
@@ -485,9 +518,12 @@ export interface FileRouteTypes {
     | '/projects/$id/benefits/add'
     | '/projects/$id/benefits/new'
     | '/projects/$id/benefits/tokens'
+    | '/projects/$id/communication/$campaignId'
+    | '/projects/$id/communication/add'
     | '/projects/$id/tasks/add-task'
     | '/projects/$id/beneficiaries'
     | '/projects/$id/benefits'
+    | '/projects/$id/communication'
     | '/projects/$id/funds'
     | '/projects/$id/tasks'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
@@ -530,10 +566,13 @@ export interface FileRouteTypes {
     | '/_app/projects/$id/benefits/add'
     | '/_app/projects/$id/benefits/new'
     | '/_app/projects/$id/benefits/tokens'
+    | '/_app/projects/$id/communication/$campaignId'
+    | '/_app/projects/$id/communication/add'
     | '/_app/projects/$id/tasks/$taskId'
     | '/_app/projects/$id/tasks/add-task'
     | '/_app/projects/$id/beneficiaries/'
     | '/_app/projects/$id/benefits/'
+    | '/_app/projects/$id/communication/'
     | '/_app/projects/$id/funds/'
     | '/_app/projects/$id/tasks/'
     | '/_app/projects/$id/beneficiaries/$beneficiaryId/edit'
@@ -753,6 +792,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdFundsIndexRouteImport
       parentRoute: typeof AppProjectsIdFundsRoute
     }
+    '/_app/projects/$id/communication/': {
+      id: '/_app/projects/$id/communication/'
+      path: '/communication'
+      fullPath: '/projects/$id/communication/'
+      preLoaderRoute: typeof AppProjectsIdCommunicationIndexRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
     '/_app/projects/$id/benefits/': {
       id: '/_app/projects/$id/benefits/'
       path: '/'
@@ -780,6 +826,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/$id/tasks/$taskId'
       preLoaderRoute: typeof AppProjectsIdTasksTaskIdRouteImport
       parentRoute: typeof AppProjectsIdTasksRoute
+    }
+    '/_app/projects/$id/communication/add': {
+      id: '/_app/projects/$id/communication/add'
+      path: '/communication/add'
+      fullPath: '/projects/$id/communication/add'
+      preLoaderRoute: typeof AppProjectsIdCommunicationAddRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
+    '/_app/projects/$id/communication/$campaignId': {
+      id: '/_app/projects/$id/communication/$campaignId'
+      path: '/communication/$campaignId'
+      fullPath: '/projects/$id/communication/$campaignId'
+      preLoaderRoute: typeof AppProjectsIdCommunicationCampaignIdRouteImport
+      parentRoute: typeof AppProjectsIdRoute
     }
     '/_app/projects/$id/benefits/tokens': {
       id: '/_app/projects/$id/benefits/tokens'
@@ -974,6 +1034,9 @@ interface AppProjectsIdRouteChildren {
   AppProjectsIdFundsRoute: typeof AppProjectsIdFundsRouteWithChildren
   AppProjectsIdTasksRoute: typeof AppProjectsIdTasksRouteWithChildren
   AppProjectsIdIndexRoute: typeof AppProjectsIdIndexRoute
+  AppProjectsIdCommunicationCampaignIdRoute: typeof AppProjectsIdCommunicationCampaignIdRoute
+  AppProjectsIdCommunicationAddRoute: typeof AppProjectsIdCommunicationAddRoute
+  AppProjectsIdCommunicationIndexRoute: typeof AppProjectsIdCommunicationIndexRoute
 }
 
 const AppProjectsIdRouteChildren: AppProjectsIdRouteChildren = {
@@ -983,6 +1046,10 @@ const AppProjectsIdRouteChildren: AppProjectsIdRouteChildren = {
   AppProjectsIdFundsRoute: AppProjectsIdFundsRouteWithChildren,
   AppProjectsIdTasksRoute: AppProjectsIdTasksRouteWithChildren,
   AppProjectsIdIndexRoute: AppProjectsIdIndexRoute,
+  AppProjectsIdCommunicationCampaignIdRoute:
+    AppProjectsIdCommunicationCampaignIdRoute,
+  AppProjectsIdCommunicationAddRoute: AppProjectsIdCommunicationAddRoute,
+  AppProjectsIdCommunicationIndexRoute: AppProjectsIdCommunicationIndexRoute,
 }
 
 const AppProjectsIdRouteWithChildren = AppProjectsIdRoute._addFileChildren(
