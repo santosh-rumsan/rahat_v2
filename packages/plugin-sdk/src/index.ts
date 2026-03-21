@@ -31,6 +31,7 @@ export interface MenuLink {
   label: string
   icon?: string
   href: string
+  requiredPluginGroup?: string
 }
 
 export interface MenuDropdown {

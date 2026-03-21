@@ -35,5 +35,12 @@ import '@rahataid/plugin-comms-sms'
 import '@rahataid/plugin-comms-whatsapp'
 import '@rahataid/plugin-comms-voice'
 
+// Register benefit type plugins — each import self-registers via registerBenefitType()
+import '@rahataid/plugin-benefits-cash'
+import '@rahataid/plugin-benefits-food'
+import '@rahataid/plugin-benefits-wash'
+import '@rahataid/plugin-benefits-nfi'
+import '@rahataid/plugin-benefits-service'
+
 export { getRegisteredPlugins, getPlugin } from './registry'
 export { getRegisteredAppPlugins, getAppPlugin } from './app-registry'

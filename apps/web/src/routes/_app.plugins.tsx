@@ -6,6 +6,7 @@ import { getRegisteredAppPlugins } from '../plugins/app-registry'
 import { getRegisteredPlugins } from '../plugins/registry'
 import { getRegisteredTaskTypes } from '@rahataid/projects-shared/task-management'
 import { getRegisteredCommTypes } from '@rahataid/projects-shared/communication'
+import { getRegisteredBenefitTypes } from '@rahataid/projects-shared/benefits'
 import { isPluginEnabled, setPluginEnabled } from '../plugins/plugin-state'
 
 export const Route = createFileRoute('/_app/plugins')({ component: PluginsPage })
@@ -30,6 +31,7 @@ const GROUP_META: Record<string, { label: string; description: string }> = {
   project: { label: 'Project', description: 'Project type plugins' },
   task: { label: 'Task', description: 'Task designer plugins for workflows' },
   comms: { label: 'Communication', description: 'Communication channel plugins (SMS, Voice, WhatsApp)' },
+  benefits: { label: 'Benefits', description: 'Benefit type plugins (Cash, Food, WASH, NFI, Service)' },
 }
 
 function PluginCard({ plugin, enabled, onToggle }: { plugin: PluginEntry; enabled: boolean; onToggle: (id: string, value: boolean) => void }) {
@@ -108,7 +110,15 @@ function PluginsPage() {
     group: 'comms',
   }))
 
-  const allPlugins = [...appPlugins, ...projectPlugins, ...taskPlugins, ...commPlugins]
+  const benefitPlugins: PluginEntry[] = getRegisteredBenefitTypes().map((p) => ({
+    id: p.type,
+    label: p.label,
+    description: p.description,
+    IconComponent: p.IconComponent,
+    group: 'benefits',
+  }))
+
+  const allPlugins = [...appPlugins, ...projectPlugins, ...taskPlugins, ...commPlugins, ...benefitPlugins]
 
   const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0)
 
@@ -117,7 +127,7 @@ function PluginsPage() {
     forceUpdate()
   }
 
-  const groups = ['core', 'project', 'task', 'comms']
+  const groups = ['core', 'project', 'task', 'comms', 'benefits']
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-white">

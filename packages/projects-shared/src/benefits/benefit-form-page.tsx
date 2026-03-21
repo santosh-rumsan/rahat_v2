@@ -1,20 +1,10 @@
 import * as React from 'react'
-import { ChevronLeft, ChevronRight, Banknote, Package, Droplets, Box, Briefcase, Plus, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Banknote, Plus, Trash2 } from 'lucide-react'
 import { cn } from '@rs/ui'
 import { idbBenefitService } from '@rahataid/sdk'
 import type { Benefit, BenefitType, PackageItem } from './types.js'
-
-// ─── helpers ─────────────────────────────────────────────────────────────────
-
-const BENEFIT_TYPES: BenefitType[] = ['Cash', 'Food', 'WASH', 'NFI', 'Service']
-
-const TYPE_META: Record<BenefitType, { icon: React.ReactNode; color: string; bg: string }> = {
-  Cash:    { icon: <Banknote size={18} />,   color: 'text-green-600',  bg: 'bg-green-100' },
-  Food:    { icon: <Package size={18} />,    color: 'text-orange-500', bg: 'bg-orange-100' },
-  WASH:    { icon: <Droplets size={18} />,   color: 'text-blue-500',   bg: 'bg-blue-100' },
-  NFI:     { icon: <Box size={18} />,        color: 'text-purple-500', bg: 'bg-purple-100' },
-  Service: { icon: <Briefcase size={18} />,  color: 'text-rose-500',   bg: 'bg-rose-100' },
-}
+import type { BenefitTypeDefinition } from './benefit-types/registry.js'
+import { getRegisteredBenefitTypes } from './benefit-types/registry.js'
 
 function uid() {
   return `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
@@ -39,6 +29,7 @@ export interface BenefitFormPageProps {
   projectId: string
   primaryToken: string
   availableTokens?: string[]
+  availableBenefitTypes?: BenefitTypeDefinition[]
   benefitId?: string
   onDone: (benefitId: string) => void
   onCancel: () => void
@@ -50,12 +41,15 @@ const STEP_LABELS = ['Basic Info', 'Distribution']
 
 const DEFAULT_TOKENS = ['cUSD', 'cEUR', 'cNPR']
 
-export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEFAULT_TOKENS, benefitId, onDone, onCancel }: BenefitFormPageProps) {
+export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEFAULT_TOKENS, availableBenefitTypes, benefitId, onDone, onCancel }: BenefitFormPageProps) {
   const isEdit = !!benefitId
   const [existing, setExisting] = React.useState<Benefit | undefined>(undefined)
 
+  const benefitTypes = availableBenefitTypes ?? getRegisteredBenefitTypes()
+  const defaultType = (benefitTypes[0]?.type ?? 'Cash') as BenefitType
+
   const [step, setStep] = React.useState(1)
-  const [step1, setStep1] = React.useState<Step1Form>({ name: '', type: 'Cash', description: '' })
+  const [step1, setStep1] = React.useState<Step1Form>({ name: '', type: defaultType, description: '' })
   const [step2, setStep2] = React.useState<Step2Form>({ totalAmount: '', amountPerBeneficiary: '', token: primaryToken, packageItems: [] })
 
   React.useEffect(() => {
@@ -156,7 +150,7 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
     }
   }
 
-  const selectedMeta = TYPE_META[step1.type]
+  const selectedMeta = benefitTypes.find((d) => d.type === step1.type) ?? benefitTypes[0]
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-white">
@@ -234,22 +228,21 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
             <div>
               <label className="text-xs font-semibold text-gray-500 block mb-1.5">Type *</label>
               {isEdit ? (
-                <div className={cn('flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm border border-gray-200 bg-gray-50', selectedMeta.bg)}>
-                  <span className={selectedMeta.color}>{selectedMeta.icon}</span>
-                  <span className={cn('font-medium', selectedMeta.color)}>{step1.type}</span>
+                <div className={cn('flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm border border-gray-200 bg-gray-50', selectedMeta?.bg)}>
+                  {selectedMeta?.IconComponent && <selectedMeta.IconComponent size={18} className={selectedMeta.color} />}
+                  <span className={cn('font-medium', selectedMeta?.color)}>{step1.type}</span>
                   <span className="text-gray-400 text-xs ml-auto">Cannot be changed after creation</span>
                 </div>
               ) : (
                 <>
                   <div className="grid grid-cols-5 gap-2">
-                    {BENEFIT_TYPES.map((t) => {
-                      const m = TYPE_META[t]
-                      const active = step1.type === t
+                    {benefitTypes.map((def) => {
+                      const active = step1.type === def.type
                       return (
                         <button
-                          key={t}
+                          key={def.type}
                           type="button"
-                          onClick={() => setStep1((s) => ({ ...s, type: t }))}
+                          onClick={() => setStep1((s) => ({ ...s, type: def.type as BenefitType }))}
                           className={cn(
                             'flex flex-col items-center gap-1.5 py-3 rounded-xl border text-xs font-medium transition-all',
                             active
@@ -257,17 +250,19 @@ export function BenefitFormPage({ projectId, primaryToken, availableTokens = DEF
                               : 'border-gray-200 text-gray-500 hover:border-gray-300'
                           )}
                         >
-                          <span className={active ? 'text-orange-500' : m.color}>{m.icon}</span>
-                          {t}
+                          {def.IconComponent && <def.IconComponent size={18} className={active ? 'text-orange-500' : def.color} />}
+                          {def.label}
                         </button>
                       )
                     })}
                   </div>
-                  <div className={cn('mt-3 flex items-center gap-2 px-3 py-2 rounded-xl text-sm', selectedMeta.bg)}>
-                    <span className={selectedMeta.color}>{selectedMeta.icon}</span>
-                    <span className={cn('font-medium', selectedMeta.color)}>{step1.type}</span>
-                    <span className="text-gray-500 text-xs ml-auto">Selected</span>
-                  </div>
+                  {selectedMeta && (
+                    <div className={cn('mt-3 flex items-center gap-2 px-3 py-2 rounded-xl text-sm', selectedMeta.bg)}>
+                      {selectedMeta.IconComponent && <selectedMeta.IconComponent size={18} className={selectedMeta.color} />}
+                      <span className={cn('font-medium', selectedMeta.color)}>{selectedMeta.label}</span>
+                      <span className="text-gray-500 text-xs ml-auto">Selected</span>
+                    </div>
+                  )}
                 </>
               )}
             </div>

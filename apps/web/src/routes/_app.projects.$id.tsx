@@ -2,6 +2,9 @@ import { Outlet, createFileRoute, useLocation, useRouter } from '@tanstack/react
 import { getPlugin } from '../plugins'
 import { ProjectHeader } from '../components/layout/project-header'
 import { useProject } from '@rahataid/projects-shared'
+import { getRegisteredBenefitTypes } from '@rahataid/projects-shared/benefits'
+import { isPluginEnabled } from '../plugins/plugin-state'
+import type { MenuItem } from '@rahataid/plugin-sdk'
 
 export const Route = createFileRoute('/_app/projects/$id')({ component: ProjectLayout })
 
@@ -35,12 +38,23 @@ function ProjectLayout() {
   const plugin = getPlugin(project.projectType)
   const isDashboardRoute = location.pathname === `/projects/${id}` || location.pathname === `/projects/${id}/`
 
+  const enabledGroupIds: Record<string, boolean> = {
+    benefits: getRegisteredBenefitTypes().some((t) => isPluginEnabled(t.type)),
+  }
+
+  const filteredMenuItems: MenuItem[] = (plugin?.menuItems ?? []).filter((item) => {
+    if (item.type === 'link' && item.requiredPluginGroup) {
+      return enabledGroupIds[item.requiredPluginGroup] !== false
+    }
+    return true
+  })
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <ProjectHeader
         projectId={id}
         projectName={isDashboardRoute ? undefined : project.name}
-        menuItems={plugin?.menuItems}
+        menuItems={filteredMenuItems}
         onBack={onBack}
       />
       <div className="flex-1 overflow-y-auto">
