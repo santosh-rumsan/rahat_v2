@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { Textarea } from '@rs/ui/textarea'
-import { Button } from '@rs/ui/button'
+import { Input } from '@rs/ui/input'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@rs/ui/alert-dialog'
-import { Upload, FileAudio, X, Search, Plus, Users } from 'lucide-react'
-import { loadGroups } from '../../../beneficiary/beneficiary-groups.js'
-import type { BeneficiaryGroup, Beneficiary } from '../../../beneficiary/types.js'
-import type { DesignerProps } from '../registry.js'
+import { Search, Plus, X, Users } from 'lucide-react'
+import { loadGroups } from '@rahataid/projects-shared/beneficiary'
+import type { BeneficiaryGroup, Beneficiary } from '@rahataid/projects-shared/beneficiary'
+import type { DesignerProps } from '@rahataid/projects-shared/task-management'
 
 const MOCK_BENEFICIARIES: Beneficiary[] = [
   { id: '1', name: 'Gita Sharma', age: 34, gender: 'Female', location: 'Ward 5, Kathmandu', status: 'Verified', enrolledDate: '2026-02-10' },
@@ -22,18 +22,16 @@ const MOCK_BENEFICIARIES: Beneficiary[] = [
   { id: '12', name: 'Mohan Khatri', age: 49, gender: 'Male', location: 'Ward 14, Kathmandu', status: 'Inactive', enrolledDate: '2026-03-03' },
 ]
 
-interface VoiceDesignerData {
-  fileName: string
-  fileDataUrl: string
-  description: string
+interface SmsDesignerData {
+  senderId: string
+  messageTemplate: string
   selectedGroupIds: string[]
 }
 
-function getVoiceData(designerData?: Record<string, unknown>): VoiceDesignerData {
+function getSmsData(designerData?: Record<string, unknown>): SmsDesignerData {
   return {
-    fileName: (designerData?.fileName as string) ?? '',
-    fileDataUrl: (designerData?.fileDataUrl as string) ?? '',
-    description: (designerData?.description as string) ?? '',
+    senderId: (designerData?.senderId as string) ?? '',
+    messageTemplate: (designerData?.messageTemplate as string) ?? '',
     selectedGroupIds: (designerData?.selectedGroupIds as string[]) ?? [],
   }
 }
@@ -48,48 +46,36 @@ function statusColor(status: string) {
   return 'bg-gray-100 text-gray-500'
 }
 
-export function VoiceDesigner({ project, task, onUpdate }: DesignerProps) {
-  const [data, setData] = React.useState<VoiceDesignerData>(() => getVoiceData(task.designerData))
+export function SmsDesigner({ project, task, onUpdate }: DesignerProps) {
+  const [data, setData] = React.useState<SmsDesignerData>(() => getSmsData(task.designerData))
   const [allGroups, setAllGroups] = React.useState<BeneficiaryGroup[]>([])
   const [search, setSearch] = React.useState('')
   const [showGroupPicker, setShowGroupPicker] = React.useState(false)
   const [groupPickerSearch, setGroupPickerSearch] = React.useState('')
   const [activePillGroupId, setActivePillGroupId] = React.useState<string | null>(null)
   const [groupToRemove, setGroupToRemove] = React.useState<string | null>(null)
-  const fileInputRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
     loadGroups(project.id).then(setAllGroups).catch(() => {})
   }, [project.id])
 
-  function update(patch: Partial<VoiceDesignerData>) {
-    const next = { ...data, ...patch }
+  function update<K extends keyof SmsDesignerData>(key: K, value: SmsDesignerData[K]) {
+    const next = { ...data, [key]: value }
     setData(next)
     onUpdate(next)
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (event) => {
-      update({ fileName: file.name, fileDataUrl: event.target?.result as string })
-    }
-    reader.readAsDataURL(file)
-  }
-
-  function handleRemoveFile() {
-    update({ fileName: '', fileDataUrl: '' })
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }
-
   function addGroup(groupId: string) {
     if (data.selectedGroupIds.includes(groupId)) return
-    update({ selectedGroupIds: [...data.selectedGroupIds, groupId] })
+    const next = { ...data, selectedGroupIds: [...data.selectedGroupIds, groupId] }
+    setData(next)
+    onUpdate(next)
   }
 
   function removeGroup(groupId: string) {
-    update({ selectedGroupIds: data.selectedGroupIds.filter((id) => id !== groupId) })
+    const next = { ...data, selectedGroupIds: data.selectedGroupIds.filter((id) => id !== groupId) }
+    setData(next)
+    onUpdate(next)
     if (activePillGroupId === groupId) setActivePillGroupId(null)
   }
 
@@ -102,6 +88,9 @@ export function VoiceDesigner({ project, task, onUpdate }: DesignerProps) {
     setSearch(value)
     if (value) setActivePillGroupId(null)
   }
+
+  const charCount = data.messageTemplate.length
+  const smsCount = Math.ceil(charCount / 160) || 1
 
   const selectedGroups = allGroups.filter((g) => data.selectedGroupIds.includes(g.id))
   const availableGroups = allGroups.filter((g) => !data.selectedGroupIds.includes(g.id))
@@ -133,7 +122,7 @@ export function VoiceDesigner({ project, task, onUpdate }: DesignerProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Group</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove &quot;{groupToRemoveName}&quot; from this task? Beneficiaries in this group will no longer receive the voice message.
+              Remove &quot;{groupToRemoveName}&quot; from this task? Beneficiaries in this group will no longer receive the SMS.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -149,62 +138,42 @@ export function VoiceDesigner({ project, task, onUpdate }: DesignerProps) {
       </AlertDialog>
 
       <div className="flex gap-6 h-full">
-        {/* Left: Voice config + group pills */}
+        {/* Left: SMS config + group pills */}
         <div className="flex-1 space-y-5 min-w-0 flex flex-col">
           <div>
-            <h3 className="text-sm font-semibold text-slate-700 mb-3">Voice Message Designer</h3>
-            <p className="text-xs text-slate-400 mb-4">Upload a voice file and add a description for this voice message task.</p>
+            <h3 className="text-sm font-semibold text-slate-700 mb-3">SMS Message Designer</h3>
+            <p className="text-xs text-slate-400 mb-4">Configure the SMS message that will be sent when this task is triggered.</p>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">Voice File</label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/*"
-              className="hidden"
-              onChange={handleFileChange}
+            <label htmlFor="sms-sender-id" className="text-sm font-medium text-slate-700">
+              Sender ID
+            </label>
+            <Input
+              id="sms-sender-id"
+              value={data.senderId}
+              onChange={(e) => update('senderId', e.target.value)}
+              placeholder="e.g. RAHAT or +977XXXXXXXXXX"
+              maxLength={11}
             />
-            {data.fileName ? (
-              <div className="flex items-center gap-3 p-3 rounded-xl border border-slate-200 bg-slate-50">
-                <FileAudio size={18} className="text-violet-500 flex-shrink-0" />
-                <span className="text-sm text-slate-700 flex-1 truncate">{data.fileName}</span>
-                {data.fileDataUrl && (
-                  <audio controls src={data.fileDataUrl} className="h-8 w-40 flex-shrink-0" />
-                )}
-                <button
-                  type="button"
-                  onClick={handleRemoveFile}
-                  className="text-slate-400 hover:text-red-500 transition-colors flex-shrink-0"
-                  aria-label="Remove file"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ) : (
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full h-20 border-dashed flex flex-col gap-1 text-slate-400 hover:text-slate-600"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload size={18} />
-                <span className="text-xs">Click to upload audio file (MP3, WAV, OGG…)</span>
-              </Button>
-            )}
+            <p className="text-xs text-slate-400">Alphanumeric sender ID (max 11 characters) or phone number.</p>
           </div>
 
           <div className="space-y-1.5">
-            <label htmlFor="voice-description" className="text-sm font-medium text-slate-700">
-              Description
+            <label htmlFor="sms-message" className="text-sm font-medium text-slate-700">
+              Message Template
             </label>
             <Textarea
-              id="voice-description"
-              value={data.description}
-              onChange={(e) => update({ description: e.target.value })}
-              placeholder="Describe the voice message content or script…"
-              rows={4}
+              id="sms-message"
+              value={data.messageTemplate}
+              onChange={(e) => update('messageTemplate', e.target.value)}
+              placeholder="Type your SMS message here. Use {{name}}, {{amount}}, {{date}} for dynamic values."
+              rows={5}
             />
+            <div className="flex justify-between text-xs text-slate-400">
+              <span>Use &#123;&#123;name&#125;&#125;, &#123;&#123;amount&#125;&#125;, &#123;&#123;date&#125;&#125; for dynamic values</span>
+              <span>{charCount} chars · {smsCount} SMS</span>
+            </div>
           </div>
 
           {/* Beneficiary Group pills */}

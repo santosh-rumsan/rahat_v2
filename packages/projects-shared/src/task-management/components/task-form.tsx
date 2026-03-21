@@ -17,6 +17,7 @@ export function TaskForm({
   onSave,
   submitLabel = 'Add task',
   hideStatus = false,
+  taskTypes: taskTypesProp,
 }: {
   project: ProjectSummary
   onSubmit?: () => void
@@ -24,10 +25,11 @@ export function TaskForm({
   onSave?: (draft: TaskDraft) => void
   submitLabel?: string
   hideStatus?: boolean
+  taskTypes?: ReturnType<typeof getRegisteredTaskTypes>
 }) {
   const { setTasks } = useProjectTasks(project)
   const [draft, setDraft] = React.useState<TaskDraft>(() => initialDraft ?? getDefaultTaskDraft())
-  const taskTypes = getRegisteredTaskTypes()
+  const taskTypes = taskTypesProp ?? getRegisteredTaskTypes()
   const isEditMode = !!initialDraft
   const [step, setStep] = React.useState<1 | 2 | 3>(isEditMode ? 3 : 1)
 

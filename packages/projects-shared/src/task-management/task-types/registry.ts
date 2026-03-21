@@ -11,9 +11,15 @@ export interface DesignerProps {
 export interface TaskTypeDefinition {
   type: string
   label: string
+  description?: string
+  icon?: string
+  group: 'task'
   designerTabLabel?: string
   designer?: React.ComponentType<DesignerProps>
 }
+
+/** Alias used by task plugins */
+export type TaskFrontendPlugin = TaskTypeDefinition
 
 const registry = new Map<string, TaskTypeDefinition>()
 

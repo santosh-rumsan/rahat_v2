@@ -10,6 +10,7 @@ import {
   BarChart3,
 } from 'lucide-react'
 import { AppShell, IconSidebar } from '../components/layout'
+import '../plugins/index'
 
 export const Route = createFileRoute('/_app')({
   component: AppLayout,

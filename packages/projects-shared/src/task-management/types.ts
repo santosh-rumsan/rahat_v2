@@ -1,7 +1,7 @@
 export type TaskView = 'list' | 'kanban'
 export type TaskPriority = 'low' | 'normal' | 'high' | 'critical'
 export type TaskStatus = 'Not Started' | 'In Progress' | 'Completed' | 'Delayed'
-export type TaskType = 'default' | 'sms' | 'voice' | 'benefit-distribution'
+export type TaskType = string
 export type TriggerType = 'manual' | 'automated'
 
 export interface StatusLog {

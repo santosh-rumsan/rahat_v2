@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { PackageOpen, ArrowLeft, RefreshCw, Search, Users, Banknote, Package, Droplets, Box, Briefcase } from 'lucide-react'
 import { Button } from '@rs/ui/button'
-import { loadBenefits } from '../../../benefits/benefit-list.js'
-import type { Benefit, BenefitType } from '../../../benefits/types.js'
-import type { Beneficiary } from '../../../beneficiary/types.js'
-import type { DesignerProps } from '../registry.js'
+import { loadBenefits } from '@rahataid/projects-shared/benefits'
+import type { Benefit, BenefitType } from '@rahataid/projects-shared/benefits'
+import type { Beneficiary } from '@rahataid/projects-shared/beneficiary'
+import type { DesignerProps } from '@rahataid/projects-shared/task-management'
 
 const MOCK_BENEFICIARIES: Beneficiary[] = [
   { id: '1', name: 'Gita Sharma', age: 34, gender: 'Female', location: 'Ward 5, Kathmandu', status: 'Verified', enrolledDate: '2026-02-10' },

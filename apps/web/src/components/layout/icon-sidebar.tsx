@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link } from '@tanstack/react-router'
-import { Settings, Puzzle } from 'lucide-react'
+import { Settings, Puzzle, Layers } from 'lucide-react'
 import { cn } from '@rs/ui'
 
 export interface SidebarNavItem {
@@ -99,11 +99,18 @@ export function IconSidebar({
       {/* Bottom */}
       <div className="mt-auto flex flex-col items-center gap-4">
         <Link
-          to="/services"
+          to="/plugins"
           className={cn('p-2 rounded-lg transition-colors', inactiveClass)}
           activeProps={{ className: cn('p-2 rounded-lg transition-colors', activeClass) }}
         >
           <Puzzle size={16} />
+        </Link>
+        <Link
+          to="/services"
+          className={cn('p-2 rounded-lg transition-colors', inactiveClass)}
+          activeProps={{ className: cn('p-2 rounded-lg transition-colors', activeClass) }}
+        >
+          <Layers size={16} />
         </Link>
         <Link
           to="/settings"

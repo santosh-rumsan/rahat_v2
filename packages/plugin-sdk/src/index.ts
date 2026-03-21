@@ -55,6 +55,9 @@ export interface ProjectFrontendPlugin {
 export interface AppFrontendPlugin {
   id: string
   label: string
+  description?: string
+  icon?: string
+  group: 'core'
   route: string
   PageComponent: () => unknown
 }

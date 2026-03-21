@@ -25,5 +25,10 @@ registerAppPlugin(FundManagementFrontendPlugin)
 registerAppPlugin(ForecastFrontendPlugin)
 registerAppPlugin(ReportsFrontendPlugin)
 
+// Register task plugins — each import self-registers via registerTaskType()
+import '@rahataid/plugin-task-sms'
+import '@rahataid/plugin-task-voice'
+import '@rahataid/plugin-task-benefits'
+
 export { getRegisteredPlugins, getPlugin } from './registry'
 export { getRegisteredAppPlugins, getAppPlugin } from './app-registry'

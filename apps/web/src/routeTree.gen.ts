@@ -17,6 +17,7 @@ import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
 import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppProjectsRouteImport } from './routes/_app.projects'
+import { Route as AppPluginsRouteImport } from './routes/_app.plugins'
 import { Route as AppFundsRouteImport } from './routes/_app.funds'
 import { Route as AppForecastRouteImport } from './routes/_app.forecast'
 import { Route as AppVendorsIndexRouteImport } from './routes/_app.vendors.index'
@@ -103,6 +104,11 @@ const AppReportsRoute = AppReportsRouteImport.update({
 const AppProjectsRoute = AppProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPluginsRoute = AppPluginsRouteImport.update({
+  id: '/plugins',
+  path: '/plugins',
   getParentRoute: () => AppRoute,
 } as any)
 const AppFundsRoute = AppFundsRouteImport.update({
@@ -371,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/forecast': typeof AppForecastRouteWithChildren
   '/funds': typeof AppFundsRouteWithChildren
+  '/plugins': typeof AppPluginsRoute
   '/projects': typeof AppProjectsRouteWithChildren
   '/reports': typeof AppReportsRouteWithChildren
   '/services': typeof AppServicesRoute
@@ -425,6 +432,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id/benefits/$benefitId/beneficiaries/add': typeof AppProjectsIdBenefitsBenefitIdBeneficiariesAddRoute
 }
 export interface FileRoutesByTo {
+  '/plugins': typeof AppPluginsRoute
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
@@ -472,6 +480,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/_app/forecast': typeof AppForecastRouteWithChildren
   '/_app/funds': typeof AppFundsRouteWithChildren
+  '/_app/plugins': typeof AppPluginsRoute
   '/_app/projects': typeof AppProjectsRouteWithChildren
   '/_app/reports': typeof AppReportsRouteWithChildren
   '/_app/services': typeof AppServicesRoute
@@ -532,6 +541,7 @@ export interface FileRouteTypes {
     | '/'
     | '/forecast'
     | '/funds'
+    | '/plugins'
     | '/projects'
     | '/reports'
     | '/services'
@@ -586,6 +596,7 @@ export interface FileRouteTypes {
     | '/projects/$id/benefits/$benefitId/beneficiaries/add'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/plugins'
     | '/services'
     | '/settings'
     | '/'
@@ -632,6 +643,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/_app/forecast'
     | '/_app/funds'
+    | '/_app/plugins'
     | '/_app/projects'
     | '/_app/reports'
     | '/_app/services'
@@ -747,6 +759,13 @@ declare module '@tanstack/react-router' {
       path: '/projects'
       fullPath: '/projects'
       preLoaderRoute: typeof AppProjectsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/plugins': {
+      id: '/_app/plugins'
+      path: '/plugins'
+      fullPath: '/plugins'
+      preLoaderRoute: typeof AppPluginsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/funds': {
@@ -1331,6 +1350,7 @@ const AppVendorsRouteWithChildren = AppVendorsRoute._addFileChildren(
 interface AppRouteChildren {
   AppForecastRoute: typeof AppForecastRouteWithChildren
   AppFundsRoute: typeof AppFundsRouteWithChildren
+  AppPluginsRoute: typeof AppPluginsRoute
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppReportsRoute: typeof AppReportsRouteWithChildren
   AppServicesRoute: typeof AppServicesRoute
@@ -1343,6 +1363,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppForecastRoute: AppForecastRouteWithChildren,
   AppFundsRoute: AppFundsRouteWithChildren,
+  AppPluginsRoute: AppPluginsRoute,
   AppProjectsRoute: AppProjectsRouteWithChildren,
   AppReportsRoute: AppReportsRouteWithChildren,
   AppServicesRoute: AppServicesRoute,

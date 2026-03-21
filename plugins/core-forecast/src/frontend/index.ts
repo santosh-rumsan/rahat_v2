@@ -4,6 +4,9 @@ import { ForecastPage } from './forecast-page.js'
 export const ForecastFrontendPlugin: AppFrontendPlugin = {
   id: 'forecast',
   label: 'Forecast',
+  description: 'Anticipatory action triggers based on weather and climate data.',
+  icon: 'CloudSun',
+  group: 'core',
   route: '/forecast',
   PageComponent: ForecastPage,
 }
