@@ -7,6 +7,7 @@ import { DashboardFrontendPlugin } from '@rahataid/plugin-dashboard/frontend'
 import { VendorsFrontendPlugin } from '@rahataid/plugin-vendors/frontend'
 import { FundManagementFrontendPlugin } from '@rahataid/plugin-fund-management/frontend'
 import { ForecastFrontendPlugin } from '@rahataid/plugin-forecast/frontend'
+import { ReportsFrontendPlugin } from '@rahataid/plugin-reports/frontend'
 import { registerPlugin } from './registry'
 import { registerAppPlugin } from './app-registry'
 
@@ -22,6 +23,7 @@ registerAppPlugin(DashboardFrontendPlugin)
 registerAppPlugin(VendorsFrontendPlugin)
 registerAppPlugin(FundManagementFrontendPlugin)
 registerAppPlugin(ForecastFrontendPlugin)
+registerAppPlugin(ReportsFrontendPlugin)
 
 export { getRegisteredPlugins, getPlugin } from './registry'
 export { getRegisteredAppPlugins, getAppPlugin } from './app-registry'

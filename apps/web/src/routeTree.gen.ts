@@ -15,11 +15,13 @@ import { Route as AppVendorsRouteImport } from './routes/_app.vendors'
 import { Route as AppUsersRouteImport } from './routes/_app.users'
 import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
+import { Route as AppReportsRouteImport } from './routes/_app.reports'
 import { Route as AppProjectsRouteImport } from './routes/_app.projects'
 import { Route as AppFundsRouteImport } from './routes/_app.funds'
 import { Route as AppForecastRouteImport } from './routes/_app.forecast'
 import { Route as AppVendorsIndexRouteImport } from './routes/_app.vendors.index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app.users.index'
+import { Route as AppReportsIndexRouteImport } from './routes/_app.reports.index'
 import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.index'
 import { Route as AppFundsIndexRouteImport } from './routes/_app.funds.index'
 import { Route as AppForecastIndexRouteImport } from './routes/_app.forecast.index'
@@ -35,12 +37,14 @@ import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$
 import { Route as AppVendorsVendorIdEditRouteImport } from './routes/_app.vendors.$vendorId.edit'
 import { Route as AppUsersUserIdEditRouteImport } from './routes/_app.users.$userId.edit'
 import { Route as AppProjectsIdTasksRouteImport } from './routes/_app.projects.$id.tasks'
+import { Route as AppProjectsIdReportsRouteImport } from './routes/_app.projects.$id.reports'
 import { Route as AppProjectsIdFundsRouteImport } from './routes/_app.projects.$id.funds'
 import { Route as AppProjectsIdEditRouteImport } from './routes/_app.projects.$id.edit'
 import { Route as AppProjectsIdBenefitsRouteImport } from './routes/_app.projects.$id.benefits'
 import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
 import { Route as AppForecastSourceIdEditRouteImport } from './routes/_app.forecast.$sourceId.edit'
 import { Route as AppProjectsIdTasksIndexRouteImport } from './routes/_app.projects.$id.tasks.index'
+import { Route as AppProjectsIdReportsIndexRouteImport } from './routes/_app.projects.$id.reports.index'
 import { Route as AppProjectsIdFundsIndexRouteImport } from './routes/_app.projects.$id.funds.index'
 import { Route as AppProjectsIdCommunicationIndexRouteImport } from './routes/_app.projects.$id.communication.index'
 import { Route as AppProjectsIdBenefitsIndexRouteImport } from './routes/_app.projects.$id.benefits.index'
@@ -91,6 +95,11 @@ const AppServicesRoute = AppServicesRouteImport.update({
   path: '/services',
   getParentRoute: () => AppRoute,
 } as any)
+const AppReportsRoute = AppReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppProjectsRoute = AppProjectsRouteImport.update({
   id: '/projects',
   path: '/projects',
@@ -115,6 +124,11 @@ const AppUsersIndexRoute = AppUsersIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppUsersRoute,
+} as any)
+const AppReportsIndexRoute = AppReportsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppReportsRoute,
 } as any)
 const AppProjectsIndexRoute = AppProjectsIndexRouteImport.update({
   id: '/',
@@ -191,6 +205,11 @@ const AppProjectsIdTasksRoute = AppProjectsIdTasksRouteImport.update({
   path: '/tasks',
   getParentRoute: () => AppProjectsIdRoute,
 } as any)
+const AppProjectsIdReportsRoute = AppProjectsIdReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AppProjectsIdRoute,
+} as any)
 const AppProjectsIdFundsRoute = AppProjectsIdFundsRouteImport.update({
   id: '/funds',
   path: '/funds',
@@ -222,6 +241,12 @@ const AppProjectsIdTasksIndexRoute = AppProjectsIdTasksIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppProjectsIdTasksRoute,
 } as any)
+const AppProjectsIdReportsIndexRoute =
+  AppProjectsIdReportsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppProjectsIdReportsRoute,
+  } as any)
 const AppProjectsIdFundsIndexRoute = AppProjectsIdFundsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -347,6 +372,7 @@ export interface FileRoutesByFullPath {
   '/forecast': typeof AppForecastRouteWithChildren
   '/funds': typeof AppFundsRouteWithChildren
   '/projects': typeof AppProjectsRouteWithChildren
+  '/reports': typeof AppReportsRouteWithChildren
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRouteWithChildren
@@ -361,6 +387,7 @@ export interface FileRoutesByFullPath {
   '/forecast/': typeof AppForecastIndexRoute
   '/funds/': typeof AppFundsIndexRoute
   '/projects/': typeof AppProjectsIndexRoute
+  '/reports/': typeof AppReportsIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/vendors/': typeof AppVendorsIndexRoute
   '/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
@@ -368,6 +395,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
   '/projects/$id/edit': typeof AppProjectsIdEditRoute
   '/projects/$id/funds': typeof AppProjectsIdFundsRouteWithChildren
+  '/projects/$id/reports': typeof AppProjectsIdReportsRouteWithChildren
   '/projects/$id/tasks': typeof AppProjectsIdTasksRouteWithChildren
   '/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
@@ -387,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id/benefits/': typeof AppProjectsIdBenefitsIndexRoute
   '/projects/$id/communication/': typeof AppProjectsIdCommunicationIndexRoute
   '/projects/$id/funds/': typeof AppProjectsIdFundsIndexRoute
+  '/projects/$id/reports/': typeof AppProjectsIdReportsIndexRoute
   '/projects/$id/tasks/': typeof AppProjectsIdTasksIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
   '/projects/$id/benefits/$benefitId/edit': typeof AppProjectsIdBenefitsBenefitIdEditRoute
@@ -407,6 +436,7 @@ export interface FileRoutesByTo {
   '/forecast': typeof AppForecastIndexRoute
   '/funds': typeof AppFundsIndexRoute
   '/projects': typeof AppProjectsIndexRoute
+  '/reports': typeof AppReportsIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/vendors': typeof AppVendorsIndexRoute
   '/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
@@ -428,6 +458,7 @@ export interface FileRoutesByTo {
   '/projects/$id/benefits': typeof AppProjectsIdBenefitsIndexRoute
   '/projects/$id/communication': typeof AppProjectsIdCommunicationIndexRoute
   '/projects/$id/funds': typeof AppProjectsIdFundsIndexRoute
+  '/projects/$id/reports': typeof AppProjectsIdReportsIndexRoute
   '/projects/$id/tasks': typeof AppProjectsIdTasksIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
   '/projects/$id/benefits/$benefitId/edit': typeof AppProjectsIdBenefitsBenefitIdEditRoute
@@ -442,6 +473,7 @@ export interface FileRoutesById {
   '/_app/forecast': typeof AppForecastRouteWithChildren
   '/_app/funds': typeof AppFundsRouteWithChildren
   '/_app/projects': typeof AppProjectsRouteWithChildren
+  '/_app/reports': typeof AppReportsRouteWithChildren
   '/_app/services': typeof AppServicesRoute
   '/_app/settings': typeof AppSettingsRoute
   '/_app/users': typeof AppUsersRouteWithChildren
@@ -457,6 +489,7 @@ export interface FileRoutesById {
   '/_app/forecast/': typeof AppForecastIndexRoute
   '/_app/funds/': typeof AppFundsIndexRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
+  '/_app/reports/': typeof AppReportsIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_app/vendors/': typeof AppVendorsIndexRoute
   '/_app/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
@@ -464,6 +497,7 @@ export interface FileRoutesById {
   '/_app/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
   '/_app/projects/$id/edit': typeof AppProjectsIdEditRoute
   '/_app/projects/$id/funds': typeof AppProjectsIdFundsRouteWithChildren
+  '/_app/projects/$id/reports': typeof AppProjectsIdReportsRouteWithChildren
   '/_app/projects/$id/tasks': typeof AppProjectsIdTasksRouteWithChildren
   '/_app/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/_app/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
@@ -483,6 +517,7 @@ export interface FileRoutesById {
   '/_app/projects/$id/benefits/': typeof AppProjectsIdBenefitsIndexRoute
   '/_app/projects/$id/communication/': typeof AppProjectsIdCommunicationIndexRoute
   '/_app/projects/$id/funds/': typeof AppProjectsIdFundsIndexRoute
+  '/_app/projects/$id/reports/': typeof AppProjectsIdReportsIndexRoute
   '/_app/projects/$id/tasks/': typeof AppProjectsIdTasksIndexRoute
   '/_app/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
   '/_app/projects/$id/benefits/$benefitId/edit': typeof AppProjectsIdBenefitsBenefitIdEditRoute
@@ -498,6 +533,7 @@ export interface FileRouteTypes {
     | '/forecast'
     | '/funds'
     | '/projects'
+    | '/reports'
     | '/services'
     | '/settings'
     | '/users'
@@ -512,6 +548,7 @@ export interface FileRouteTypes {
     | '/forecast/'
     | '/funds/'
     | '/projects/'
+    | '/reports/'
     | '/users/'
     | '/vendors/'
     | '/forecast/$sourceId/edit'
@@ -519,6 +556,7 @@ export interface FileRouteTypes {
     | '/projects/$id/benefits'
     | '/projects/$id/edit'
     | '/projects/$id/funds'
+    | '/projects/$id/reports'
     | '/projects/$id/tasks'
     | '/users/$userId/edit'
     | '/vendors/$vendorId/edit'
@@ -538,6 +576,7 @@ export interface FileRouteTypes {
     | '/projects/$id/benefits/'
     | '/projects/$id/communication/'
     | '/projects/$id/funds/'
+    | '/projects/$id/reports/'
     | '/projects/$id/tasks/'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
     | '/projects/$id/benefits/$benefitId/edit'
@@ -558,6 +597,7 @@ export interface FileRouteTypes {
     | '/forecast'
     | '/funds'
     | '/projects'
+    | '/reports'
     | '/users'
     | '/vendors'
     | '/forecast/$sourceId/edit'
@@ -579,6 +619,7 @@ export interface FileRouteTypes {
     | '/projects/$id/benefits'
     | '/projects/$id/communication'
     | '/projects/$id/funds'
+    | '/projects/$id/reports'
     | '/projects/$id/tasks'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
     | '/projects/$id/benefits/$benefitId/edit'
@@ -592,6 +633,7 @@ export interface FileRouteTypes {
     | '/_app/forecast'
     | '/_app/funds'
     | '/_app/projects'
+    | '/_app/reports'
     | '/_app/services'
     | '/_app/settings'
     | '/_app/users'
@@ -607,6 +649,7 @@ export interface FileRouteTypes {
     | '/_app/forecast/'
     | '/_app/funds/'
     | '/_app/projects/'
+    | '/_app/reports/'
     | '/_app/users/'
     | '/_app/vendors/'
     | '/_app/forecast/$sourceId/edit'
@@ -614,6 +657,7 @@ export interface FileRouteTypes {
     | '/_app/projects/$id/benefits'
     | '/_app/projects/$id/edit'
     | '/_app/projects/$id/funds'
+    | '/_app/projects/$id/reports'
     | '/_app/projects/$id/tasks'
     | '/_app/users/$userId/edit'
     | '/_app/vendors/$vendorId/edit'
@@ -633,6 +677,7 @@ export interface FileRouteTypes {
     | '/_app/projects/$id/benefits/'
     | '/_app/projects/$id/communication/'
     | '/_app/projects/$id/funds/'
+    | '/_app/projects/$id/reports/'
     | '/_app/projects/$id/tasks/'
     | '/_app/projects/$id/beneficiaries/$beneficiaryId/edit'
     | '/_app/projects/$id/benefits/$benefitId/edit'
@@ -690,6 +735,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppServicesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/reports': {
+      id: '/_app/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof AppReportsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/projects': {
       id: '/_app/projects'
       path: '/projects'
@@ -724,6 +776,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/'
       preLoaderRoute: typeof AppUsersIndexRouteImport
       parentRoute: typeof AppUsersRoute
+    }
+    '/_app/reports/': {
+      id: '/_app/reports/'
+      path: '/'
+      fullPath: '/reports/'
+      preLoaderRoute: typeof AppReportsIndexRouteImport
+      parentRoute: typeof AppReportsRoute
     }
     '/_app/projects/': {
       id: '/_app/projects/'
@@ -830,6 +889,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdTasksRouteImport
       parentRoute: typeof AppProjectsIdRoute
     }
+    '/_app/projects/$id/reports': {
+      id: '/_app/projects/$id/reports'
+      path: '/reports'
+      fullPath: '/projects/$id/reports'
+      preLoaderRoute: typeof AppProjectsIdReportsRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
     '/_app/projects/$id/funds': {
       id: '/_app/projects/$id/funds'
       path: '/funds'
@@ -871,6 +937,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/$id/tasks/'
       preLoaderRoute: typeof AppProjectsIdTasksIndexRouteImport
       parentRoute: typeof AppProjectsIdTasksRoute
+    }
+    '/_app/projects/$id/reports/': {
+      id: '/_app/projects/$id/reports/'
+      path: '/'
+      fullPath: '/projects/$id/reports/'
+      preLoaderRoute: typeof AppProjectsIdReportsIndexRouteImport
+      parentRoute: typeof AppProjectsIdReportsRoute
     }
     '/_app/projects/$id/funds/': {
       id: '/_app/projects/$id/funds/'
@@ -1109,6 +1182,17 @@ const AppProjectsIdFundsRouteChildren: AppProjectsIdFundsRouteChildren = {
 const AppProjectsIdFundsRouteWithChildren =
   AppProjectsIdFundsRoute._addFileChildren(AppProjectsIdFundsRouteChildren)
 
+interface AppProjectsIdReportsRouteChildren {
+  AppProjectsIdReportsIndexRoute: typeof AppProjectsIdReportsIndexRoute
+}
+
+const AppProjectsIdReportsRouteChildren: AppProjectsIdReportsRouteChildren = {
+  AppProjectsIdReportsIndexRoute: AppProjectsIdReportsIndexRoute,
+}
+
+const AppProjectsIdReportsRouteWithChildren =
+  AppProjectsIdReportsRoute._addFileChildren(AppProjectsIdReportsRouteChildren)
+
 interface AppProjectsIdTasksTaskIdRouteChildren {
   AppProjectsIdTasksTaskIdEditRoute: typeof AppProjectsIdTasksTaskIdEditRoute
   AppProjectsIdTasksTaskIdIndexRoute: typeof AppProjectsIdTasksTaskIdIndexRoute
@@ -1145,6 +1229,7 @@ interface AppProjectsIdRouteChildren {
   AppProjectsIdBenefitsRoute: typeof AppProjectsIdBenefitsRouteWithChildren
   AppProjectsIdEditRoute: typeof AppProjectsIdEditRoute
   AppProjectsIdFundsRoute: typeof AppProjectsIdFundsRouteWithChildren
+  AppProjectsIdReportsRoute: typeof AppProjectsIdReportsRouteWithChildren
   AppProjectsIdTasksRoute: typeof AppProjectsIdTasksRouteWithChildren
   AppProjectsIdIndexRoute: typeof AppProjectsIdIndexRoute
   AppProjectsIdCommunicationCampaignIdRoute: typeof AppProjectsIdCommunicationCampaignIdRoute
@@ -1157,6 +1242,7 @@ const AppProjectsIdRouteChildren: AppProjectsIdRouteChildren = {
   AppProjectsIdBenefitsRoute: AppProjectsIdBenefitsRouteWithChildren,
   AppProjectsIdEditRoute: AppProjectsIdEditRoute,
   AppProjectsIdFundsRoute: AppProjectsIdFundsRouteWithChildren,
+  AppProjectsIdReportsRoute: AppProjectsIdReportsRouteWithChildren,
   AppProjectsIdTasksRoute: AppProjectsIdTasksRouteWithChildren,
   AppProjectsIdIndexRoute: AppProjectsIdIndexRoute,
   AppProjectsIdCommunicationCampaignIdRoute:
@@ -1183,6 +1269,18 @@ const AppProjectsRouteChildren: AppProjectsRouteChildren = {
 
 const AppProjectsRouteWithChildren = AppProjectsRoute._addFileChildren(
   AppProjectsRouteChildren,
+)
+
+interface AppReportsRouteChildren {
+  AppReportsIndexRoute: typeof AppReportsIndexRoute
+}
+
+const AppReportsRouteChildren: AppReportsRouteChildren = {
+  AppReportsIndexRoute: AppReportsIndexRoute,
+}
+
+const AppReportsRouteWithChildren = AppReportsRoute._addFileChildren(
+  AppReportsRouteChildren,
 )
 
 interface AppUsersRouteChildren {
@@ -1234,6 +1332,7 @@ interface AppRouteChildren {
   AppForecastRoute: typeof AppForecastRouteWithChildren
   AppFundsRoute: typeof AppFundsRouteWithChildren
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
+  AppReportsRoute: typeof AppReportsRouteWithChildren
   AppServicesRoute: typeof AppServicesRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppUsersRoute: typeof AppUsersRouteWithChildren
@@ -1245,6 +1344,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppForecastRoute: AppForecastRouteWithChildren,
   AppFundsRoute: AppFundsRouteWithChildren,
   AppProjectsRoute: AppProjectsRouteWithChildren,
+  AppReportsRoute: AppReportsRouteWithChildren,
   AppServicesRoute: AppServicesRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppUsersRoute: AppUsersRouteWithChildren,

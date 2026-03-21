@@ -1,34 +1,30 @@
 {
-  "name": "@rahataid/projects-shared",
+  "name": "@rahataid/plugin-reports",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./beneficiary": "./src/beneficiary/index.ts",
-    "./benefits": "./src/benefits/index.ts",
-    "./fund-management": "./src/fund-management/index.ts",
-    "./project": "./src/project/index.ts",
-    "./vendor": "./src/vendor/index.ts",
-    "./user": "./src/user/index.ts",
-    "./reports": "./src/reports/index.ts"
+    "./frontend": "./src/frontend/index.ts"
   },
   "scripts": {
+    "build": "tsc",
     "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc --watch",
     "typecheck": "tsc --noEmit --emitDeclarationOnly false"
   },
   "dependencies": {
     "@rahataid/plugin-sdk": "workspace:*",
     "@rahataid/sdk": "workspace:*",
-    "@rs/ui": "workspace:*",
-    "@tanstack/react-query": "catalog:tanstack",
     "lucide-react": "catalog:"
   },
   "peerDependencies": {
+    "@tanstack/react-query": ">=5.0.0",
     "react": "catalog:react19"
   },
   "devDependencies": {
     "@rs/tsconfig": "workspace:*",
+    "@tanstack/react-query": "catalog:tanstack",
     "@types/react": "catalog:react19",
     "react": "catalog:react19",
     "typescript": "catalog:"

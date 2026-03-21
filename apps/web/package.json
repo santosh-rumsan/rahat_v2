@@ -20,6 +20,7 @@
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@rahataid/plugin-dashboard": "workspace:*",
     "@rahataid/plugin-forecast": "workspace:*",
+    "@rahataid/plugin-reports": "workspace:*",
     "@rahataid/plugin-fund-management": "workspace:*",
     "@rahataid/plugin-project-aa": "workspace:*",
     "@rahataid/plugin-project-beneficiary": "workspace:*",

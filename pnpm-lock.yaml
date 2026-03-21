@@ -398,6 +398,9 @@ importers:
       '@rahataid/plugin-project-microloans':
         specifier: workspace:*
         version: link:../../projects/microloans
+      '@rahataid/plugin-reports':
+        specifier: workspace:*
+        version: link:../../plugins/reports
       '@rahataid/plugin-sdk':
         specifier: workspace:*
         version: link:../../packages/plugin-sdk
@@ -724,6 +727,34 @@ importers:
       '@rs/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      '@types/react':
+        specifier: catalog:react19
+        version: 19.2.14
+      react:
+        specifier: catalog:react19
+        version: 19.2.4
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
+  plugins/reports:
+    dependencies:
+      '@rahataid/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+      '@rahataid/sdk':
+        specifier: workspace:*
+        version: link:../../packages/sdk
+      lucide-react:
+        specifier: 'catalog:'
+        version: 0.563.0(react@19.2.4)
+    devDependencies:
+      '@rs/tsconfig':
+        specifier: workspace:*
+        version: link:../../tooling/typescript
+      '@tanstack/react-query':
+        specifier: catalog:tanstack
+        version: 5.90.21(react@19.2.4)
       '@types/react':
         specifier: catalog:react19
         version: 19.2.14
