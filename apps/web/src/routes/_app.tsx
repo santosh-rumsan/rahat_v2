@@ -6,6 +6,7 @@ import {
   Wallet,
   Building2,
   Users,
+  CloudSun,
 } from 'lucide-react'
 import { AppShell, IconSidebar } from '../components/layout'
 
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
   { icon: <Wallet size={18} />, to: '/funds' },
   { icon: <Building2 size={18} />, to: '/vendors' },
   { icon: <Users size={18} />, to: '/users' },
+  { icon: <CloudSun size={18} />, to: '/forecast' },
 ]
 
 function AppLayout() {

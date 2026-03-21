@@ -17,16 +17,19 @@ import { Route as AppSettingsRouteImport } from './routes/_app.settings'
 import { Route as AppServicesRouteImport } from './routes/_app.services'
 import { Route as AppProjectsRouteImport } from './routes/_app.projects'
 import { Route as AppFundsRouteImport } from './routes/_app.funds'
+import { Route as AppForecastRouteImport } from './routes/_app.forecast'
 import { Route as AppVendorsIndexRouteImport } from './routes/_app.vendors.index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app.users.index'
 import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.index'
 import { Route as AppFundsIndexRouteImport } from './routes/_app.funds.index'
+import { Route as AppForecastIndexRouteImport } from './routes/_app.forecast.index'
 import { Route as AppVendorsAddRouteImport } from './routes/_app.vendors.add'
 import { Route as AppVendorsVendorIdRouteImport } from './routes/_app.vendors.$vendorId'
 import { Route as AppUsersAddRouteImport } from './routes/_app.users.add'
 import { Route as AppProjectsNewRouteImport } from './routes/_app.projects.new'
 import { Route as AppProjectsIdRouteImport } from './routes/_app.projects.$id'
 import { Route as AppFundsAllocateRouteImport } from './routes/_app.funds.allocate'
+import { Route as AppForecastAddRouteImport } from './routes/_app.forecast.add'
 import { Route as AppVendorsVendorIdIndexRouteImport } from './routes/_app.vendors.$vendorId.index'
 import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$id.index'
 import { Route as AppVendorsVendorIdEditRouteImport } from './routes/_app.vendors.$vendorId.edit'
@@ -36,6 +39,7 @@ import { Route as AppProjectsIdFundsRouteImport } from './routes/_app.projects.$
 import { Route as AppProjectsIdEditRouteImport } from './routes/_app.projects.$id.edit'
 import { Route as AppProjectsIdBenefitsRouteImport } from './routes/_app.projects.$id.benefits'
 import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
+import { Route as AppForecastSourceIdEditRouteImport } from './routes/_app.forecast.$sourceId.edit'
 import { Route as AppProjectsIdTasksIndexRouteImport } from './routes/_app.projects.$id.tasks.index'
 import { Route as AppProjectsIdFundsIndexRouteImport } from './routes/_app.projects.$id.funds.index'
 import { Route as AppProjectsIdCommunicationIndexRouteImport } from './routes/_app.projects.$id.communication.index'
@@ -50,6 +54,7 @@ import { Route as AppProjectsIdBenefitsNewRouteImport } from './routes/_app.proj
 import { Route as AppProjectsIdBenefitsAddRouteImport } from './routes/_app.projects.$id.benefits.add'
 import { Route as AppProjectsIdBeneficiariesGroupsRouteImport } from './routes/_app.projects.$id.beneficiaries.groups'
 import { Route as AppProjectsIdBeneficiariesAddRouteImport } from './routes/_app.projects.$id.beneficiaries.add'
+import { Route as AppForecastSourceIdGlofasItemIndexRouteImport } from './routes/_app.forecast.$sourceId.glofas.$itemIndex'
 import { Route as AppProjectsIdTasksTaskIdIndexRouteImport } from './routes/_app.projects.$id.tasks.$taskId.index'
 import { Route as AppProjectsIdBenefitsBenefitIdIndexRouteImport } from './routes/_app.projects.$id.benefits.$benefitId.index'
 import { Route as AppProjectsIdTasksTaskIdEditRouteImport } from './routes/_app.projects.$id.tasks.$taskId.edit'
@@ -96,6 +101,11 @@ const AppFundsRoute = AppFundsRouteImport.update({
   path: '/funds',
   getParentRoute: () => AppRoute,
 } as any)
+const AppForecastRoute = AppForecastRouteImport.update({
+  id: '/forecast',
+  path: '/forecast',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppVendorsIndexRoute = AppVendorsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -115,6 +125,11 @@ const AppFundsIndexRoute = AppFundsIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppFundsRoute,
+} as any)
+const AppForecastIndexRoute = AppForecastIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppForecastRoute,
 } as any)
 const AppVendorsAddRoute = AppVendorsAddRouteImport.update({
   id: '/add',
@@ -145,6 +160,11 @@ const AppFundsAllocateRoute = AppFundsAllocateRouteImport.update({
   id: '/allocate',
   path: '/allocate',
   getParentRoute: () => AppFundsRoute,
+} as any)
+const AppForecastAddRoute = AppForecastAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => AppForecastRoute,
 } as any)
 const AppVendorsVendorIdIndexRoute = AppVendorsVendorIdIndexRouteImport.update({
   id: '/',
@@ -192,6 +212,11 @@ const AppProjectsIdBeneficiariesRoute =
     path: '/beneficiaries',
     getParentRoute: () => AppProjectsIdRoute,
   } as any)
+const AppForecastSourceIdEditRoute = AppForecastSourceIdEditRouteImport.update({
+  id: '/$sourceId/edit',
+  path: '/$sourceId/edit',
+  getParentRoute: () => AppForecastRoute,
+} as any)
 const AppProjectsIdTasksIndexRoute = AppProjectsIdTasksIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -274,6 +299,12 @@ const AppProjectsIdBeneficiariesAddRoute =
     path: '/add',
     getParentRoute: () => AppProjectsIdBeneficiariesRoute,
   } as any)
+const AppForecastSourceIdGlofasItemIndexRoute =
+  AppForecastSourceIdGlofasItemIndexRouteImport.update({
+    id: '/$sourceId/glofas/$itemIndex',
+    path: '/$sourceId/glofas/$itemIndex',
+    getParentRoute: () => AppForecastRoute,
+  } as any)
 const AppProjectsIdTasksTaskIdIndexRoute =
   AppProjectsIdTasksTaskIdIndexRouteImport.update({
     id: '/',
@@ -313,22 +344,26 @@ const AppProjectsIdBenefitsBenefitIdBeneficiariesAddRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/forecast': typeof AppForecastRouteWithChildren
   '/funds': typeof AppFundsRouteWithChildren
   '/projects': typeof AppProjectsRouteWithChildren
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRouteWithChildren
   '/vendors': typeof AppVendorsRouteWithChildren
+  '/forecast/add': typeof AppForecastAddRoute
   '/funds/allocate': typeof AppFundsAllocateRoute
   '/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/projects/new': typeof AppProjectsNewRoute
   '/users/add': typeof AppUsersAddRoute
   '/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
   '/vendors/add': typeof AppVendorsAddRoute
+  '/forecast/': typeof AppForecastIndexRoute
   '/funds/': typeof AppFundsIndexRoute
   '/projects/': typeof AppProjectsIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/vendors/': typeof AppVendorsIndexRoute
+  '/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
   '/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRouteWithChildren
   '/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
   '/projects/$id/edit': typeof AppProjectsIdEditRoute
@@ -338,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/projects/$id/': typeof AppProjectsIdIndexRoute
   '/vendors/$vendorId/': typeof AppVendorsVendorIdIndexRoute
+  '/forecast/$sourceId/glofas/$itemIndex': typeof AppForecastSourceIdGlofasItemIndexRoute
   '/projects/$id/beneficiaries/add': typeof AppProjectsIdBeneficiariesAddRoute
   '/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/projects/$id/benefits/add': typeof AppProjectsIdBenefitsAddRoute
@@ -363,19 +399,23 @@ export interface FileRoutesByTo {
   '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
+  '/forecast/add': typeof AppForecastAddRoute
   '/funds/allocate': typeof AppFundsAllocateRoute
   '/projects/new': typeof AppProjectsNewRoute
   '/users/add': typeof AppUsersAddRoute
   '/vendors/add': typeof AppVendorsAddRoute
+  '/forecast': typeof AppForecastIndexRoute
   '/funds': typeof AppFundsIndexRoute
   '/projects': typeof AppProjectsIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/vendors': typeof AppVendorsIndexRoute
+  '/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
   '/projects/$id/edit': typeof AppProjectsIdEditRoute
   '/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/projects/$id': typeof AppProjectsIdIndexRoute
   '/vendors/$vendorId': typeof AppVendorsVendorIdIndexRoute
+  '/forecast/$sourceId/glofas/$itemIndex': typeof AppForecastSourceIdGlofasItemIndexRoute
   '/projects/$id/beneficiaries/add': typeof AppProjectsIdBeneficiariesAddRoute
   '/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/projects/$id/benefits/add': typeof AppProjectsIdBenefitsAddRoute
@@ -399,6 +439,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/_app/forecast': typeof AppForecastRouteWithChildren
   '/_app/funds': typeof AppFundsRouteWithChildren
   '/_app/projects': typeof AppProjectsRouteWithChildren
   '/_app/services': typeof AppServicesRoute
@@ -406,16 +447,19 @@ export interface FileRoutesById {
   '/_app/users': typeof AppUsersRouteWithChildren
   '/_app/vendors': typeof AppVendorsRouteWithChildren
   '/_app/': typeof AppIndexRoute
+  '/_app/forecast/add': typeof AppForecastAddRoute
   '/_app/funds/allocate': typeof AppFundsAllocateRoute
   '/_app/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/_app/projects/new': typeof AppProjectsNewRoute
   '/_app/users/add': typeof AppUsersAddRoute
   '/_app/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
   '/_app/vendors/add': typeof AppVendorsAddRoute
+  '/_app/forecast/': typeof AppForecastIndexRoute
   '/_app/funds/': typeof AppFundsIndexRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_app/vendors/': typeof AppVendorsIndexRoute
+  '/_app/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
   '/_app/projects/$id/beneficiaries': typeof AppProjectsIdBeneficiariesRouteWithChildren
   '/_app/projects/$id/benefits': typeof AppProjectsIdBenefitsRouteWithChildren
   '/_app/projects/$id/edit': typeof AppProjectsIdEditRoute
@@ -425,6 +469,7 @@ export interface FileRoutesById {
   '/_app/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/_app/projects/$id/': typeof AppProjectsIdIndexRoute
   '/_app/vendors/$vendorId/': typeof AppVendorsVendorIdIndexRoute
+  '/_app/forecast/$sourceId/glofas/$itemIndex': typeof AppForecastSourceIdGlofasItemIndexRoute
   '/_app/projects/$id/beneficiaries/add': typeof AppProjectsIdBeneficiariesAddRoute
   '/_app/projects/$id/beneficiaries/groups': typeof AppProjectsIdBeneficiariesGroupsRoute
   '/_app/projects/$id/benefits/add': typeof AppProjectsIdBenefitsAddRoute
@@ -450,22 +495,26 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forecast'
     | '/funds'
     | '/projects'
     | '/services'
     | '/settings'
     | '/users'
     | '/vendors'
+    | '/forecast/add'
     | '/funds/allocate'
     | '/projects/$id'
     | '/projects/new'
     | '/users/add'
     | '/vendors/$vendorId'
     | '/vendors/add'
+    | '/forecast/'
     | '/funds/'
     | '/projects/'
     | '/users/'
     | '/vendors/'
+    | '/forecast/$sourceId/edit'
     | '/projects/$id/beneficiaries'
     | '/projects/$id/benefits'
     | '/projects/$id/edit'
@@ -475,6 +524,7 @@ export interface FileRouteTypes {
     | '/vendors/$vendorId/edit'
     | '/projects/$id/'
     | '/vendors/$vendorId/'
+    | '/forecast/$sourceId/glofas/$itemIndex'
     | '/projects/$id/beneficiaries/add'
     | '/projects/$id/beneficiaries/groups'
     | '/projects/$id/benefits/add'
@@ -500,19 +550,23 @@ export interface FileRouteTypes {
     | '/services'
     | '/settings'
     | '/'
+    | '/forecast/add'
     | '/funds/allocate'
     | '/projects/new'
     | '/users/add'
     | '/vendors/add'
+    | '/forecast'
     | '/funds'
     | '/projects'
     | '/users'
     | '/vendors'
+    | '/forecast/$sourceId/edit'
     | '/projects/$id/edit'
     | '/users/$userId/edit'
     | '/vendors/$vendorId/edit'
     | '/projects/$id'
     | '/vendors/$vendorId'
+    | '/forecast/$sourceId/glofas/$itemIndex'
     | '/projects/$id/beneficiaries/add'
     | '/projects/$id/beneficiaries/groups'
     | '/projects/$id/benefits/add'
@@ -535,6 +589,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_app'
+    | '/_app/forecast'
     | '/_app/funds'
     | '/_app/projects'
     | '/_app/services'
@@ -542,16 +597,19 @@ export interface FileRouteTypes {
     | '/_app/users'
     | '/_app/vendors'
     | '/_app/'
+    | '/_app/forecast/add'
     | '/_app/funds/allocate'
     | '/_app/projects/$id'
     | '/_app/projects/new'
     | '/_app/users/add'
     | '/_app/vendors/$vendorId'
     | '/_app/vendors/add'
+    | '/_app/forecast/'
     | '/_app/funds/'
     | '/_app/projects/'
     | '/_app/users/'
     | '/_app/vendors/'
+    | '/_app/forecast/$sourceId/edit'
     | '/_app/projects/$id/beneficiaries'
     | '/_app/projects/$id/benefits'
     | '/_app/projects/$id/edit'
@@ -561,6 +619,7 @@ export interface FileRouteTypes {
     | '/_app/vendors/$vendorId/edit'
     | '/_app/projects/$id/'
     | '/_app/vendors/$vendorId/'
+    | '/_app/forecast/$sourceId/glofas/$itemIndex'
     | '/_app/projects/$id/beneficiaries/add'
     | '/_app/projects/$id/beneficiaries/groups'
     | '/_app/projects/$id/benefits/add'
@@ -645,6 +704,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFundsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/forecast': {
+      id: '/_app/forecast'
+      path: '/forecast'
+      fullPath: '/forecast'
+      preLoaderRoute: typeof AppForecastRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/vendors/': {
       id: '/_app/vendors/'
       path: '/'
@@ -672,6 +738,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/funds/'
       preLoaderRoute: typeof AppFundsIndexRouteImport
       parentRoute: typeof AppFundsRoute
+    }
+    '/_app/forecast/': {
+      id: '/_app/forecast/'
+      path: '/'
+      fullPath: '/forecast/'
+      preLoaderRoute: typeof AppForecastIndexRouteImport
+      parentRoute: typeof AppForecastRoute
     }
     '/_app/vendors/add': {
       id: '/_app/vendors/add'
@@ -714,6 +787,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/funds/allocate'
       preLoaderRoute: typeof AppFundsAllocateRouteImport
       parentRoute: typeof AppFundsRoute
+    }
+    '/_app/forecast/add': {
+      id: '/_app/forecast/add'
+      path: '/add'
+      fullPath: '/forecast/add'
+      preLoaderRoute: typeof AppForecastAddRouteImport
+      parentRoute: typeof AppForecastRoute
     }
     '/_app/vendors/$vendorId/': {
       id: '/_app/vendors/$vendorId/'
@@ -777,6 +857,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/$id/beneficiaries'
       preLoaderRoute: typeof AppProjectsIdBeneficiariesRouteImport
       parentRoute: typeof AppProjectsIdRoute
+    }
+    '/_app/forecast/$sourceId/edit': {
+      id: '/_app/forecast/$sourceId/edit'
+      path: '/$sourceId/edit'
+      fullPath: '/forecast/$sourceId/edit'
+      preLoaderRoute: typeof AppForecastSourceIdEditRouteImport
+      parentRoute: typeof AppForecastRoute
     }
     '/_app/projects/$id/tasks/': {
       id: '/_app/projects/$id/tasks/'
@@ -876,6 +963,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppProjectsIdBeneficiariesAddRouteImport
       parentRoute: typeof AppProjectsIdBeneficiariesRoute
     }
+    '/_app/forecast/$sourceId/glofas/$itemIndex': {
+      id: '/_app/forecast/$sourceId/glofas/$itemIndex'
+      path: '/$sourceId/glofas/$itemIndex'
+      fullPath: '/forecast/$sourceId/glofas/$itemIndex'
+      preLoaderRoute: typeof AppForecastSourceIdGlofasItemIndexRouteImport
+      parentRoute: typeof AppForecastRoute
+    }
     '/_app/projects/$id/tasks/$taskId/': {
       id: '/_app/projects/$id/tasks/$taskId/'
       path: '/'
@@ -920,6 +1014,25 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AppForecastRouteChildren {
+  AppForecastAddRoute: typeof AppForecastAddRoute
+  AppForecastIndexRoute: typeof AppForecastIndexRoute
+  AppForecastSourceIdEditRoute: typeof AppForecastSourceIdEditRoute
+  AppForecastSourceIdGlofasItemIndexRoute: typeof AppForecastSourceIdGlofasItemIndexRoute
+}
+
+const AppForecastRouteChildren: AppForecastRouteChildren = {
+  AppForecastAddRoute: AppForecastAddRoute,
+  AppForecastIndexRoute: AppForecastIndexRoute,
+  AppForecastSourceIdEditRoute: AppForecastSourceIdEditRoute,
+  AppForecastSourceIdGlofasItemIndexRoute:
+    AppForecastSourceIdGlofasItemIndexRoute,
+}
+
+const AppForecastRouteWithChildren = AppForecastRoute._addFileChildren(
+  AppForecastRouteChildren,
+)
 
 interface AppFundsRouteChildren {
   AppFundsAllocateRoute: typeof AppFundsAllocateRoute
@@ -1118,6 +1231,7 @@ const AppVendorsRouteWithChildren = AppVendorsRoute._addFileChildren(
 )
 
 interface AppRouteChildren {
+  AppForecastRoute: typeof AppForecastRouteWithChildren
   AppFundsRoute: typeof AppFundsRouteWithChildren
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppServicesRoute: typeof AppServicesRoute
@@ -1128,6 +1242,7 @@ interface AppRouteChildren {
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppForecastRoute: AppForecastRouteWithChildren,
   AppFundsRoute: AppFundsRouteWithChildren,
   AppProjectsRoute: AppProjectsRouteWithChildren,
   AppServicesRoute: AppServicesRoute,

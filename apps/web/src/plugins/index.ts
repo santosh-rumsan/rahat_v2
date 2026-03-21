@@ -6,6 +6,7 @@ import { MicroloansFrontendPlugin } from '@rahataid/plugin-project-microloans/fr
 import { DashboardFrontendPlugin } from '@rahataid/plugin-dashboard/frontend'
 import { VendorsFrontendPlugin } from '@rahataid/plugin-vendors/frontend'
 import { FundManagementFrontendPlugin } from '@rahataid/plugin-fund-management/frontend'
+import { ForecastFrontendPlugin } from '@rahataid/plugin-forecast/frontend'
 import { registerPlugin } from './registry'
 import { registerAppPlugin } from './app-registry'
 
@@ -20,6 +21,7 @@ registerPlugin(MicroloansFrontendPlugin)
 registerAppPlugin(DashboardFrontendPlugin)
 registerAppPlugin(VendorsFrontendPlugin)
 registerAppPlugin(FundManagementFrontendPlugin)
+registerAppPlugin(ForecastFrontendPlugin)
 
 export { getRegisteredPlugins, getPlugin } from './registry'
 export { getRegisteredAppPlugins, getAppPlugin } from './app-registry'

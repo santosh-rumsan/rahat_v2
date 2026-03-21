@@ -1,0 +1,41 @@
+{
+  "name": "@rahataid/plugin-forecast",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./frontend": {
+      "types": "./dist/frontend/index.d.ts",
+      "default": "./dist/frontend/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "git clean -xdf .cache .turbo dist node_modules",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false"
+  },
+  "dependencies": {
+    "@rahataid/plugin-sdk": "workspace:*",
+    "@rahataid/sdk": "workspace:*",
+    "@rs/ui": "workspace:*",
+    "lucide-react": "catalog:"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": ">=5.0.0",
+    "@tanstack/react-router": ">=1.0.0",
+    "react": "catalog:react19"
+  },
+  "devDependencies": {
+    "@rs/tsconfig": "workspace:*",
+    "@tanstack/react-query": "catalog:tanstack",
+    "@tanstack/react-router": "catalog:tanstack",
+    "@types/react": "catalog:react19",
+    "react": "catalog:react19",
+    "typescript": "catalog:"
+  }
+}

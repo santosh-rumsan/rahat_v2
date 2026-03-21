@@ -43,3 +43,10 @@ export type {
   TransmissionLog,
   CreateTransmissionLogInput,
 } from './campaign.js'
+export type {
+  ForecastSource,
+  ForecastSourceType,
+  CreateForecastSourceInput,
+  UpdateForecastSourceInput,
+} from './forecast.js'
+export { FORECAST_SOURCE_TYPES, FORECAST_SOURCE_TYPE_LABELS } from './forecast.js'

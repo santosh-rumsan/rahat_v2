@@ -93,3 +93,12 @@ export {
   createIndexedDbProjectImportAdapter,
   createApiProjectImportAdapter,
 } from './project-import.js'
+export type {
+  ForecastSource,
+  ForecastSourceType,
+  CreateForecastSourceInput,
+  UpdateForecastSourceInput,
+} from './types/index.js'
+export { FORECAST_SOURCE_TYPES, FORECAST_SOURCE_TYPE_LABELS } from './types/index.js'
+export { createForecastSourceService, idbForecastSourceService, createApiForecastSourceService } from './forecast/index.js'
+export type { ForecastSourceService } from './forecast/index.js'

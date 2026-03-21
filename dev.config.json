@@ -5,7 +5,8 @@
     "@rahataid/plugin-dashboard",
     "@rahataid/plugin-fund-management",
     "@rahataid/plugin-vendors",
-    "@rahataid/plugin-project-cva"
+    "@rahataid/plugin-project-cva",
+    "@rahataid/plugin-forecast"
   ],
   "available": {
     "core": ["api", "web"],
