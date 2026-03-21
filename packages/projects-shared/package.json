@@ -12,7 +12,8 @@
     "./vendor": "./src/vendor/index.ts",
     "./user": "./src/user/index.ts",
     "./reports": "./src/reports/index.ts",
-    "./task-management": "./src/task-management/index.ts"
+    "./task-management": "./src/task-management/index.ts",
+    "./communication": "./src/communication/index.ts"
   },
   "scripts": {
     "clean": "git clean -xdf .cache .turbo dist node_modules",

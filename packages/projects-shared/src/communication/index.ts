@@ -1,5 +1,6 @@
 export * from './types.js'
 export * from './hooks.js'
+export * from './comm-types/index.js'
 export { CommunicationModule } from './campaign-list.js'
 export type { CommunicationModuleProps } from './campaign-list.js'
 export { CampaignFormPage } from './campaign-form.js'

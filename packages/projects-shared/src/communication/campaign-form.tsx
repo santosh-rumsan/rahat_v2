@@ -1,23 +1,20 @@
 import * as React from 'react'
-import { ArrowLeft, ArrowRight, Check, MessageSquare, Phone, MessageCircle, Users, User } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Users, User } from 'lucide-react'
 import { cn } from '@rs/ui'
 import { Button } from '@rs/ui/button'
 import { idbBeneficiaryGroupService, idbBeneficiaryService } from '@rahataid/sdk'
 import type {
-  CommunicationType,
-  SmsDetails,
-  WhatsappDetails,
-  VoiceDetails,
   BeneficiaryGroup,
   Beneficiary,
 } from '@rahataid/sdk'
 import { useProjectCampaigns } from './hooks.js'
-import { COMMUNICATION_TYPES } from './types.js'
+import { getRegisteredCommTypes, getCommTypeDefinition } from './comm-types/registry.js'
 
 export interface CampaignFormPageProps {
   projectId: string
   onSaved?: (campaignId: string) => void
   onCancel?: () => void
+  isCommTypeEnabled?: (type: string) => boolean
 }
 
 type Step = 'basics' | 'type' | 'details' | 'recipients'
@@ -36,14 +33,8 @@ function stepIndex(step: Step): number {
 interface FormState {
   name: string
   description: string
-  communicationType: CommunicationType | ''
-  smsMessage: string
-  smsSenderId: string
-  whatsappMessage: string
-  whatsappTemplateId: string
-  voiceScript: string
-  voiceAudioUrl: string
-  voiceLanguage: string
+  communicationType: string
+  commDetails: Record<string, unknown>
   beneficiaryIds: string[]
   beneficiaryGroupIds: string[]
 }
@@ -53,19 +44,13 @@ function getDefaultForm(): FormState {
     name: '',
     description: '',
     communicationType: '',
-    smsMessage: '',
-    smsSenderId: '',
-    whatsappMessage: '',
-    whatsappTemplateId: '',
-    voiceScript: '',
-    voiceAudioUrl: '',
-    voiceLanguage: '',
+    commDetails: {},
     beneficiaryIds: [],
     beneficiaryGroupIds: [],
   }
 }
 
-export function CampaignFormPage({ projectId, onSaved, onCancel }: CampaignFormPageProps) {
+export function CampaignFormPage({ projectId, onSaved, onCancel, isCommTypeEnabled }: CampaignFormPageProps) {
   const [step, setStep] = React.useState<Step>('basics')
   const [form, setForm] = React.useState<FormState>(getDefaultForm())
   const [groups, setGroups] = React.useState<BeneficiaryGroup[]>([])
@@ -87,9 +72,9 @@ export function CampaignFormPage({ projectId, onSaved, onCancel }: CampaignFormP
     if (step === 'basics') return form.name.trim().length > 0
     if (step === 'type') return form.communicationType !== ''
     if (step === 'details') {
-      if (form.communicationType === 'sms') return form.smsMessage.trim().length > 0
-      if (form.communicationType === 'whatsapp') return form.whatsappMessage.trim().length > 0
-      if (form.communicationType === 'voice') return form.voiceScript.trim().length > 0 || form.voiceAudioUrl.trim().length > 0
+      const plugin = getCommTypeDefinition(form.communicationType)
+      if (plugin?.canAdvance) return plugin.canAdvance(form.commDetails)
+      return true
     }
     return true
   }
@@ -104,20 +89,6 @@ export function CampaignFormPage({ projectId, onSaved, onCancel }: CampaignFormP
     if (idx > 0) setStep(STEPS[idx - 1]!.id)
   }
 
-  function buildDetails(): SmsDetails | WhatsappDetails | VoiceDetails {
-    if (form.communicationType === 'sms') {
-      return { message: form.smsMessage, senderId: form.smsSenderId || undefined }
-    }
-    if (form.communicationType === 'whatsapp') {
-      return { message: form.whatsappMessage, templateId: form.whatsappTemplateId || undefined }
-    }
-    return {
-      script: form.voiceScript || undefined,
-      audioUrl: form.voiceAudioUrl || undefined,
-      language: form.voiceLanguage || undefined,
-    }
-  }
-
   async function handleSave() {
     if (!form.communicationType) return
     setSaving(true)
@@ -125,8 +96,8 @@ export function CampaignFormPage({ projectId, onSaved, onCancel }: CampaignFormP
       const campaign = await createCampaign({
         name: form.name.trim(),
         description: form.description.trim(),
-        communicationType: form.communicationType,
-        details: buildDetails(),
+        communicationType: form.communicationType as any,
+        details: form.commDetails as any,
         beneficiaryIds: form.beneficiaryIds,
         beneficiaryGroupIds: form.beneficiaryGroupIds,
       })
@@ -217,7 +188,7 @@ export function CampaignFormPage({ projectId, onSaved, onCancel }: CampaignFormP
               <BasicsStep form={form} update={update} />
             )}
             {step === 'type' && (
-              <TypeStep form={form} update={update} />
+              <TypeStep form={form} update={update} isCommTypeEnabled={isCommTypeEnabled} />
             )}
             {step === 'details' && form.communicationType && (
               <DetailsStep form={form} update={update} />
@@ -308,12 +279,8 @@ function BasicsStep({ form, update }: { form: FormState; update: (p: Partial<For
   )
 }
 
-function TypeStep({ form, update }: { form: FormState; update: (p: Partial<FormState>) => void }) {
-  const icons: Record<string, React.ReactNode> = {
-    sms: <MessageSquare className="size-6" />,
-    whatsapp: <MessageCircle className="size-6" />,
-    voice: <Phone className="size-6" />,
-  }
+function TypeStep({ form, update, isCommTypeEnabled }: { form: FormState; update: (p: Partial<FormState>) => void; isCommTypeEnabled?: (type: string) => boolean }) {
+  const commTypes = getRegisteredCommTypes().filter((ct) => isCommTypeEnabled ? isCommTypeEnabled(ct.type) : true)
 
   return (
     <div className="space-y-6">
@@ -322,159 +289,67 @@ function TypeStep({ form, update }: { form: FormState; update: (p: Partial<FormS
         <p className="text-sm text-slate-500 mt-1">Choose how you want to reach beneficiaries.</p>
       </div>
       <div className="grid grid-cols-1 gap-3">
-        {COMMUNICATION_TYPES.map((ct) => (
-          <button
-            key={ct.value}
-            type="button"
-            onClick={() => update({ communicationType: ct.value })}
-            className={cn(
-              'flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all',
-              form.communicationType === ct.value
-                ? 'border-orange-400 bg-orange-50'
-                : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
-            )}
-          >
-            <div className={cn(
-              'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
-              form.communicationType === ct.value ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-500',
-            )}>
-              {icons[ct.value]}
-            </div>
-            <div>
-              <p className={cn('font-semibold', form.communicationType === ct.value ? 'text-orange-700' : 'text-slate-900')}>
-                {ct.label}
-              </p>
-              <p className="text-sm text-slate-500">{ct.description}</p>
-            </div>
-            {form.communicationType === ct.value && (
-              <div className="ml-auto w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
-                <Check className="size-3 text-white" />
+        {commTypes.map((ct) => {
+          const Icon = ct.IconComponent
+          const selected = form.communicationType === ct.type
+          return (
+            <button
+              key={ct.type}
+              type="button"
+              onClick={() => update({ communicationType: ct.type, commDetails: {} })}
+              className={cn(
+                'flex items-center gap-4 p-4 rounded-2xl border-2 text-left transition-all',
+                selected
+                  ? 'border-orange-400 bg-orange-50'
+                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
+              )}
+            >
+              <div className={cn(
+                'w-12 h-12 rounded-xl flex items-center justify-center shrink-0',
+                selected ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-500',
+              )}>
+                {Icon && <Icon className="size-6" />}
               </div>
-            )}
-          </button>
-        ))}
+              <div>
+                <p className={cn('font-semibold', selected ? 'text-orange-700' : 'text-slate-900')}>
+                  {ct.label}
+                </p>
+                <p className="text-sm text-slate-500">{ct.description}</p>
+              </div>
+              {selected && (
+                <div className="ml-auto w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center shrink-0">
+                  <Check className="size-3 text-white" />
+                </div>
+              )}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
 }
 
 function DetailsStep({ form, update }: { form: FormState; update: (p: Partial<FormState>) => void }) {
-  if (form.communicationType === 'sms') {
+  const plugin = getCommTypeDefinition(form.communicationType)
+
+  if (!plugin?.DetailsComponent) {
     return (
       <div className="space-y-6">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">SMS details</h2>
-          <p className="text-sm text-slate-500 mt-1">Write the SMS message to send to beneficiaries.</p>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1.5">
-              Message <span className="text-rose-500">*</span>
-            </label>
-            <textarea
-              placeholder="Enter the SMS message…"
-              value={form.smsMessage}
-              onChange={(e) => update({ smsMessage: e.currentTarget.value })}
-              rows={5}
-              className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-              autoFocus
-            />
-            <p className="text-xs text-slate-400 mt-1">{form.smsMessage.length} characters</p>
-          </div>
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1.5">Sender ID</label>
-            <input
-              type="text"
-              placeholder="e.g. RAHAT or leave blank for default"
-              value={form.smsSenderId}
-              onChange={(e) => update({ smsSenderId: e.currentTarget.value })}
-              className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-            />
-          </div>
+          <h2 className="text-lg font-semibold text-slate-900">Details</h2>
+          <p className="text-sm text-slate-500 mt-1">No configuration needed for this communication type.</p>
         </div>
       </div>
     )
   }
 
-  if (form.communicationType === 'whatsapp') {
-    return (
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-lg font-semibold text-slate-900">WhatsApp details</h2>
-          <p className="text-sm text-slate-500 mt-1">Write the WhatsApp message to send to beneficiaries.</p>
-        </div>
-        <div className="space-y-4">
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1.5">
-              Message <span className="text-rose-500">*</span>
-            </label>
-            <textarea
-              placeholder="Enter the WhatsApp message…"
-              value={form.whatsappMessage}
-              onChange={(e) => update({ whatsappMessage: e.currentTarget.value })}
-              rows={5}
-              className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-              autoFocus
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-1.5">Template ID</label>
-            <input
-              type="text"
-              placeholder="WhatsApp template ID (optional)"
-              value={form.whatsappTemplateId}
-              onChange={(e) => update({ whatsappTemplateId: e.currentTarget.value })}
-              className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-            />
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const { DetailsComponent } = plugin
 
-  // voice
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold text-slate-900">Voice call details</h2>
-        <p className="text-sm text-slate-500 mt-1">Provide a script or audio URL for the voice message.</p>
-      </div>
-      <div className="space-y-4">
-        <div>
-          <label className="text-sm font-medium text-slate-700 block mb-1.5">
-            Script <span className="text-rose-500">*</span>
-          </label>
-          <textarea
-            placeholder="Write the voice message script…"
-            value={form.voiceScript}
-            onChange={(e) => update({ voiceScript: e.currentTarget.value })}
-            rows={5}
-            className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent resize-none"
-            autoFocus
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-slate-700 block mb-1.5">Audio URL</label>
-          <input
-            type="text"
-            placeholder="https://… (optional pre-recorded audio)"
-            value={form.voiceAudioUrl}
-            onChange={(e) => update({ voiceAudioUrl: e.currentTarget.value })}
-            className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-slate-700 block mb-1.5">Language</label>
-          <input
-            type="text"
-            placeholder="e.g. Nepali, English"
-            value={form.voiceLanguage}
-            onChange={(e) => update({ voiceLanguage: e.currentTarget.value })}
-            className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
-          />
-        </div>
-      </div>
-    </div>
+    <DetailsComponent
+      data={form.commDetails}
+      onChange={(commDetails) => update({ commDetails })}
+    />
   )
 }
 

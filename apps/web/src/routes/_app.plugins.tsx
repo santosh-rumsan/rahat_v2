@@ -5,6 +5,7 @@ import { CheckCircle2, XCircle } from 'lucide-react'
 import { getRegisteredAppPlugins } from '../plugins/app-registry'
 import { getRegisteredPlugins } from '../plugins/registry'
 import { getRegisteredTaskTypes } from '@rahataid/projects-shared/task-management'
+import { getRegisteredCommTypes } from '@rahataid/projects-shared/communication'
 import { isPluginEnabled, setPluginEnabled } from '../plugins/plugin-state'
 
 export const Route = createFileRoute('/_app/plugins')({ component: PluginsPage })
@@ -14,6 +15,7 @@ type PluginEntry = {
   label: string
   description?: string
   icon?: string
+  IconComponent?: React.ComponentType<{ className?: string }>
   group: string
 }
 
@@ -27,10 +29,11 @@ const GROUP_META: Record<string, { label: string; description: string }> = {
   core: { label: 'Core', description: 'Built-in application modules' },
   project: { label: 'Project', description: 'Project type plugins' },
   task: { label: 'Task', description: 'Task designer plugins for workflows' },
+  comms: { label: 'Communication', description: 'Communication channel plugins (SMS, Voice, WhatsApp)' },
 }
 
 function PluginCard({ plugin, enabled, onToggle }: { plugin: PluginEntry; enabled: boolean; onToggle: (id: string, value: boolean) => void }) {
-  const Icon = getLucideIcon(plugin.icon)
+  const Icon = plugin.IconComponent ?? getLucideIcon(plugin.icon)
 
   return (
     <div className="flex items-center gap-4 bg-gray-50 rounded-2xl px-5 py-4">
@@ -97,7 +100,15 @@ function PluginsPage() {
     group: 'task',
   }))
 
-  const allPlugins = [...appPlugins, ...projectPlugins, ...taskPlugins]
+  const commPlugins: PluginEntry[] = getRegisteredCommTypes().map((p) => ({
+    id: p.type,
+    label: p.label,
+    description: p.description,
+    IconComponent: p.IconComponent,
+    group: 'comms',
+  }))
+
+  const allPlugins = [...appPlugins, ...projectPlugins, ...taskPlugins, ...commPlugins]
 
   const [, forceUpdate] = React.useReducer((x: number) => x + 1, 0)
 
@@ -106,7 +117,7 @@ function PluginsPage() {
     forceUpdate()
   }
 
-  const groups = ['core', 'project', 'task']
+  const groups = ['core', 'project', 'task', 'comms']
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-white">

@@ -30,5 +30,10 @@ import '@rahataid/plugin-task-sms'
 import '@rahataid/plugin-task-voice'
 import '@rahataid/plugin-task-benefits'
 
+// Register communication plugins — each import self-registers via registerCommType()
+import '@rahataid/plugin-comms-sms'
+import '@rahataid/plugin-comms-whatsapp'
+import '@rahataid/plugin-comms-voice'
+
 export { getRegisteredPlugins, getPlugin } from './registry'
 export { getRegisteredAppPlugins, getAppPlugin } from './app-registry'
