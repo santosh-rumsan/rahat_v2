@@ -374,15 +374,21 @@ importers:
       '@fontsource-variable/plus-jakarta-sans':
         specifier: ^5.2.8
         version: 5.2.8
-      '@rahataid/plugin-dashboard':
+      '@rahataid/plugin-core-dashboard':
         specifier: workspace:*
-        version: link:../../plugins/dashboard
-      '@rahataid/plugin-forecast':
+        version: link:../../plugins/core-dashboard
+      '@rahataid/plugin-core-forecast':
         specifier: workspace:*
-        version: link:../../plugins/forecast
-      '@rahataid/plugin-fund-management':
+        version: link:../../plugins/core-forecast
+      '@rahataid/plugin-core-fund-management':
         specifier: workspace:*
-        version: link:../../plugins/fund-management
+        version: link:../../plugins/core-fund-management
+      '@rahataid/plugin-core-reports':
+        specifier: workspace:*
+        version: link:../../plugins/core-reports
+      '@rahataid/plugin-core-vendors':
+        specifier: workspace:*
+        version: link:../../plugins/core-vendors
       '@rahataid/plugin-project-aa':
         specifier: workspace:*
         version: link:../../projects/aa
@@ -398,15 +404,9 @@ importers:
       '@rahataid/plugin-project-microloans':
         specifier: workspace:*
         version: link:../../projects/microloans
-      '@rahataid/plugin-reports':
-        specifier: workspace:*
-        version: link:../../plugins/reports
       '@rahataid/plugin-sdk':
         specifier: workspace:*
         version: link:../../packages/plugin-sdk
-      '@rahataid/plugin-vendors':
-        specifier: workspace:*
-        version: link:../../plugins/vendors
       '@rahataid/projects-shared':
         specifier: workspace:*
         version: link:../../packages/projects-shared
@@ -659,7 +659,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  plugins/dashboard:
+  plugins/core-dashboard:
     dependencies:
       '@rahataid/plugin-sdk':
         specifier: workspace:*
@@ -681,7 +681,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  plugins/forecast:
+  plugins/core-forecast:
     dependencies:
       '@rahataid/plugin-sdk':
         specifier: workspace:*
@@ -715,7 +715,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  plugins/fund-management:
+  plugins/core-fund-management:
     dependencies:
       '@rahataid/plugin-sdk':
         specifier: workspace:*
@@ -737,7 +737,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  plugins/reports:
+  plugins/core-reports:
     dependencies:
       '@rahataid/plugin-sdk':
         specifier: workspace:*
@@ -765,7 +765,7 @@ importers:
         specifier: 'catalog:'
         version: 5.9.3
 
-  plugins/vendors:
+  plugins/core-vendors:
     dependencies:
       '@rahataid/plugin-sdk':
         specifier: workspace:*

@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { ForecastSourceForm } from '@rahataid/plugin-forecast/frontend'
+import { ForecastSourceForm } from '@rahataid/plugin-core-forecast/frontend'
 
 export const Route = createFileRoute('/_app/forecast/add')({ component: ForecastAddPage })
 

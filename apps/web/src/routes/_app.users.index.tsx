@@ -11,11 +11,13 @@ import {
   KeyRound,
   Pencil,
   Calendar,
+  Upload,
 } from 'lucide-react'
 import * as React from 'react'
 import { cn } from '@rs/ui'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@rs/ui/tabs'
-import { useUsers, useDeleteUser } from '../lib/user/queries.js'
+import { useUsers, useDeleteUser, useImportUsers } from '../lib/user/queries.js'
+import type { CreateUserInput } from '@rahataid/sdk'
 
 export const Route = createFileRoute('/_app/users/')({ component: Users })
 
@@ -31,9 +33,27 @@ function Users() {
   const navigate = useNavigate()
   const { data: users = [], isLoading } = useUsers()
   const deleteMutation = useDeleteUser()
+  const importMutation = useImportUsers()
+  const importInputRef = React.useRef<HTMLInputElement>(null)
 
   const [search, setSearch] = React.useState('')
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
+
+  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const records = JSON.parse(ev.target?.result as string) as CreateUserInput[]
+        importMutation.mutate(records)
+      } catch {
+        alert('Invalid JSON file')
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
 
   const filtered = users.filter(
     (u) =>
@@ -63,6 +83,21 @@ function Users() {
             <div className="flex items-center gap-2">
               <button className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-white/50">
                 <SlidersHorizontal size={15} />
+              </button>
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".json"
+                className="hidden"
+                onChange={handleImportFile}
+              />
+              <button
+                onClick={() => importInputRef.current?.click()}
+                disabled={importMutation.isPending}
+                className="flex items-center gap-1 text-gray-600 hover:text-gray-900 bg-white/70 hover:bg-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors disabled:opacity-50"
+              >
+                <Upload size={13} />
+                {importMutation.isPending ? 'Importing…' : 'Import'}
               </button>
               <button
                 onClick={() => navigate({ to: '/users/add' })}

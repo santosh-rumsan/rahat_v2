@@ -1,5 +1,5 @@
 {
-  "name": "@rahataid/plugin-forecast",
+  "name": "@rahataid/plugin-core-forecast",
   "version": "0.0.1",
   "private": true,
   "type": "module",

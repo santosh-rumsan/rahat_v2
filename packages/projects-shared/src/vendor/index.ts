@@ -10,5 +10,6 @@ export {
   useCreateVendor,
   useUpdateVendor,
   useDeleteVendor,
+  useImportVendors,
   vendorKeys,
 } from './queries.js'

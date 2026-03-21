@@ -1,11 +1,17 @@
 {
-  "name": "@rahataid/plugin-reports",
+  "name": "@rahataid/plugin-core-dashboard",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts",
-    "./frontend": "./src/frontend/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./frontend": {
+      "types": "./dist/frontend/index.d.ts",
+      "default": "./dist/frontend/index.js"
+    }
   },
   "scripts": {
     "build": "tsc",
@@ -15,16 +21,13 @@
   },
   "dependencies": {
     "@rahataid/plugin-sdk": "workspace:*",
-    "@rahataid/sdk": "workspace:*",
     "lucide-react": "catalog:"
   },
   "peerDependencies": {
-    "@tanstack/react-query": ">=5.0.0",
     "react": "catalog:react19"
   },
   "devDependencies": {
     "@rs/tsconfig": "workspace:*",
-    "@tanstack/react-query": "catalog:tanstack",
     "@types/react": "catalog:react19",
     "react": "catalog:react19",
     "typescript": "catalog:"

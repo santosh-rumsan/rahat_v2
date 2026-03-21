@@ -53,3 +53,12 @@ export function useDeleteVendor() {
     onSuccess: () => qc.invalidateQueries({ queryKey: vendorKeys.all }),
   })
 }
+
+export function useImportVendors() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (records: CreateVendorInput[]) =>
+      Promise.all(records.map((r) => service().create(r))),
+    onSuccess: () => qc.invalidateQueries({ queryKey: vendorKeys.all }),
+  })
+}

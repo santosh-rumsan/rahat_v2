@@ -53,3 +53,12 @@ export function useDeleteUser() {
     onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
   })
 }
+
+export function useImportUsers() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (records: CreateUserInput[]) =>
+      Promise.all(records.map((r) => service().create(r))),
+    onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
+  })
+}

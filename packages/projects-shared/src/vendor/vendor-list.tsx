@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { Search, Plus, MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
+import { Search, Plus, MoreHorizontal, Pencil, Trash2, Upload } from 'lucide-react'
 import { cn } from '@rs/ui'
-import type { Vendor } from '@rahataid/sdk'
-import { useVendors, useDeleteVendor } from './queries.js'
+import type { Vendor, CreateVendorInput } from '@rahataid/sdk'
+import { useVendors, useDeleteVendor, useImportVendors } from './queries.js'
 
 // ─── constants ────────────────────────────────────────────────────────────────
 
@@ -23,9 +23,27 @@ export interface VendorListProps {
 export function VendorList({ onAdd, onEdit, onRowClick }: VendorListProps) {
   const { data: vendors = [] as Vendor[], isLoading } = useVendors()
   const deleteMutation = useDeleteVendor()
+  const importMutation = useImportVendors()
+  const importInputRef = React.useRef<HTMLInputElement>(null)
   const [search, setSearch] = React.useState('')
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null)
   const menuRef = React.useRef<HTMLDivElement>(null)
+
+  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (ev) => {
+      try {
+        const records = JSON.parse(ev.target?.result as string) as CreateVendorInput[]
+        importMutation.mutate(records)
+      } catch {
+        alert('Invalid JSON file')
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ''
+  }
 
   React.useEffect(() => {
     function onOutside(e: MouseEvent) {
@@ -63,13 +81,30 @@ export function VendorList({ onAdd, onEdit, onRowClick }: VendorListProps) {
           <h1 className="text-2xl font-semibold text-gray-900">Vendors</h1>
           <p className="text-sm text-gray-500 mt-1">{vendors.length} registered vendors</p>
         </div>
-        <button
-          onClick={onAdd}
-          className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
-        >
-          <Plus size={16} />
-          Add Vendor
-        </button>
+        <div className="flex items-center gap-2">
+          <input
+            ref={importInputRef}
+            type="file"
+            accept=".json"
+            className="hidden"
+            onChange={handleImportFile}
+          />
+          <button
+            onClick={() => importInputRef.current?.click()}
+            disabled={importMutation.isPending}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
+          >
+            <Upload size={15} />
+            {importMutation.isPending ? 'Importing…' : 'Import'}
+          </button>
+          <button
+            onClick={onAdd}
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-xl transition-colors"
+          >
+            <Plus size={16} />
+            Add Vendor
+          </button>
+        </div>
       </div>
 
       <div className="px-8 pt-5">

@@ -5,7 +5,7 @@ import {
   GlofasItem,
   ReturnPeriodTable,
   HydrographImage,
-} from '@rahataid/plugin-forecast/frontend'
+} from '@rahataid/plugin-core-forecast/frontend'
 
 export const Route = createFileRoute('/_app/forecast/$sourceId/glofas/$itemIndex')({
   component: GlofasDetailPage,

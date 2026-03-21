@@ -2,11 +2,11 @@
   "active": [
     "api",
     "web",
-    "@rahataid/plugin-dashboard",
-    "@rahataid/plugin-fund-management",
-    "@rahataid/plugin-vendors",
+    "@rahataid/plugin-core-dashboard",
+    "@rahataid/plugin-core-fund-management",
+    "@rahataid/plugin-core-vendors",
     "@rahataid/plugin-project-cva",
-    "@rahataid/plugin-forecast"
+    "@rahataid/plugin-core-forecast"
   ],
   "available": {
     "core": ["api", "web"],

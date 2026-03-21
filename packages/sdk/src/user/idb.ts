@@ -29,7 +29,7 @@ export const idbUserService: UserService = {
 
   async create(data: CreateUserInput) {
     const db = await openDb()
-    const id = `usr_${Date.now()}`
+    const id = `usr_${crypto.randomUUID()}`
     const user: User = {
       id,
       joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
