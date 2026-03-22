@@ -7,6 +7,6 @@ export const FundManagementFrontendPlugin: AppFrontendPlugin = {
   description: 'Track and allocate funds across projects and beneficiaries.',
   icon: 'Wallet',
   group: 'core',
-  route: '/fund-management',
+  route: '/funds',
   PageComponent: FundManagementPage,
 }

@@ -1,3 +1,4 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { PluginGate } from '../components/plugin-gate'
 
-export const Route = createFileRoute('/_app/vendors')({ component: () => <Outlet /> })
+export const Route = createFileRoute('/_app/vendors')({ component: () => <PluginGate pluginId="vendors" /> })

@@ -17,4 +17,5 @@ export function setPluginEnabled(id: string, enabled: boolean): void {
   const all = getAll()
   all[id] = enabled
   localStorage.setItem(STORAGE_KEY, JSON.stringify(all))
+  window.dispatchEvent(new Event('rahat:plugin-state-change'))
 }

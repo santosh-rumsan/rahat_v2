@@ -1,7 +1,4 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { PluginGate } from '../components/plugin-gate'
 
-export const Route = createFileRoute('/_app/forecast')({ component: ForecastLayout })
-
-function ForecastLayout() {
-  return <Outlet />
-}
+export const Route = createFileRoute('/_app/forecast')({ component: () => <PluginGate pluginId="forecast" /> })
