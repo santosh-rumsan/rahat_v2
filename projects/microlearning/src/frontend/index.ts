@@ -10,6 +10,8 @@ export const MicrolearningFrontendPlugin: ProjectFrontendPlugin = {
   icon: 'BookOpen',
   menuItems: [
     { type: 'link', label: 'Tasks', href: '/projects/:projectId/tasks' },
+    { type: 'link', label: 'Communication', href: '/projects/:projectId/communication' },
+    { type: 'link', label: 'Reports', href: '/projects/:projectId/reports' },
   ],
   SetupPage: MicrolearningSetupPage,
   DashboardPage: MicrolearningDashboardPage,

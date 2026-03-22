@@ -8,6 +8,10 @@ export const BeneficiaryFrontendPlugin: ProjectFrontendPlugin = {
   label: 'Beneficiary Management',
   description: 'Manage and track project beneficiaries',
   icon: 'Users',
+  menuItems: [
+    { type: 'link', label: 'Communication', href: '/projects/:projectId/communication' },
+    { type: 'link', label: 'Reports', href: '/projects/:projectId/reports' },
+  ],
   SetupPage: BeneficiarySetupPage,
   DashboardPage: BeneficiaryDashboardPage,
 }
