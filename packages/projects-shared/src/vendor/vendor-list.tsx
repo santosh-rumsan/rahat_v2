@@ -1,6 +1,14 @@
 import * as React from 'react'
-import { Search, Plus, MoreHorizontal, Pencil, Trash2, Upload } from 'lucide-react'
+import { Search, Plus, MoreHorizontal, Pencil, Trash2, Upload, FileJson, Link, X } from 'lucide-react'
 import { cn } from '@rs/ui'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@rs/ui/dialog'
+import { toast } from '@rs/ui/toast'
 import type { Vendor, CreateVendorInput } from '@rahataid/sdk'
 import { useVendors, useDeleteVendor, useImportVendors } from './queries.js'
 
@@ -10,6 +18,187 @@ const STATUS_COLORS: Record<Vendor['status'], string> = {
   Active: 'bg-green-100 text-green-700',
   Pending: 'bg-yellow-100 text-yellow-700',
   Inactive: 'bg-gray-100 text-gray-500',
+}
+
+// ─── import dialog ────────────────────────────────────────────────────────────
+
+type ImportTab = 'file' | 'url'
+
+function ImportDialog({
+  open,
+  onOpenChange,
+  onImport,
+  isImporting,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onImport: (records: CreateVendorInput[]) => void
+  isImporting: boolean
+}) {
+  const [tab, setTab] = React.useState<ImportTab>('file')
+  const [url, setUrl] = React.useState('')
+  const [isDragging, setIsDragging] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  function reset() {
+    setUrl('')
+    setTab('file')
+    setError(null)
+  }
+
+  function handleClose() {
+    if (isImporting) return
+    reset()
+    onOpenChange(false)
+  }
+
+  function parseAndImport(jsonText: string) {
+    try {
+      const json = JSON.parse(jsonText)
+      if (json.type !== 'vendor') {
+        setError(`Type mismatch: expected "vendor", got "${json.type ?? 'unknown'}"`)
+        return
+      }
+      if (!Array.isArray(json.data)) {
+        setError('Invalid format: "data" must be an array')
+        return
+      }
+      setError(null)
+      onImport(json.data as CreateVendorInput[])
+    } catch {
+      setError('Invalid JSON file')
+    }
+  }
+
+  async function handleFile(file: File) {
+    if (!file.name.endsWith('.json') && file.type !== 'application/json') {
+      setError('Please select a JSON file')
+      return
+    }
+    parseAndImport(await file.text())
+  }
+
+  async function handleUrlImport(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const trimmed = url.trim()
+    if (!trimmed) return
+    try {
+      const response = await fetch(trimmed)
+      if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)
+      parseAndImport(await response.text())
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch URL')
+    }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setIsDragging(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleFile(file)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Import Vendors</DialogTitle>
+          <DialogDescription>
+            Import vendors from a JSON file or a URL. File must have <code>type: "vendor"</code>.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex gap-1 bg-gray-100 p-1 rounded-lg mt-1">
+          {(['file', 'url'] as ImportTab[]).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                tab === t
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {t === 'file' ? <Upload size={14} /> : <Link size={14} />}
+              {t === 'file' ? 'From File' : 'From URL'}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'file' && (
+          <div
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`mt-1 flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-xl p-10 cursor-pointer transition-colors ${
+              isDragging
+                ? 'border-orange-400 bg-orange-50'
+                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) handleFile(file)
+                e.target.value = ''
+              }}
+            />
+            <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full">
+              <FileJson size={22} className="text-gray-500" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-700">Drop a JSON file here</p>
+              <p className="text-xs text-gray-400 mt-0.5">or click to browse</p>
+            </div>
+          </div>
+        )}
+
+        {tab === 'url' && (
+          <form onSubmit={handleUrlImport} className="mt-1 space-y-3">
+            <div className="relative">
+              <Link size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="url"
+                placeholder="https://example.com/vendors.json"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                autoFocus
+                className="w-full pl-9 pr-9 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+              />
+              {url && (
+                <button
+                  type="button"
+                  onClick={() => setUrl('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={!url.trim() || isImporting}
+              className="w-full py-2.5 text-sm font-medium bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isImporting ? 'Importing…' : 'Import from URL'}
+            </button>
+          </form>
+        )}
+
+        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+        {isImporting && tab === 'file' && (
+          <p className="text-center text-sm text-gray-500 mt-1">Importing…</p>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
@@ -24,25 +213,21 @@ export function VendorList({ onAdd, onEdit, onRowClick }: VendorListProps) {
   const { data: vendors = [] as Vendor[], isLoading } = useVendors()
   const deleteMutation = useDeleteVendor()
   const importMutation = useImportVendors()
-  const importInputRef = React.useRef<HTMLInputElement>(null)
   const [search, setSearch] = React.useState('')
   const [menuOpenId, setMenuOpenId] = React.useState<string | null>(null)
+  const [importOpen, setImportOpen] = React.useState(false)
   const menuRef = React.useRef<HTMLDivElement>(null)
 
-  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      try {
-        const records = JSON.parse(ev.target?.result as string) as CreateVendorInput[]
-        importMutation.mutate(records)
-      } catch {
-        alert('Invalid JSON file')
-      }
-    }
-    reader.readAsText(file)
-    e.target.value = ''
+  function handleImport(records: CreateVendorInput[]) {
+    importMutation.mutate(records, {
+      onSuccess: () => {
+        toast.success(`Imported ${records.length} vendor${records.length !== 1 ? 's' : ''}`)
+        setImportOpen(false)
+      },
+      onError: (err) => {
+        toast.error(err instanceof Error ? err.message : 'Import failed')
+      },
+    })
   }
 
   React.useEffect(() => {
@@ -76,21 +261,21 @@ export function VendorList({ onAdd, onEdit, onRowClick }: VendorListProps) {
 
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-white">
+      <ImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImport={handleImport}
+        isImporting={importMutation.isPending}
+      />
+
       <div className="px-8 pt-8 pb-6 border-b border-gray-100 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Vendors</h1>
           <p className="text-sm text-gray-500 mt-1">{vendors.length} registered vendors</p>
         </div>
         <div className="flex items-center gap-2">
-          <input
-            ref={importInputRef}
-            type="file"
-            accept=".json"
-            className="hidden"
-            onChange={handleImportFile}
-          />
           <button
-            onClick={() => importInputRef.current?.click()}
+            onClick={() => setImportOpen(true)}
             disabled={importMutation.isPending}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 text-sm font-medium px-4 py-2 rounded-xl transition-colors disabled:opacity-50"
           >

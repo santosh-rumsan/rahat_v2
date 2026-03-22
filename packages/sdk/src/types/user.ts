@@ -11,6 +11,6 @@ export interface User {
   notes?: string
 }
 
-export type CreateUserInput = Omit<User, 'id' | 'joinedDate' | 'lastLogin'>
+export type CreateUserInput = Omit<User, 'id' | 'joinedDate' | 'lastLogin'> & { id?: string }
 
 export type UpdateUserInput = Partial<Omit<User, 'id' | 'joinedDate'>>

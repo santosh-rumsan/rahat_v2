@@ -57,8 +57,17 @@ export function useDeleteVendor() {
 export function useImportVendors() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (records: CreateVendorInput[]) =>
-      Promise.all(records.map((r) => service().create(r))),
+    mutationFn: async (records: CreateVendorInput[]) => {
+      const svc = service()
+      const existing = await svc.list()
+      const existingIds = new Set(existing.map((v) => v.id))
+      const results: Vendor[] = []
+      for (const r of records) {
+        if (r.id && existingIds.has(r.id)) continue
+        results.push(await svc.create(r))
+      }
+      return results
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: vendorKeys.all }),
   })
 }

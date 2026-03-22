@@ -57,8 +57,17 @@ export function useDeleteUser() {
 export function useImportUsers() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (records: CreateUserInput[]) =>
-      Promise.all(records.map((r) => service().create(r))),
+    mutationFn: async (records: CreateUserInput[]) => {
+      const svc = service()
+      const existing = await svc.list()
+      const existingIds = new Set(existing.map((u) => u.id))
+      const results: User[] = []
+      for (const r of records) {
+        if (r.id && existingIds.has(r.id)) continue
+        results.push(await svc.create(r))
+      }
+      return results
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: userKeys.all }),
   })
 }

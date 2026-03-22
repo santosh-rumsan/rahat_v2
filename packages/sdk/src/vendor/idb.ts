@@ -28,8 +28,12 @@ export const idbVendorService: VendorService = {
   },
 
   async create(data: CreateVendorInput) {
+    if (data.id) {
+      const existing = await idbVendorService.get(data.id)
+      if (existing) return existing
+    }
     const db = await openDb()
-    const vendor: Vendor = { id: `vnd_${crypto.randomUUID()}`, ...data }
+    const vendor: Vendor = { id: data.id ?? `vnd_${crypto.randomUUID()}`, ...data }
     await new Promise<void>((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readwrite')
       const store = transaction.objectStore(STORE_NAME)

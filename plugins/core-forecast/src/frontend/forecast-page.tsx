@@ -19,10 +19,21 @@ import {
   TrendingDown,
   Minus,
   Upload,
+  FileJson,
+  Link,
+  X,
 } from 'lucide-react'
 import { cn } from '@rs/ui'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@rs/ui/dialog'
+import { toast } from '@rs/ui/toast'
 import { FORECAST_SOURCE_TYPE_LABELS } from '@rahataid/sdk'
-import type { ForecastSourceType, ForecastSource } from '@rahataid/sdk'
+import type { ForecastSourceType, ForecastSource, CreateForecastSourceInput } from '@rahataid/sdk'
 import {
   useForecastSources,
   useForecastSourceData,
@@ -31,6 +42,187 @@ import {
 } from './queries.js'
 import { GlofasCard } from './glofas-card.js'
 import type { GlofasItem } from './glofas-card.js'
+
+// ─── import dialog ────────────────────────────────────────────────────────────
+
+type ImportTab = 'file' | 'url'
+
+function ImportDialog({
+  open,
+  onOpenChange,
+  onImport,
+  isImporting,
+}: {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onImport: (records: CreateForecastSourceInput[]) => void
+  isImporting: boolean
+}) {
+  const [tab, setTab] = React.useState<ImportTab>('file')
+  const [url, setUrl] = React.useState('')
+  const [isDragging, setIsDragging] = React.useState(false)
+  const [error, setError] = React.useState<string | null>(null)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  function reset() {
+    setUrl('')
+    setTab('file')
+    setError(null)
+  }
+
+  function handleClose() {
+    if (isImporting) return
+    reset()
+    onOpenChange(false)
+  }
+
+  function parseAndImport(jsonText: string) {
+    try {
+      const json = JSON.parse(jsonText)
+      if (json.type !== 'forecast') {
+        setError(`Type mismatch: expected "forecast", got "${json.type ?? 'unknown'}"`)
+        return
+      }
+      if (!Array.isArray(json.data)) {
+        setError('Invalid format: "data" must be an array')
+        return
+      }
+      setError(null)
+      onImport(json.data as CreateForecastSourceInput[])
+    } catch {
+      setError('Invalid JSON file')
+    }
+  }
+
+  async function handleFile(file: File) {
+    if (!file.name.endsWith('.json') && file.type !== 'application/json') {
+      setError('Please select a JSON file')
+      return
+    }
+    parseAndImport(await file.text())
+  }
+
+  async function handleUrlImport(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault()
+    const trimmed = url.trim()
+    if (!trimmed) return
+    try {
+      const response = await fetch(trimmed)
+      if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)
+      parseAndImport(await response.text())
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch URL')
+    }
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault()
+    setIsDragging(false)
+    const file = e.dataTransfer.files?.[0]
+    if (file) handleFile(file)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Import Forecast Sources</DialogTitle>
+          <DialogDescription>
+            Import sources from a JSON file or a URL. File must have <code>type: "forecast"</code>.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex gap-1 bg-gray-100 p-1 rounded-lg mt-1">
+          {(['file', 'url'] as ImportTab[]).map((t) => (
+            <button
+              key={t}
+              type="button"
+              onClick={() => setTab(t)}
+              className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                tab === t
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {t === 'file' ? <Upload size={14} /> : <Link size={14} />}
+              {t === 'file' ? 'From File' : 'From URL'}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'file' && (
+          <div
+            onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`mt-1 flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-xl p-10 cursor-pointer transition-colors ${
+              isDragging
+                ? 'border-blue-400 bg-blue-50'
+                : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+            }`}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) handleFile(file)
+                e.target.value = ''
+              }}
+            />
+            <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full">
+              <FileJson size={22} className="text-gray-500" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-medium text-gray-700">Drop a JSON file here</p>
+              <p className="text-xs text-gray-400 mt-0.5">or click to browse</p>
+            </div>
+          </div>
+        )}
+
+        {tab === 'url' && (
+          <form onSubmit={handleUrlImport} className="mt-1 space-y-3">
+            <div className="relative">
+              <Link size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="url"
+                placeholder="https://example.com/forecast.json"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                autoFocus
+                className="w-full pl-9 pr-9 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent"
+              />
+              {url && (
+                <button
+                  type="button"
+                  onClick={() => setUrl('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={!url.trim() || isImporting}
+              className="w-full py-2.5 text-sm font-medium bg-[#1a1a1a] hover:bg-[#333] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isImporting ? 'Importing…' : 'Import from URL'}
+            </button>
+          </form>
+        )}
+
+        {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+        {isImporting && tab === 'file' && (
+          <p className="text-center text-sm text-gray-500 mt-1">Importing…</p>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 // ─── icons per type ───────────────────────────────────────────────────────────
 
@@ -476,28 +668,18 @@ export function ForecastPage() {
   const deleteMutation = useDeleteForecastSource()
   const importMutation = useImportForecastSources()
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
-  const [importError, setImportError] = React.useState<string | null>(null)
-  const importInputRef = React.useRef<HTMLInputElement>(null)
+  const [importOpen, setImportOpen] = React.useState(false)
 
-  function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!importInputRef.current) return
-    importInputRef.current.value = ''
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      try {
-        const json = JSON.parse(ev.target?.result as string)
-        const list = Array.isArray(json) ? json : [json]
-        setImportError(null)
-        importMutation.mutate(list, {
-          onError: (err) => setImportError(err instanceof Error ? err.message : 'Import failed'),
-        })
-      } catch {
-        setImportError('Invalid JSON file')
-      }
-    }
-    reader.readAsText(file)
+  function handleImport(records: CreateForecastSourceInput[]) {
+    importMutation.mutate(records, {
+      onSuccess: (imported) => {
+        toast.success(`Imported ${imported.length} source${imported.length !== 1 ? 's' : ''}`)
+        setImportOpen(false)
+      },
+      onError: (err) => {
+        toast.error(err instanceof Error ? err.message : 'Import failed')
+      },
+    })
   }
 
   const selected = sources.find((s) => s.id === selectedId) ?? null
@@ -514,6 +696,12 @@ export function ForecastPage() {
   if (sources.length === 0) {
     return (
       <div className="h-full bg-white">
+        <ImportDialog
+          open={importOpen}
+          onOpenChange={setImportOpen}
+          onImport={handleImport}
+          isImporting={importMutation.isPending}
+        />
         <div className="px-8 pt-7 pb-5 border-b border-gray-100 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-black text-[#1a1a1a]">Forecast Data</h1>
@@ -521,23 +709,15 @@ export function ForecastPage() {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => importInputRef.current?.click()}
+              onClick={() => setImportOpen(true)}
               disabled={importMutation.isPending}
               className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 px-4 py-2.5 rounded-xl transition-colors disabled:opacity-40"
             >
               <Upload size={15} />
               {importMutation.isPending ? 'Importing…' : 'Import JSON'}
             </button>
-            <input
-              ref={importInputRef}
-              type="file"
-              accept=".json,application/json"
-              className="hidden"
-              onChange={handleImportFile}
-            />
           </div>
         </div>
-        {importError && <p className="text-sm text-red-500 px-8 pt-3">{importError}</p>}
         <EmptyState onAdd={() => navigate({ to: '/forecast/add' })} />
       </div>
     )
@@ -545,6 +725,12 @@ export function ForecastPage() {
 
   return (
     <div className="flex h-full bg-[#f0f0f0] overflow-hidden">
+      <ImportDialog
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        onImport={handleImport}
+        isImporting={importMutation.isPending}
+      />
       {/* Left sidebar */}
       <div className="w-[260px] flex-shrink-0 flex flex-col bg-[#f0f0f0]">
         <div className="px-4 pt-5 pb-3">
@@ -552,7 +738,7 @@ export function ForecastPage() {
             <h2 className="text-lg font-bold text-[#1a1a1a]">Sources</h2>
             <div className="flex items-center gap-1.5">
               <button
-                onClick={() => importInputRef.current?.click()}
+                onClick={() => setImportOpen(true)}
                 disabled={importMutation.isPending}
                 title="Import from JSON"
                 className="flex items-center gap-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors disabled:opacity-40"
@@ -560,13 +746,6 @@ export function ForecastPage() {
                 <Upload size={13} />
                 {importMutation.isPending ? 'Importing…' : 'Import'}
               </button>
-              <input
-                ref={importInputRef}
-                type="file"
-                accept=".json,application/json"
-                className="hidden"
-                onChange={handleImportFile}
-              />
               <button
                 onClick={() => navigate({ to: '/forecast/add' })}
                 className="flex items-center gap-1 bg-[#1a1a1a] hover:bg-[#333] text-white text-xs font-semibold px-3 py-1.5 rounded-xl transition-colors"
@@ -576,7 +755,6 @@ export function ForecastPage() {
               </button>
             </div>
           </div>
-          {importError && <p className="text-xs text-red-500 mt-1">{importError}</p>}
           <p className="text-xs text-gray-400">
             {sources.length} configured · {sources.filter((s) => s.isActive).length} active
           </p>

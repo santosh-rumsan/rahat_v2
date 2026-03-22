@@ -10,6 +10,6 @@ export interface Vendor {
   notes?: string
 }
 
-export type CreateVendorInput = Omit<Vendor, 'id'>
+export type CreateVendorInput = Omit<Vendor, 'id'> & { id?: string }
 
 export type UpdateVendorInput = Partial<Omit<Vendor, 'id'>>

@@ -28,12 +28,16 @@ export const idbUserService: UserService = {
   },
 
   async create(data: CreateUserInput) {
+    if (data.id) {
+      const existing = await idbUserService.get(data.id)
+      if (existing) return existing
+    }
     const db = await openDb()
-    const id = `usr_${crypto.randomUUID()}`
+    const id = data.id ?? `usr_${crypto.randomUUID()}`
     const user: User = {
-      id,
       joinedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
       ...data,
+      id,
       avatar: data.avatar || `https://i.pravatar.cc/150?u=${id}`,
     }
     await new Promise<void>((resolve, reject) => {
