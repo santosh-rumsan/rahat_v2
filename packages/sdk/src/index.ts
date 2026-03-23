@@ -102,3 +102,12 @@ export type {
 export { FORECAST_SOURCE_TYPES, FORECAST_SOURCE_TYPE_LABELS } from './types/index.js'
 export { createForecastSourceService, idbForecastSourceService, createApiForecastSourceService } from './forecast/index.js'
 export type { ForecastSourceService } from './forecast/index.js'
+export type {
+  Service,
+  ServiceType,
+  CreateServiceInput,
+  UpdateServiceInput,
+} from './types/index.js'
+export { SERVICE_TYPES, SERVICE_TYPE_LABELS } from './types/index.js'
+export { createServiceService, idbServiceService, createApiServiceService } from './service/index.js'
+export type { ServiceService } from './service/index.js'

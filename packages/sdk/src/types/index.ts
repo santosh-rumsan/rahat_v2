@@ -50,3 +50,10 @@ export type {
   UpdateForecastSourceInput,
 } from './forecast.js'
 export { FORECAST_SOURCE_TYPES, FORECAST_SOURCE_TYPE_LABELS } from './forecast.js'
+export type {
+  Service,
+  ServiceType,
+  CreateServiceInput,
+  UpdateServiceInput,
+} from './service.js'
+export { SERVICE_TYPES, SERVICE_TYPE_LABELS } from './service.js'

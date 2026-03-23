@@ -22,6 +22,7 @@ import { Route as AppFundsRouteImport } from './routes/_app.funds'
 import { Route as AppForecastRouteImport } from './routes/_app.forecast'
 import { Route as AppVendorsIndexRouteImport } from './routes/_app.vendors.index'
 import { Route as AppUsersIndexRouteImport } from './routes/_app.users.index'
+import { Route as AppServicesIndexRouteImport } from './routes/_app.services.index'
 import { Route as AppReportsIndexRouteImport } from './routes/_app.reports.index'
 import { Route as AppProjectsIndexRouteImport } from './routes/_app.projects.index'
 import { Route as AppFundsIndexRouteImport } from './routes/_app.funds.index'
@@ -29,6 +30,7 @@ import { Route as AppForecastIndexRouteImport } from './routes/_app.forecast.ind
 import { Route as AppVendorsAddRouteImport } from './routes/_app.vendors.add'
 import { Route as AppVendorsVendorIdRouteImport } from './routes/_app.vendors.$vendorId'
 import { Route as AppUsersAddRouteImport } from './routes/_app.users.add'
+import { Route as AppServicesAddRouteImport } from './routes/_app.services.add'
 import { Route as AppProjectsNewRouteImport } from './routes/_app.projects.new'
 import { Route as AppProjectsIdRouteImport } from './routes/_app.projects.$id'
 import { Route as AppFundsAllocateRouteImport } from './routes/_app.funds.allocate'
@@ -37,6 +39,7 @@ import { Route as AppVendorsVendorIdIndexRouteImport } from './routes/_app.vendo
 import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$id.index'
 import { Route as AppVendorsVendorIdEditRouteImport } from './routes/_app.vendors.$vendorId.edit'
 import { Route as AppUsersUserIdEditRouteImport } from './routes/_app.users.$userId.edit'
+import { Route as AppServicesServiceIdEditRouteImport } from './routes/_app.services.$serviceId.edit'
 import { Route as AppProjectsIdTasksRouteImport } from './routes/_app.projects.$id.tasks'
 import { Route as AppProjectsIdReportsRouteImport } from './routes/_app.projects.$id.reports'
 import { Route as AppProjectsIdFundsRouteImport } from './routes/_app.projects.$id.funds'
@@ -131,6 +134,11 @@ const AppUsersIndexRoute = AppUsersIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppUsersRoute,
 } as any)
+const AppServicesIndexRoute = AppServicesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppServicesRoute,
+} as any)
 const AppReportsIndexRoute = AppReportsIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -165,6 +173,11 @@ const AppUsersAddRoute = AppUsersAddRouteImport.update({
   id: '/add',
   path: '/add',
   getParentRoute: () => AppUsersRoute,
+} as any)
+const AppServicesAddRoute = AppServicesAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => AppServicesRoute,
 } as any)
 const AppProjectsNewRoute = AppProjectsNewRouteImport.update({
   id: '/new',
@@ -206,6 +219,12 @@ const AppUsersUserIdEditRoute = AppUsersUserIdEditRouteImport.update({
   path: '/$userId/edit',
   getParentRoute: () => AppUsersRoute,
 } as any)
+const AppServicesServiceIdEditRoute =
+  AppServicesServiceIdEditRouteImport.update({
+    id: '/$serviceId/edit',
+    path: '/$serviceId/edit',
+    getParentRoute: () => AppServicesRoute,
+  } as any)
 const AppProjectsIdTasksRoute = AppProjectsIdTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -380,7 +399,7 @@ export interface FileRoutesByFullPath {
   '/plugins': typeof AppPluginsRoute
   '/projects': typeof AppProjectsRouteWithChildren
   '/reports': typeof AppReportsRouteWithChildren
-  '/services': typeof AppServicesRoute
+  '/services': typeof AppServicesRouteWithChildren
   '/settings': typeof AppSettingsRoute
   '/users': typeof AppUsersRouteWithChildren
   '/vendors': typeof AppVendorsRouteWithChildren
@@ -388,6 +407,7 @@ export interface FileRoutesByFullPath {
   '/funds/allocate': typeof AppFundsAllocateRoute
   '/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/projects/new': typeof AppProjectsNewRoute
+  '/services/add': typeof AppServicesAddRoute
   '/users/add': typeof AppUsersAddRoute
   '/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
   '/vendors/add': typeof AppVendorsAddRoute
@@ -395,6 +415,7 @@ export interface FileRoutesByFullPath {
   '/funds/': typeof AppFundsIndexRoute
   '/projects/': typeof AppProjectsIndexRoute
   '/reports/': typeof AppReportsIndexRoute
+  '/services/': typeof AppServicesIndexRoute
   '/users/': typeof AppUsersIndexRoute
   '/vendors/': typeof AppVendorsIndexRoute
   '/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
@@ -404,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id/funds': typeof AppProjectsIdFundsRouteWithChildren
   '/projects/$id/reports': typeof AppProjectsIdReportsRouteWithChildren
   '/projects/$id/tasks': typeof AppProjectsIdTasksRouteWithChildren
+  '/services/$serviceId/edit': typeof AppServicesServiceIdEditRoute
   '/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/projects/$id/': typeof AppProjectsIdIndexRoute
@@ -433,22 +455,24 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/plugins': typeof AppPluginsRoute
-  '/services': typeof AppServicesRoute
   '/settings': typeof AppSettingsRoute
   '/': typeof AppIndexRoute
   '/forecast/add': typeof AppForecastAddRoute
   '/funds/allocate': typeof AppFundsAllocateRoute
   '/projects/new': typeof AppProjectsNewRoute
+  '/services/add': typeof AppServicesAddRoute
   '/users/add': typeof AppUsersAddRoute
   '/vendors/add': typeof AppVendorsAddRoute
   '/forecast': typeof AppForecastIndexRoute
   '/funds': typeof AppFundsIndexRoute
   '/projects': typeof AppProjectsIndexRoute
   '/reports': typeof AppReportsIndexRoute
+  '/services': typeof AppServicesIndexRoute
   '/users': typeof AppUsersIndexRoute
   '/vendors': typeof AppVendorsIndexRoute
   '/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
   '/projects/$id/edit': typeof AppProjectsIdEditRoute
+  '/services/$serviceId/edit': typeof AppServicesServiceIdEditRoute
   '/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/projects/$id': typeof AppProjectsIdIndexRoute
@@ -483,7 +507,7 @@ export interface FileRoutesById {
   '/_app/plugins': typeof AppPluginsRoute
   '/_app/projects': typeof AppProjectsRouteWithChildren
   '/_app/reports': typeof AppReportsRouteWithChildren
-  '/_app/services': typeof AppServicesRoute
+  '/_app/services': typeof AppServicesRouteWithChildren
   '/_app/settings': typeof AppSettingsRoute
   '/_app/users': typeof AppUsersRouteWithChildren
   '/_app/vendors': typeof AppVendorsRouteWithChildren
@@ -492,6 +516,7 @@ export interface FileRoutesById {
   '/_app/funds/allocate': typeof AppFundsAllocateRoute
   '/_app/projects/$id': typeof AppProjectsIdRouteWithChildren
   '/_app/projects/new': typeof AppProjectsNewRoute
+  '/_app/services/add': typeof AppServicesAddRoute
   '/_app/users/add': typeof AppUsersAddRoute
   '/_app/vendors/$vendorId': typeof AppVendorsVendorIdRouteWithChildren
   '/_app/vendors/add': typeof AppVendorsAddRoute
@@ -499,6 +524,7 @@ export interface FileRoutesById {
   '/_app/funds/': typeof AppFundsIndexRoute
   '/_app/projects/': typeof AppProjectsIndexRoute
   '/_app/reports/': typeof AppReportsIndexRoute
+  '/_app/services/': typeof AppServicesIndexRoute
   '/_app/users/': typeof AppUsersIndexRoute
   '/_app/vendors/': typeof AppVendorsIndexRoute
   '/_app/forecast/$sourceId/edit': typeof AppForecastSourceIdEditRoute
@@ -508,6 +534,7 @@ export interface FileRoutesById {
   '/_app/projects/$id/funds': typeof AppProjectsIdFundsRouteWithChildren
   '/_app/projects/$id/reports': typeof AppProjectsIdReportsRouteWithChildren
   '/_app/projects/$id/tasks': typeof AppProjectsIdTasksRouteWithChildren
+  '/_app/services/$serviceId/edit': typeof AppServicesServiceIdEditRoute
   '/_app/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/_app/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
   '/_app/projects/$id/': typeof AppProjectsIdIndexRoute
@@ -552,6 +579,7 @@ export interface FileRouteTypes {
     | '/funds/allocate'
     | '/projects/$id'
     | '/projects/new'
+    | '/services/add'
     | '/users/add'
     | '/vendors/$vendorId'
     | '/vendors/add'
@@ -559,6 +587,7 @@ export interface FileRouteTypes {
     | '/funds/'
     | '/projects/'
     | '/reports/'
+    | '/services/'
     | '/users/'
     | '/vendors/'
     | '/forecast/$sourceId/edit'
@@ -568,6 +597,7 @@ export interface FileRouteTypes {
     | '/projects/$id/funds'
     | '/projects/$id/reports'
     | '/projects/$id/tasks'
+    | '/services/$serviceId/edit'
     | '/users/$userId/edit'
     | '/vendors/$vendorId/edit'
     | '/projects/$id/'
@@ -597,22 +627,24 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/plugins'
-    | '/services'
     | '/settings'
     | '/'
     | '/forecast/add'
     | '/funds/allocate'
     | '/projects/new'
+    | '/services/add'
     | '/users/add'
     | '/vendors/add'
     | '/forecast'
     | '/funds'
     | '/projects'
     | '/reports'
+    | '/services'
     | '/users'
     | '/vendors'
     | '/forecast/$sourceId/edit'
     | '/projects/$id/edit'
+    | '/services/$serviceId/edit'
     | '/users/$userId/edit'
     | '/vendors/$vendorId/edit'
     | '/projects/$id'
@@ -655,6 +687,7 @@ export interface FileRouteTypes {
     | '/_app/funds/allocate'
     | '/_app/projects/$id'
     | '/_app/projects/new'
+    | '/_app/services/add'
     | '/_app/users/add'
     | '/_app/vendors/$vendorId'
     | '/_app/vendors/add'
@@ -662,6 +695,7 @@ export interface FileRouteTypes {
     | '/_app/funds/'
     | '/_app/projects/'
     | '/_app/reports/'
+    | '/_app/services/'
     | '/_app/users/'
     | '/_app/vendors/'
     | '/_app/forecast/$sourceId/edit'
@@ -671,6 +705,7 @@ export interface FileRouteTypes {
     | '/_app/projects/$id/funds'
     | '/_app/projects/$id/reports'
     | '/_app/projects/$id/tasks'
+    | '/_app/services/$serviceId/edit'
     | '/_app/users/$userId/edit'
     | '/_app/vendors/$vendorId/edit'
     | '/_app/projects/$id/'
@@ -796,6 +831,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppUsersIndexRouteImport
       parentRoute: typeof AppUsersRoute
     }
+    '/_app/services/': {
+      id: '/_app/services/'
+      path: '/'
+      fullPath: '/services/'
+      preLoaderRoute: typeof AppServicesIndexRouteImport
+      parentRoute: typeof AppServicesRoute
+    }
     '/_app/reports/': {
       id: '/_app/reports/'
       path: '/'
@@ -844,6 +886,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/add'
       preLoaderRoute: typeof AppUsersAddRouteImport
       parentRoute: typeof AppUsersRoute
+    }
+    '/_app/services/add': {
+      id: '/_app/services/add'
+      path: '/add'
+      fullPath: '/services/add'
+      preLoaderRoute: typeof AppServicesAddRouteImport
+      parentRoute: typeof AppServicesRoute
     }
     '/_app/projects/new': {
       id: '/_app/projects/new'
@@ -900,6 +949,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/users/$userId/edit'
       preLoaderRoute: typeof AppUsersUserIdEditRouteImport
       parentRoute: typeof AppUsersRoute
+    }
+    '/_app/services/$serviceId/edit': {
+      id: '/_app/services/$serviceId/edit'
+      path: '/$serviceId/edit'
+      fullPath: '/services/$serviceId/edit'
+      preLoaderRoute: typeof AppServicesServiceIdEditRouteImport
+      parentRoute: typeof AppServicesRoute
     }
     '/_app/projects/$id/tasks': {
       id: '/_app/projects/$id/tasks'
@@ -1302,6 +1358,22 @@ const AppReportsRouteWithChildren = AppReportsRoute._addFileChildren(
   AppReportsRouteChildren,
 )
 
+interface AppServicesRouteChildren {
+  AppServicesAddRoute: typeof AppServicesAddRoute
+  AppServicesIndexRoute: typeof AppServicesIndexRoute
+  AppServicesServiceIdEditRoute: typeof AppServicesServiceIdEditRoute
+}
+
+const AppServicesRouteChildren: AppServicesRouteChildren = {
+  AppServicesAddRoute: AppServicesAddRoute,
+  AppServicesIndexRoute: AppServicesIndexRoute,
+  AppServicesServiceIdEditRoute: AppServicesServiceIdEditRoute,
+}
+
+const AppServicesRouteWithChildren = AppServicesRoute._addFileChildren(
+  AppServicesRouteChildren,
+)
+
 interface AppUsersRouteChildren {
   AppUsersAddRoute: typeof AppUsersAddRoute
   AppUsersIndexRoute: typeof AppUsersIndexRoute
@@ -1353,7 +1425,7 @@ interface AppRouteChildren {
   AppPluginsRoute: typeof AppPluginsRoute
   AppProjectsRoute: typeof AppProjectsRouteWithChildren
   AppReportsRoute: typeof AppReportsRouteWithChildren
-  AppServicesRoute: typeof AppServicesRoute
+  AppServicesRoute: typeof AppServicesRouteWithChildren
   AppSettingsRoute: typeof AppSettingsRoute
   AppUsersRoute: typeof AppUsersRouteWithChildren
   AppVendorsRoute: typeof AppVendorsRouteWithChildren
@@ -1366,7 +1438,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppPluginsRoute: AppPluginsRoute,
   AppProjectsRoute: AppProjectsRouteWithChildren,
   AppReportsRoute: AppReportsRouteWithChildren,
-  AppServicesRoute: AppServicesRoute,
+  AppServicesRoute: AppServicesRouteWithChildren,
   AppSettingsRoute: AppSettingsRoute,
   AppUsersRoute: AppUsersRouteWithChildren,
   AppVendorsRoute: AppVendorsRouteWithChildren,

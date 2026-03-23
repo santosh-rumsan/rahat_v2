@@ -1,5 +1,5 @@
 const DB_NAME = 'rahat-db'
-const DB_VERSION = 2
+const DB_VERSION = 3
 
 function ensureObjectStore(db: IDBDatabase, name: string, options?: IDBObjectStoreParameters) {
   if (db.objectStoreNames.contains(name)) {
@@ -75,6 +75,7 @@ export function openDb(): Promise<IDBDatabase> {
       ensureIndex(moduleLogStore, 'by_project', 'projectId', { unique: false })
 
       ensureObjectStore(db, 'forecast_sources', { keyPath: 'id' })
+      ensureObjectStore(db, 'services', { keyPath: 'id' })
     }
 
     request.onsuccess = () => resolve(request.result)
