@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { TaskManagementEditTaskPage, useProject } from '@rahataid/projects-shared'
+import { getPlugin } from '@/plugins'
 
 export const Route = createFileRoute('/_app/projects/$id/tasks/$taskId/edit')({
   component: TaskManagementEditRoute,
@@ -25,5 +26,6 @@ function TaskManagementEditRoute() {
     )
   }
 
-  return <TaskManagementEditTaskPage project={project} taskId={taskId} />
+  const plugin = getPlugin(project.projectType)
+  return <TaskManagementEditTaskPage project={project} taskId={taskId} taskGroups={plugin?.taskGroups} />
 }

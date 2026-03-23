@@ -5,7 +5,7 @@ import { type TaskDraft, type ProjectTask } from './types.js'
 import { useProjectTasks } from './hooks.js'
 import { TaskForm } from './components/task-form.js'
 
-export function TaskManagementEditTaskPage({ project, taskId }: { project: ProjectSummary; taskId: string }) {
+export function TaskManagementEditTaskPage({ project, taskId, taskGroups }: { project: ProjectSummary; taskId: string; taskGroups?: string[] }) {
   const { tasks, setTasks } = useProjectTasks(project)
   const task = tasks.find((t) => t.id === taskId) ?? null
 
@@ -27,6 +27,7 @@ export function TaskManagementEditTaskPage({ project, taskId }: { project: Proje
     priority: task.priority,
     taskType: task.taskType ?? 'default',
     triggerType: task.triggerType ?? 'manual',
+    group: task.group,
   }
 
   function handleSave(draft: TaskDraft) {
@@ -41,6 +42,7 @@ export function TaskManagementEditTaskPage({ project, taskId }: { project: Proje
       priority: draft.priority,
       taskType: draft.taskType,
       triggerType: draft.triggerType,
+      group: draft.group,
       designerData: task!.designerData,
     }
     setTasks((current) => current.map((t) => (t.id === taskId ? updated : t)))
@@ -64,6 +66,7 @@ export function TaskManagementEditTaskPage({ project, taskId }: { project: Proje
           onSave={handleSave}
           submitLabel="Save changes"
           hideStatus
+          taskGroups={taskGroups}
         />
       </div>
     </div>

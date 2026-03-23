@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { TaskManagementAddTaskPage, useProject } from '@rahataid/projects-shared'
 import { getRegisteredTaskTypes } from '@rahataid/projects-shared/task-management'
 import { isPluginEnabled } from '../plugins/plugin-state'
+import { getPlugin } from '@/plugins'
 
 export const Route = createFileRoute('/_app/projects/$id/tasks/add-task')({
   component: TaskManagementAddTaskRoute,
@@ -28,5 +29,6 @@ function TaskManagementAddTaskRoute() {
   }
 
   const taskTypes = getRegisteredTaskTypes().filter((t) => isPluginEnabled(t.type))
-  return <TaskManagementAddTaskPage project={project} taskTypes={taskTypes} />
+  const plugin = getPlugin(project.projectType)
+  return <TaskManagementAddTaskPage project={project} taskTypes={taskTypes} taskGroups={plugin?.taskGroups} />
 }

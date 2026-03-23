@@ -8,6 +8,7 @@ export const AaFrontendPlugin: ProjectFrontendPlugin = {
   label: 'Anticipatory Action',
   description: 'Take anticipatory actions before disasters strike',
   icon: 'Shield',
+  taskGroups: ['General', 'Readiness', 'Preparedness', 'Activation'],
   menuItems: [
     { type: 'link', label: 'Benefits', href: '/projects/:projectId/benefits', requiredPluginGroup: 'benefits' },
     { type: 'link', label: 'Tasks', href: '/projects/:projectId/tasks' },

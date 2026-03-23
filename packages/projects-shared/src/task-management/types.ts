@@ -30,6 +30,7 @@ export interface ProjectTask {
   priority: TaskPriority
   taskType: TaskType
   triggerType: TriggerType
+  group?: string
   designerData?: Record<string, unknown>
   statusLogs?: StatusLog[]
   documents?: TaskDocument[]
@@ -45,6 +46,7 @@ export interface TaskDraft {
   priority: TaskPriority
   taskType: TaskType
   triggerType: TriggerType
+  group?: string
 }
 
 export const TASK_STATUSES: TaskStatus[] = ['Not Started', 'In Progress', 'Completed', 'Delayed']

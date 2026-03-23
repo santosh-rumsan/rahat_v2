@@ -7,9 +7,11 @@ import { getRegisteredTaskTypes } from './task-types/registry.js'
 export function TaskManagementAddTaskPage({
   project,
   taskTypes,
+  taskGroups,
 }: {
   project: ProjectSummary
   taskTypes?: ReturnType<typeof getRegisteredTaskTypes>
+  taskGroups?: string[]
 }) {
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-white">
@@ -22,7 +24,7 @@ export function TaskManagementAddTaskPage({
         <p className="text-sm text-gray-400 mt-1">Fill in the details below to create a new task.</p>
       </div>
       <div className="flex-1 px-8 py-6 max-w-2xl">
-        <TaskForm project={project} taskTypes={taskTypes} onSubmit={() => { window.location.href = `/projects/${project.id}/tasks` }} />
+        <TaskForm project={project} taskTypes={taskTypes} taskGroups={taskGroups} onSubmit={() => { window.location.href = `/projects/${project.id}/tasks` }} />
       </div>
     </div>
   )

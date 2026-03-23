@@ -18,6 +18,7 @@ export function TaskForm({
   submitLabel = 'Add task',
   hideStatus = false,
   taskTypes: taskTypesProp,
+  taskGroups,
 }: {
   project: ProjectSummary
   onSubmit?: () => void
@@ -26,6 +27,7 @@ export function TaskForm({
   submitLabel?: string
   hideStatus?: boolean
   taskTypes?: ReturnType<typeof getRegisteredTaskTypes>
+  taskGroups?: string[]
 }) {
   const { setTasks } = useProjectTasks(project)
   const [draft, setDraft] = React.useState<TaskDraft>(() => initialDraft ?? getDefaultTaskDraft())
@@ -57,6 +59,7 @@ export function TaskForm({
       priority: draft.priority,
       taskType: draft.taskType,
       triggerType: draft.triggerType,
+      group: draft.group ?? 'General',
     }
 
     setTasks((current) => [nextTask, ...current])
@@ -196,6 +199,16 @@ export function TaskForm({
           required
         />
       </div>
+
+      {taskGroups && taskGroups.length > 1 && (
+        <FormSelect
+          label="Group"
+          value={draft.group ?? taskGroups[0]!}
+          onChange={(value) => updateDraft('group', value)}
+          options={taskGroups}
+          required
+        />
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormSelect
