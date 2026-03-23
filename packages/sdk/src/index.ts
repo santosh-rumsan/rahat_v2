@@ -68,6 +68,7 @@ export { createCampaignService, idbCampaignService, createApiCampaignService } f
 export type { CampaignService } from './campaign/index.js'
 export { createTransmissionLogService, idbTransmissionLogService, createApiTransmissionLogService } from './campaign/index.js'
 export type { TransmissionLogService } from './campaign/index.js'
+export { resolveServiceBody } from './campaign/template.js'
 export type {
   ProjectModuleLog,
   ImportedProject,

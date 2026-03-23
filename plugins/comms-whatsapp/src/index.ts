@@ -39,7 +39,7 @@ if (typeof window !== 'undefined') window.addEventListener(CAMPAIGN_SEND_EVENT, 
       try {
         await fetch(service.url, {
           method: service.method,
-          headers: { 'Content-Type': 'application/json', ...service.headers },
+          headers: { 'content-type': 'application/json', ...Object.fromEntries(Object.entries(service.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v])) },
           body: JSON.stringify({
             ...service.body,
             message: details.message,

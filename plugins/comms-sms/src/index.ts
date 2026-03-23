@@ -3,7 +3,7 @@ import { registerCommType } from '@rahataid/projects-shared/communication'
 import type { CommFrontendPlugin } from '@rahataid/projects-shared/communication'
 import { CAMPAIGN_SEND_EVENT } from '@rahataid/projects-shared/communication'
 import type { CampaignSendEventDetail } from '@rahataid/projects-shared/communication'
-import { idbServiceService, idbTransmissionLogService, getIsProd } from '@rahataid/sdk'
+import { idbServiceService, idbTransmissionLogService, getIsProd, resolveServiceBody, getSDKApiUrl } from '@rahataid/sdk'
 import type { SmsDetails } from '@rahataid/sdk'
 import { SmsDetails as SmsDetailsComponent } from './sms-details.js'
 
@@ -23,7 +23,7 @@ registerCommType(commsSmsPlugin)
 if (typeof window !== 'undefined') window.addEventListener(CAMPAIGN_SEND_EVENT, async (e: Event) => {
   if (getIsProd()) return
 
-  const { campaign, beneficiaryIds, transmissionLogs } = (e as CustomEvent<CampaignSendEventDetail>).detail
+  const { campaign, beneficiaries, transmissionLogs } = (e as CustomEvent<CampaignSendEventDetail>).detail
 
   if (campaign.communicationType !== 'sms') return
 
@@ -32,30 +32,38 @@ if (typeof window !== 'undefined') window.addEventListener(CAMPAIGN_SEND_EVENT, 
   if (!service) return
 
   const details = campaign.details as SmsDetails
+  const phoneNumbers = beneficiaries.map((b) => b.phone).filter((p): p is string => !!p)
 
-  await Promise.all(
-    beneficiaryIds.map(async (beneficiaryId, i) => {
-      const log = transmissionLogs[i]
-      try {
-        await fetch(service.url, {
-          method: service.method,
-          headers: { 'Content-Type': 'application/json', ...service.headers },
-          body: JSON.stringify({
-            ...service.body,
-            message: details.message,
-            senderId: details.senderId,
-            to: beneficiaryId,
-          }),
-        })
-        if (log) await idbTransmissionLogService.update(log.id, { status: 'Sent' })
-      } catch (err) {
-        if (log) {
-          await idbTransmissionLogService.update(log.id, {
-            status: 'Failed',
-            errorMessage: err instanceof Error ? err.message : 'Unknown error',
-          })
-        }
-      }
-    }),
-  )
+  const resolvedBody = resolveServiceBody(service.body, {
+    phone_number_array: phoneNumbers,
+    message: details.message,
+    senderId: details.senderId ?? '',
+  })
+
+  const apiUrl = getSDKApiUrl()
+  const useProxy = apiUrl !== 'indexdb'
+
+  try {
+    if (useProxy) {
+      await fetch(`${apiUrl}/proxy`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: service.url, method: service.method, headers: service.headers, body: resolvedBody }),
+      })
+    } else {
+      await fetch(service.url, {
+        method: service.method,
+        headers: { 'content-type': 'application/json', ...Object.fromEntries(Object.entries(service.headers ?? {}).map(([k, v]) => [k.toLowerCase(), v])) },
+        body: JSON.stringify(resolvedBody),
+      })
+    }
+    await Promise.all(
+      transmissionLogs.map((log) => idbTransmissionLogService.update(log.id, { status: 'Sent' })),
+    )
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    await Promise.all(
+      transmissionLogs.map((log) => idbTransmissionLogService.update(log.id, { status: 'Failed', errorMessage })),
+    )
+  }
 })

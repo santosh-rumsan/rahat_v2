@@ -5,6 +5,7 @@ export interface Beneficiary {
   gender: 'Male' | 'Female' | 'Other'
   location: string
   phone?: string
+  email?: string
   status: 'Verified' | 'Pending' | 'Inactive'
   enrolledDate: string
   householdSize?: number

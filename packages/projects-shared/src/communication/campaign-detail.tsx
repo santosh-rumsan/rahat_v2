@@ -14,7 +14,7 @@ import {
   TRANSMISSION_STATUS_COLORS,
 } from './types.js'
 import type { Campaign, SmsDetails, WhatsappDetails, VoiceDetails } from './types.js'
-import { CAMPAIGN_SEND_EVENT } from './comm-types/registry.js'
+import { CAMPAIGN_SEND_EVENT, getCommTypeDefinition } from './comm-types/registry.js'
 import type { CampaignSendEventDetail } from './comm-types/registry.js'
 
 export interface CampaignDetailPageProps {
@@ -67,11 +67,13 @@ export function CampaignDetailPage({ projectId, campaignId, onBack }: CampaignDe
       )
 
       // Dispatch event — comms plugins listen and call service webhooks
+      const resolvedBeneficiaries = beneficiaryIds.map((id) => beneficiaries.find((b) => b.id === id)).filter((b) => b !== undefined)
       window.dispatchEvent(
         new CustomEvent<CampaignSendEventDetail>(CAMPAIGN_SEND_EVENT, {
           detail: {
             campaign: updatedCampaign ?? campaign,
             beneficiaryIds,
+            beneficiaries: resolvedBeneficiaries,
             transmissionLogs,
             projectId,
           },
@@ -304,19 +306,30 @@ function MessageTab({ campaign, onUpdate }: { campaign: Campaign; onUpdate: (dat
   const [script, setScript] = React.useState((details as VoiceDetails).script ?? '')
   const [audioUrl, setAudioUrl] = React.useState((details as VoiceDetails).audioUrl ?? '')
   const [language, setLanguage] = React.useState((details as VoiceDetails).language ?? '')
+  const [pluginDetails, setPluginDetails] = React.useState<Record<string, unknown>>(
+    campaign.details as Record<string, unknown> ?? {}
+  )
+
+  const plugin = getCommTypeDefinition(type)
+  const isBuiltIn = type === 'sms' || type === 'whatsapp' || type === 'voice'
+  const hasPluginDetails = !isBuiltIn && !!plugin?.DetailsComponent
 
   async function handleSave() {
     setSaving(true)
-    let newDetails: SmsDetails | WhatsappDetails | VoiceDetails
-    if (type === 'sms') newDetails = { message, senderId: senderId || undefined }
-    else if (type === 'whatsapp') newDetails = { message, templateId: templateId || undefined }
-    else newDetails = { script: script || undefined, audioUrl: audioUrl || undefined, language: language || undefined }
-    await onUpdate({ details: newDetails })
+    if (hasPluginDetails) {
+      await onUpdate({ details: pluginDetails as any })
+    } else {
+      let newDetails: SmsDetails | WhatsappDetails | VoiceDetails
+      if (type === 'sms') newDetails = { message, senderId: senderId || undefined }
+      else if (type === 'whatsapp') newDetails = { message, templateId: templateId || undefined }
+      else newDetails = { script: script || undefined, audioUrl: audioUrl || undefined, language: language || undefined }
+      await onUpdate({ details: newDetails })
+    }
     setEditing(false)
     setSaving(false)
   }
 
-  const label = type === 'sms' ? 'SMS' : type === 'whatsapp' ? 'WhatsApp' : 'Voice Call'
+  const label = type === 'sms' ? 'SMS' : type === 'whatsapp' ? 'WhatsApp' : type === 'voice' ? 'Voice Call' : (plugin?.label ?? type)
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
@@ -334,6 +347,12 @@ function MessageTab({ campaign, onUpdate }: { campaign: Campaign; onUpdate: (dat
 
       {editing ? (
         <div className="space-y-4">
+          {hasPluginDetails && plugin?.DetailsComponent && (
+            <plugin.DetailsComponent
+              data={pluginDetails}
+              onChange={setPluginDetails}
+            />
+          )}
           {(type === 'sms' || type === 'whatsapp') && (
             <>
               <div>
@@ -419,6 +438,14 @@ function MessageTab({ campaign, onUpdate }: { campaign: Campaign; onUpdate: (dat
         </div>
       ) : (
         <div className="space-y-4">
+          {hasPluginDetails && (
+            <div>
+              <p className="text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wide">Message</p>
+              <div className="bg-slate-50 rounded-xl p-4 text-sm text-slate-800 whitespace-pre-wrap">
+                {(campaign.details as Record<string, unknown>).message as string || <span className="text-slate-400">No message set</span>}
+              </div>
+            </div>
+          )}
           {(type === 'sms' || type === 'whatsapp') && (
             <>
               <div>

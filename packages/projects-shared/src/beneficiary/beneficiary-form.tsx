@@ -25,6 +25,7 @@ interface FormState {
   gender: Beneficiary['gender']
   location: string
   phone: string
+  email: string
   status: Beneficiary['status']
   householdSize: string
   notes: string
@@ -37,6 +38,7 @@ function toForm(b: Beneficiary): FormState {
     gender: b.gender,
     location: b.location,
     phone: b.phone ?? '',
+    email: b.email ?? '',
     status: b.status,
     householdSize: b.householdSize != null ? String(b.householdSize) : '',
     notes: b.notes ?? '',
@@ -49,6 +51,7 @@ const emptyForm: FormState = {
   gender: 'Female',
   location: '',
   phone: '',
+  email: '',
   status: 'Pending',
   householdSize: '',
   notes: '',
@@ -76,6 +79,7 @@ export function BeneficiaryForm({ projectId, beneficiary, onSave, onCancel }: Be
       gender: form.gender,
       location: form.location.trim(),
       phone: form.phone.trim() || undefined,
+      email: form.email.trim() || undefined,
       status: form.status,
       householdSize: form.householdSize ? Number(form.householdSize) : undefined,
       notes: form.notes.trim() || undefined,
@@ -197,6 +201,18 @@ export function BeneficiaryForm({ projectId, beneficiary, onSave, onCancel }: Be
               className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
             />
           </div>
+        </div>
+
+        {/* Email */}
+        <div>
+          <label className="text-sm font-medium text-gray-700 block mb-1.5">Email</label>
+          <input
+            type="email"
+            placeholder="e.g. gita@example.com"
+            value={form.email}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setField('email', e.currentTarget.value)}
+            className="w-full px-3 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent"
+          />
         </div>
 
         {/* Status */}

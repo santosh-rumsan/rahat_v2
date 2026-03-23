@@ -88,6 +88,7 @@ export function BeneficiaryDetail({
               { label: 'Age', value: String(beneficiary.age) },
               { label: 'Gender', value: beneficiary.gender },
               { label: 'Phone', value: beneficiary.phone ?? '—' },
+              { label: 'Email', value: beneficiary.email ?? '—' },
               { label: 'Location', value: beneficiary.location },
               { label: 'Status', value: beneficiary.status },
             ].map((field) => (
