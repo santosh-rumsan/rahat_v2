@@ -23,6 +23,7 @@
     "@rahataid/plugin-benefits-nfi": "workspace:*",
     "@rahataid/plugin-benefits-service": "workspace:*",
     "@rahataid/plugin-benefits-wash": "workspace:*",
+    "@rahataid/plugin-comms-slack": "workspace:*",
     "@rahataid/plugin-comms-sms": "workspace:*",
     "@rahataid/plugin-comms-voice": "workspace:*",
     "@rahataid/plugin-comms-whatsapp": "workspace:*",

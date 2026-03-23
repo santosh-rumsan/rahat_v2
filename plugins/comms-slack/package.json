@@ -1,5 +1,5 @@
 {
-  "name": "@rahataid/plugin-comms-sms",
+  "name": "@rahataid/plugin-comms-slack",
   "version": "0.0.1",
   "private": true,
   "type": "module",

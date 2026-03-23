@@ -1,39 +1,37 @@
-import { Phone } from 'lucide-react'
+import { Hash } from 'lucide-react'
 import { registerCommType } from '@rahataid/projects-shared/communication'
 import type { CommFrontendPlugin } from '@rahataid/projects-shared/communication'
 import { CAMPAIGN_SEND_EVENT } from '@rahataid/projects-shared/communication'
 import type { CampaignSendEventDetail } from '@rahataid/projects-shared/communication'
 import { idbServiceService, idbTransmissionLogService, getIsProd } from '@rahataid/sdk'
-import type { VoiceDetails } from '@rahataid/sdk'
-import { VoiceDetails as VoiceDetailsComponent } from './voice-details.js'
+import type { SlackDetails } from '@rahataid/sdk'
+import { SlackDetails as SlackDetailsComponent } from './slack-details.js'
 
-export const commsVoicePlugin: CommFrontendPlugin = {
-  type: 'voice',
-  label: 'Voice Call',
-  description: 'Send automated voice calls to beneficiaries',
+export const commsSlackPlugin: CommFrontendPlugin = {
+  type: 'slack',
+  label: 'Slack',
+  description: 'Send Slack messages to beneficiaries',
   group: 'comms',
-  IconComponent: Phone,
-  DetailsComponent: VoiceDetailsComponent,
-  canAdvance: (data) =>
-    (typeof data.script === 'string' && data.script.trim().length > 0) ||
-    (typeof data.audioUrl === 'string' && data.audioUrl.trim().length > 0),
+  IconComponent: Hash,
+  DetailsComponent: SlackDetailsComponent,
+  canAdvance: (data) => typeof data.message === 'string' && data.message.trim().length > 0,
 }
 
-registerCommType(commsVoicePlugin)
+registerCommType(commsSlackPlugin)
 
-// Listen for campaign send events and call the SIP/Voice webhook
+// Listen for campaign send events and call the Slack webhook
 if (typeof window !== 'undefined') window.addEventListener(CAMPAIGN_SEND_EVENT, async (e: Event) => {
   if (getIsProd()) return
 
   const { campaign, beneficiaryIds, transmissionLogs } = (e as CustomEvent<CampaignSendEventDetail>).detail
 
-  if (campaign.communicationType !== 'voice') return
+  if (campaign.communicationType !== 'slack') return
 
   const services = await idbServiceService.list()
-  const service = services.find((s) => s.serviceType === 'SIP' && s.isEnabled)
+  const service = services.find((s) => s.serviceType === 'SLACK' && s.isEnabled)
   if (!service) return
 
-  const details = campaign.details as VoiceDetails
+  const details = campaign.details as SlackDetails
 
   await Promise.all(
     beneficiaryIds.map(async (beneficiaryId, i) => {
@@ -44,10 +42,9 @@ if (typeof window !== 'undefined') window.addEventListener(CAMPAIGN_SEND_EVENT, 
           headers: { 'Content-Type': 'application/json', ...service.headers },
           body: JSON.stringify({
             ...service.body,
-            script: details.script,
-            audioUrl: details.audioUrl,
-            language: details.language,
-            to: beneficiaryId,
+            text: details.message,
+            channel: details.channel || undefined,
+            beneficiaryId,
           }),
         })
         if (log) await idbTransmissionLogService.update(log.id, { status: 'Sent' })

@@ -20,10 +20,11 @@ import {
   loadFont,
   saveFont,
 } from '../lib/font-store'
+import { getIsProd, setIsProd } from '@rahataid/sdk'
 
 export const Route = createFileRoute('/_app/settings')({ component: SettingsPage })
 
-type Tab = 'general' | 'project'
+type Tab = 'general' | 'project' | 'advanced'
 
 function SettingsPage() {
   const [activeTab, setActiveTab] = React.useState<Tab>('general')
@@ -74,11 +75,15 @@ function SettingsPage() {
           <TabButton active={activeTab === 'project'} onClick={() => setActiveTab('project')}>
             Project Settings
           </TabButton>
+          <TabButton active={activeTab === 'advanced'} onClick={() => setActiveTab('advanced')}>
+            Advanced
+          </TabButton>
         </div>
 
         {/* Tab content */}
         <div className="flex-1 px-8 py-6 overflow-y-auto">
           {activeTab === 'general' && <GeneralTab />}
+          {activeTab === 'advanced' && <AdvancedTab />}
           {activeTab === 'project' && (
             <ProjectSettingsTab
               plugins={plugins}
@@ -128,8 +133,6 @@ async function clearAllCache() {
 function GeneralTab() {
   const [colorTheme, setColorThemeState] = React.useState<ColorTheme>(loadColorTheme)
   const [font, setFontState] = React.useState<AppFont>(loadFont)
-  const [showClearConfirm, setShowClearConfirm] = React.useState(false)
-  const [cleared, setCleared] = React.useState(false)
 
   function handleThemeChange(theme: ColorTheme) {
     setColorThemeState(theme)
@@ -139,12 +142,6 @@ function GeneralTab() {
   function handleFontChange(f: AppFont) {
     setFontState(f)
     saveFont(f)
-  }
-
-  async function handleClearCache() {
-    await clearAllCache()
-    setShowClearConfirm(false)
-    setCleared(true)
   }
 
   return (
@@ -204,6 +201,100 @@ function GeneralTab() {
             </button>
           ))}
         </div>
+      </section>
+
+    </div>
+  )
+}
+
+function AdvancedTab() {
+  const [isProd, setIsProdState] = React.useState<boolean>(getIsProd)
+  const [pendingValue, setPendingValue] = React.useState<boolean | null>(null)
+  const [showClearConfirm, setShowClearConfirm] = React.useState(false)
+  const [cleared, setCleared] = React.useState(false)
+
+  async function handleConfirm() {
+    if (pendingValue === null) return
+    if (pendingValue === true) {
+      // Turning prod ON: clear all local cache
+      await clearAllCache()
+    }
+    setIsProd(pendingValue)
+    setIsProdState(pendingValue)
+    setPendingValue(null)
+  }
+
+  async function handleClearCache() {
+    await clearAllCache()
+    setShowClearConfirm(false)
+    setCleared(true)
+  }
+
+  function handleToggle(value: boolean) {
+    setPendingValue(value)
+  }
+
+  return (
+    <div className="max-w-lg flex flex-col gap-8">
+      <section>
+        <h2 className="text-base font-semibold text-gray-900 mb-0.5">Environment</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Control whether this instance behaves as a production environment. When disabled,
+          campaigns will be sent locally via the configured services in IndexedDB.
+        </p>
+
+        <label className="flex items-center justify-between p-4 rounded-xl border border-gray-200 cursor-pointer hover:border-brand-300 hover:bg-brand-50 transition-colors">
+          <div>
+            <p className="text-sm font-medium text-gray-900">Production mode</p>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {isProd
+                ? 'Local campaign sending is disabled.'
+                : 'Local campaign sending via idb services is active.'}
+            </p>
+          </div>
+          <button
+            role="switch"
+            aria-checked={isProd}
+            onClick={() => handleToggle(!isProd)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors focus:outline-none ${
+              isProd ? 'bg-brand-600' : 'bg-gray-200'
+            }`}
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                isProd ? 'translate-x-5' : 'translate-x-0'
+              }`}
+            />
+          </button>
+        </label>
+
+        {pendingValue !== null && (
+          <div className={`mt-3 flex flex-col gap-3 px-4 py-4 rounded-xl border ${
+            pendingValue ? 'border-red-200 bg-red-50' : 'border-yellow-200 bg-yellow-50'
+          }`}>
+            <p className={`text-sm font-medium ${pendingValue ? 'text-red-800' : 'text-yellow-800'}`}>
+              {pendingValue
+                ? 'Turning on production mode will clear all local cache (localStorage + IndexedDB). Are you sure?'
+                : 'Turn off production mode? Local campaign sending via idb services will be re-enabled.'}
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={handleConfirm}
+                className={`px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors ${
+                  pendingValue ? 'bg-red-600 hover:bg-red-700' : 'bg-brand-600 hover:bg-brand-700'
+                }`}
+              >
+                {pendingValue ? 'Yes, enable production mode' : 'Yes, disable production mode'}
+              </button>
+              <button
+                onClick={() => setPendingValue(null)}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       <section>

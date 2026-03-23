@@ -123,6 +123,20 @@ export const idbTransmissionLogService: TransmissionLogService = {
     return log
   },
 
+  async update(id, data) {
+    const db = await openDb()
+    const existing = await new Promise<TransmissionLog | undefined>((resolve, reject) => {
+      const transaction = db.transaction(LOG_STORE, 'readonly')
+      const req = transaction.objectStore(LOG_STORE).get(id)
+      req.onsuccess = () => resolve(req.result as TransmissionLog | undefined)
+      req.onerror = () => reject(req.error)
+    })
+    if (!existing) throw new Error(`TransmissionLog ${id} not found`)
+    const updated: TransmissionLog = { ...existing, ...data }
+    await tx(db, LOG_STORE, 'readwrite', (store) => store.put(updated))
+    return updated
+  },
+
   async clearByCampaign(campaignId) {
     const db = await openDb()
     const logs = await idbTransmissionLogService.list(campaignId)

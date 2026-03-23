@@ -17,5 +17,6 @@ export interface CampaignService {
 export interface TransmissionLogService {
   list(campaignId: string): Promise<TransmissionLog[]>
   create(data: CreateTransmissionLogInput): Promise<TransmissionLog>
+  update(id: string, data: Partial<Pick<TransmissionLog, 'status' | 'errorMessage'>>): Promise<TransmissionLog>
   clearByCampaign(campaignId: string): Promise<void>
 }

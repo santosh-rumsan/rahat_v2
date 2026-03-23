@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { ArrowLeft, Users, User, UserMinus, UserPlus, Search, Trash2, Plus } from 'lucide-react'
+import { ArrowLeft, Users, User, UserMinus, UserPlus, Search, Trash2, Plus, Send } from 'lucide-react'
 import { cn } from '@rs/ui'
 import { Badge } from '@rs/ui/badge'
 import { Button } from '@rs/ui/button'
@@ -14,6 +14,8 @@ import {
   TRANSMISSION_STATUS_COLORS,
 } from './types.js'
 import type { Campaign, SmsDetails, WhatsappDetails, VoiceDetails } from './types.js'
+import { CAMPAIGN_SEND_EVENT } from './comm-types/registry.js'
+import type { CampaignSendEventDetail } from './comm-types/registry.js'
 
 export interface CampaignDetailPageProps {
   projectId: string
@@ -26,6 +28,7 @@ export function CampaignDetailPage({ projectId, campaignId, onBack }: CampaignDe
   const { logs, addLog, clearLogs } = useCampaignTransmissionLogs(campaignId)
   const [beneficiaries, setBeneficiaries] = React.useState<Beneficiary[]>([])
   const [groups, setGroups] = React.useState<BeneficiaryGroup[]>([])
+  const [sending, setSending] = React.useState(false)
 
   React.useEffect(() => {
     idbBeneficiaryService.list(projectId).then(setBeneficiaries).catch(() => {})
@@ -37,6 +40,45 @@ export function CampaignDetailPage({ projectId, campaignId, onBack }: CampaignDe
       onBack()
     } else {
       window.location.href = `/projects/${projectId}/communication`
+    }
+  }
+
+  async function handleSend() {
+    if (!campaign || sending) return
+    setSending(true)
+    try {
+      // Resolve all beneficiary IDs (expand groups)
+      const resolvedIds = new Set<string>(campaign.beneficiaryIds)
+      for (const groupId of campaign.beneficiaryGroupIds) {
+        const group = groups.find((g) => g.id === groupId)
+        if (group) group.beneficiaryIds.forEach((id) => resolvedIds.add(id))
+      }
+      const beneficiaryIds = Array.from(resolvedIds)
+
+      // Update campaign status to Sending
+      const updatedCampaign = await update({ status: 'Sending', sentAt: new Date().toISOString() })
+
+      // Create Pending transmission logs for each beneficiary
+      const transmissionLogs = await Promise.all(
+        beneficiaryIds.map((bId) => {
+          const b = beneficiaries.find((x) => x.id === bId)
+          return addLog({ campaignId: campaign.id, beneficiaryId: bId, beneficiaryName: b?.name, status: 'Pending' })
+        }),
+      )
+
+      // Dispatch event — comms plugins listen and call service webhooks
+      window.dispatchEvent(
+        new CustomEvent<CampaignSendEventDetail>(CAMPAIGN_SEND_EVENT, {
+          detail: {
+            campaign: updatedCampaign ?? campaign,
+            beneficiaryIds,
+            transmissionLogs,
+            projectId,
+          },
+        }),
+      )
+    } finally {
+      setSending(false)
     }
   }
 
@@ -76,8 +118,18 @@ export function CampaignDetailPage({ projectId, campaignId, onBack }: CampaignDe
                 <h1 className="text-2xl font-black text-[#1a1a1a] leading-tight">{campaign.name}</h1>
                 <Badge className={CAMPAIGN_STATUS_COLORS[campaign.status]}>{campaign.status}</Badge>
                 <span className={cn('text-xs font-semibold px-2 py-0.5 rounded-full', COMM_TYPE_COLORS[campaign.communicationType])}>
-                  {campaign.communicationType === 'sms' ? 'SMS' : campaign.communicationType === 'whatsapp' ? 'WhatsApp' : 'Voice'}
+                  {campaign.communicationType === 'sms' ? 'SMS' : campaign.communicationType === 'whatsapp' ? 'WhatsApp' : campaign.communicationType === 'slack' ? 'Slack' : 'Voice'}
                 </span>
+                {(campaign.status === 'Draft' || campaign.status === 'Scheduled') && (
+                  <Button
+                    onClick={() => { void handleSend() }}
+                    disabled={sending || (campaign.beneficiaryIds.length === 0 && campaign.beneficiaryGroupIds.length === 0)}
+                    className="ml-2 flex items-center gap-1.5 bg-orange-500 text-white hover:bg-orange-600 text-sm px-4 py-2 h-auto"
+                  >
+                    <Send className="size-3.5" />
+                    {sending ? 'Sending…' : 'Send Campaign'}
+                  </Button>
+                )}
               </div>
               {campaign.description && (
                 <p className="text-sm text-gray-400 mt-1">{campaign.description}</p>

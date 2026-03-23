@@ -1,4 +1,4 @@
-export { configureSDK, getSDKApiUrl, getSDKIsDev } from './config.js'
+export { configureSDK, getSDKApiUrl, getSDKIsDev, getIsProd, setIsProd, IS_PROD_KEY } from './config.js'
 export { openDb } from './db.js'
 export type {
   Beneficiary,
@@ -56,6 +56,7 @@ export type {
   SmsDetails,
   WhatsappDetails,
   VoiceDetails,
+  SlackDetails,
   CampaignDetails,
   Campaign,
   CreateCampaignInput,

@@ -1,4 +1,16 @@
 import * as React from 'react'
+import type { Campaign, TransmissionLog } from '@rahataid/sdk'
+
+export const CAMPAIGN_SEND_EVENT = 'rahat:campaign:send' as const
+
+export interface CampaignSendEventDetail {
+  campaign: Campaign
+  /** Fully resolved beneficiary IDs (groups already expanded) */
+  beneficiaryIds: string[]
+  /** Pre-created Pending transmission logs, one per beneficiary (same order as beneficiaryIds) */
+  transmissionLogs: TransmissionLog[]
+  projectId: string
+}
 
 export interface CommDetailsProps {
   data: Record<string, unknown>

@@ -1,4 +1,4 @@
-export type CommunicationType = 'sms' | 'whatsapp' | 'voice'
+export type CommunicationType = 'sms' | 'whatsapp' | 'voice' | 'slack'
 export type CampaignStatus = 'Draft' | 'Scheduled' | 'Sending' | 'Completed' | 'Failed'
 export type TransmissionStatus = 'Pending' | 'Sent' | 'Delivered' | 'Failed'
 
@@ -18,7 +18,12 @@ export interface VoiceDetails {
   language?: string
 }
 
-export type CampaignDetails = SmsDetails | WhatsappDetails | VoiceDetails
+export interface SlackDetails {
+  message: string
+  channel?: string
+}
+
+export type CampaignDetails = SmsDetails | WhatsappDetails | VoiceDetails | SlackDetails
 
 export interface Campaign {
   id: string

@@ -17,6 +17,7 @@ export const COMMUNICATION_TYPES: { value: import('@rahataid/sdk').Communication
   { value: 'sms', label: 'SMS', description: 'Send text messages to beneficiaries' },
   { value: 'whatsapp', label: 'WhatsApp', description: 'Send WhatsApp messages to beneficiaries' },
   { value: 'voice', label: 'Voice Call', description: 'Send automated voice calls to beneficiaries' },
+  { value: 'slack', label: 'Slack', description: 'Send Slack messages to beneficiaries' },
 ]
 
 export const CAMPAIGN_STATUS_COLORS: Record<import('@rahataid/sdk').CampaignStatus, string> = {
@@ -38,10 +39,12 @@ export const COMM_TYPE_ICONS: Record<import('@rahataid/sdk').CommunicationType, 
   sms: '💬',
   whatsapp: '📱',
   voice: '📞',
+  slack: '#',
 }
 
 export const COMM_TYPE_COLORS: Record<import('@rahataid/sdk').CommunicationType, string> = {
   sms: 'bg-blue-100 text-blue-700',
   whatsapp: 'bg-green-100 text-green-700',
   voice: 'bg-orange-100 text-orange-700',
+  slack: 'bg-purple-100 text-purple-700',
 }

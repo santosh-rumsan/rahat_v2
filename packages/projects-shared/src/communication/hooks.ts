@@ -58,9 +58,10 @@ export function useCampaignTransmissionLogs(campaignId: string) {
     idbTransmissionLogService.list(campaignId).then(setLogs).catch(() => {})
   }, [campaignId])
 
-  async function addLog(data: CreateTransmissionLogInput): Promise<void> {
+  async function addLog(data: CreateTransmissionLogInput): Promise<TransmissionLog> {
     const log = await idbTransmissionLogService.create(data)
     setLogs((prev) => [log, ...prev])
+    return log
   }
 
   async function clearLogs(): Promise<void> {

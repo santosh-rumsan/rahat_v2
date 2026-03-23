@@ -34,6 +34,7 @@ import '@rahataid/plugin-task-benefits'
 import '@rahataid/plugin-comms-sms'
 import '@rahataid/plugin-comms-whatsapp'
 import '@rahataid/plugin-comms-voice'
+import '@rahataid/plugin-comms-slack'
 
 // Register benefit type plugins — each import self-registers via registerBenefitType()
 import '@rahataid/plugin-benefits-cash'

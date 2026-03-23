@@ -36,6 +36,7 @@ export type {
   SmsDetails,
   WhatsappDetails,
   VoiceDetails,
+  SlackDetails,
   CampaignDetails,
   Campaign,
   CreateCampaignInput,

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@rahataid/projects-shared": "workspace:*",
+    "@rahataid/sdk": "workspace:*",
     "@rs/ui": "workspace:*",
     "lucide-react": "catalog:"
   },

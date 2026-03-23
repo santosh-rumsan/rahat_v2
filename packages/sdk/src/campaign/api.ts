@@ -63,6 +63,13 @@ export function createApiTransmissionLogService(baseUrl: string): TransmissionLo
       })
     },
 
+    update(id, data) {
+      return apiFetch<TransmissionLog>(`${base}/transmission-logs/${id}`, {
+        method: 'PATCH',
+        body: JSON.stringify(data),
+      })
+    },
+
     async clearByCampaign(campaignId) {
       await apiFetch<void>(`${base}/${campaignId}/transmission-logs`, { method: 'DELETE' })
     },
