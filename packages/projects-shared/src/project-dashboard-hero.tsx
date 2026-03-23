@@ -8,6 +8,7 @@ interface ProjectDashboardHeroProps {
   projectTypeLabel: string
   accentClassName: string
   onEdit?: () => void
+  mapSlot?: React.ReactNode
 }
 
 const statusClassNames: Record<string, string> = {
@@ -27,7 +28,7 @@ function fmtAmount(n: number) {
   return new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(n)
 }
 
-export function ProjectDashboardHero({ project, projectTypeLabel, accentClassName, onEdit }: ProjectDashboardHeroProps) {
+export function ProjectDashboardHero({ project, projectTypeLabel, accentClassName, onEdit, mapSlot }: ProjectDashboardHeroProps) {
   const [open, setOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
   const { data: allocations = [] } = useProjectAllocations(project.id)
@@ -54,72 +55,84 @@ export function ProjectDashboardHero({ project, projectTypeLabel, accentClassNam
 
   return (
     <section className="px-8 pt-10">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-[-0.03em] text-slate-950 md:text-4xl xl:text-3xl">
-            {project.name}
-          </h1>
-          <p className="mt-1.5 text-sm text-slate-500 md:text-base">
-            {project.location}
-          </p>
-        </div>
+      <div className="flex gap-6 items-stretch">
+        {/* Left: project info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-semibold tracking-[-0.03em] text-slate-950 md:text-4xl xl:text-3xl">
+                {project.name}
+              </h1>
+              <p className="mt-1.5 text-sm text-slate-500 md:text-base">
+                {project.location}
+              </p>
+            </div>
 
-        {onEdit && (
-          <div className="relative" ref={dropdownRef}>
-            <button
-              onClick={() => setOpen((v) => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              <MoreHorizontal size={16} />
-              Actions
-            </button>
-            {open && (
-              <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1">
+            {onEdit && (
+              <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={() => { setOpen(false); onEdit() }}
-                  className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={() => setOpen((v) => !v)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                 >
-                  <Pencil size={14} />
-                  Edit
+                  <MoreHorizontal size={16} />
+                  Actions
                 </button>
+                {open && (
+                  <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-10 py-1">
+                    <button
+                      onClick={() => { setOpen(false); onEdit() }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                    >
+                      <Pencil size={14} />
+                      Edit
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs tracking-[0.05em] ${accentClassName}`}>
+              {projectTypeLabel}
+            </span>
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-1 text-xs  tracking-[0.05em] ${
+                statusClassNames[project.status] ?? statusClassNames.Completed
+              }`}
+            >
+              {project.status}
+            </span>
+          </div>
+
+          {tokenTotals.length > 0 && (
+            <div className="mt-5 flex flex-wrap items-center gap-3">
+              <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
+                <Coins size={13} />
+                Allocated funds:
+              </span>
+              {tokenTotals.map(({ token, amount }) => {
+                const c = TOKEN_COLORS[token] ?? FALLBACK_COLORS
+                return (
+                  <span
+                    key={token}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${c.bg} ${c.text}`}
+                  >
+                    {fmtAmount(amount)} {token}
+                  </span>
+                )
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Right: map */}
+        {mapSlot && (
+          <div className="w-[42%] flex-shrink-0 rounded-2xl overflow-hidden min-h-[260px]">
+            {mapSlot}
+          </div>
         )}
       </div>
-
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        <span className={`inline-flex items-center rounded-full px-2 py-1 text-xs tracking-[0.05em] ${accentClassName}`}>
-          {projectTypeLabel}
-        </span>
-        <span
-          className={`inline-flex items-center rounded-full px-2 py-1 text-xs  tracking-[0.05em] ${
-            statusClassNames[project.status] ?? statusClassNames.Completed
-          }`}
-        >
-          {project.status}
-        </span>
-      </div>
-
-      {tokenTotals.length > 0 && (
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          <span className="flex items-center gap-1 text-xs text-slate-400 font-medium">
-            <Coins size={13} />
-            Allocated funds:
-          </span>
-          {tokenTotals.map(({ token, amount }) => {
-            const c = TOKEN_COLORS[token] ?? FALLBACK_COLORS
-            return (
-              <span
-                key={token}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${c.bg} ${c.text}`}
-              >
-                {fmtAmount(amount)} {token}
-              </span>
-            )
-          })}
-        </div>
-      )}
     </section>
   )
 }

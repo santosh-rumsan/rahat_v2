@@ -21,7 +21,7 @@ const statCardClassName =
 const panelCardClassName =
   'rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_18px_38px_-28px_rgba(15,23,42,0.45)]'
 
-export function AaDashboardPage({ project, onEdit }: DashboardPageProps) {
+export function AaDashboardPage({ project, onEdit, mapSlot }: DashboardPageProps) {
   const triggersActivated = triggers.length
   const householdsReached = project.beneficiaries
   const earlyWarnings = 7
@@ -34,6 +34,7 @@ export function AaDashboardPage({ project, onEdit }: DashboardPageProps) {
         projectTypeLabel="Anticipatory Action"
         accentClassName="bg-purple-500 text-white"
         onEdit={onEdit}
+        mapSlot={mapSlot}
       />
 
       <div className="flex-1 px-8 py-6 space-y-6">

@@ -22,7 +22,7 @@ const statCardClassName =
 const panelCardClassName =
   'rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_18px_38px_-28px_rgba(15,23,42,0.45)]'
 
-export function MicroloansDashboardPage({ project, onEdit }: DashboardPageProps) {
+export function MicroloansDashboardPage({ project, onEdit, mapSlot }: DashboardPageProps) {
   const totalLoans = project.beneficiaries
   const activeBorrowers = Math.round(totalLoans * 0.72)
   const repaymentRate = 84
@@ -35,6 +35,7 @@ export function MicroloansDashboardPage({ project, onEdit }: DashboardPageProps)
         projectTypeLabel="Microloans"
         accentClassName="bg-emerald-500 text-white"
         onEdit={onEdit}
+        mapSlot={mapSlot}
       />
 
       <div className="flex-1 px-8 py-6 space-y-6">

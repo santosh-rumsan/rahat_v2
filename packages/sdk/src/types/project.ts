@@ -11,6 +11,8 @@ export interface Project {
   beneficiaries: number
   budget: string
   primaryToken?: string
+  longitude?: number
+  latitude?: number
 }
 
 export type CreateProjectInput = {

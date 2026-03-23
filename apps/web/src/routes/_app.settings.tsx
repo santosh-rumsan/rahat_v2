@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import * as React from 'react'
-import { Check } from 'lucide-react'
+import { Check, Trash2 } from 'lucide-react'
 import { getRegisteredPlugins } from '../plugins'
 import {
   ALL_BLOCKCHAINS,
@@ -117,9 +117,19 @@ function TabButton({
   )
 }
 
+async function clearAllCache() {
+  localStorage.clear()
+  const dbs = await indexedDB.databases?.()
+  if (dbs) {
+    await Promise.all(dbs.map((db) => db.name && indexedDB.deleteDatabase(db.name)))
+  }
+}
+
 function GeneralTab() {
   const [colorTheme, setColorThemeState] = React.useState<ColorTheme>(loadColorTheme)
   const [font, setFontState] = React.useState<AppFont>(loadFont)
+  const [showClearConfirm, setShowClearConfirm] = React.useState(false)
+  const [cleared, setCleared] = React.useState(false)
 
   function handleThemeChange(theme: ColorTheme) {
     setColorThemeState(theme)
@@ -129,6 +139,12 @@ function GeneralTab() {
   function handleFontChange(f: AppFont) {
     setFontState(f)
     saveFont(f)
+  }
+
+  async function handleClearCache() {
+    await clearAllCache()
+    setShowClearConfirm(false)
+    setCleared(true)
   }
 
   return (
@@ -188,6 +204,48 @@ function GeneralTab() {
             </button>
           ))}
         </div>
+      </section>
+
+      <section>
+        <h2 className="text-base font-semibold text-gray-900 mb-0.5">Danger Zone</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          Clearing the cache will remove all locally stored data including settings, preferences, and
+          cached content. The page will need to be reloaded.
+        </p>
+        {cleared ? (
+          <div className="flex items-center gap-2 px-4 py-3 rounded-xl border border-green-200 bg-green-50 text-sm text-green-700">
+            <Check size={16} strokeWidth={3} />
+            Cache cleared. Please reload the page.
+          </div>
+        ) : showClearConfirm ? (
+          <div className="flex flex-col gap-3 px-4 py-4 rounded-xl border border-red-200 bg-red-50">
+            <p className="text-sm font-medium text-red-800">
+              Are you sure? This cannot be undone.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={handleClearCache}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+              >
+                Yes, clear cache
+              </button>
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 text-sm font-medium hover:bg-gray-100 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowClearConfirm(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg border border-red-300 text-red-700 text-sm font-medium hover:bg-red-50 transition-colors"
+          >
+            <Trash2 size={15} />
+            Clear Cache
+          </button>
+        )}
       </section>
     </div>
   )

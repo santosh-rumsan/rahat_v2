@@ -13,6 +13,7 @@
   },
   "devDependencies": {
     "@rs/tsconfig": "workspace:*",
+    "@types/react": "catalog:react19",
     "typescript": "catalog:"
   }
 }

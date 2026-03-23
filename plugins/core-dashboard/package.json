@@ -21,13 +21,18 @@
   },
   "dependencies": {
     "@rahataid/plugin-sdk": "workspace:*",
-    "lucide-react": "catalog:"
+    "@rahataid/sdk": "workspace:*",
+    "lucide-react": "catalog:",
+    "mapbox-gl": "^3.20.0"
   },
   "peerDependencies": {
+    "@tanstack/react-query": "catalog:tanstack",
     "react": "catalog:react19"
   },
   "devDependencies": {
     "@rs/tsconfig": "workspace:*",
+    "@tanstack/react-query": "catalog:tanstack",
+    "@types/mapbox-gl": "^3.5.0",
     "@types/react": "catalog:react19",
     "react": "catalog:react19",
     "typescript": "catalog:"

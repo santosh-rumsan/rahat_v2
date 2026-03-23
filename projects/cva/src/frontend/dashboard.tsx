@@ -15,7 +15,7 @@ const statCardClassName =
 const panelCardClassName =
   'rounded-2xl border border-slate-200/80 bg-white/95 p-5 shadow-[0_18px_38px_-28px_rgba(15,23,42,0.45)]'
 
-export function CvaDashboardPage({ project, onEdit }: DashboardPageProps) {
+export function CvaDashboardPage({ project, onEdit, mapSlot }: DashboardPageProps) {
   const totalVouchers = Math.round(project.beneficiaries * 1.2)
   const redeemed = Math.round(totalVouchers * 0.73)
   const redemptionRate = Math.round((redeemed / totalVouchers) * 100)
@@ -27,6 +27,7 @@ export function CvaDashboardPage({ project, onEdit }: DashboardPageProps) {
         projectTypeLabel="Cash Voucher Assistance"
         accentClassName="bg-orange-500 text-white"
         onEdit={onEdit}
+        mapSlot={mapSlot}
       />
 
       <div className="flex-1 px-8 py-6 space-y-6">

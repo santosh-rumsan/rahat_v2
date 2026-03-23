@@ -19,11 +19,14 @@ export interface ProjectSummary {
   budget: string
   image: string
   projectType: string
+  longitude?: number
+  latitude?: number
 }
 
 export interface DashboardPageProps {
   project: ProjectSummary
   onEdit?: () => void
+  mapSlot?: import('react').ReactNode
 }
 
 export interface MenuLink {

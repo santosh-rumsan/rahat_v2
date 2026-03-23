@@ -153,6 +153,19 @@ export function parseProjectImportPayload(input: string | unknown): NormalizedPr
   normalizedProject.budget = typeof project.budget === 'string' ? project.budget : '$0'
   normalizedProject.beneficiaries = beneficiaryCount
 
+  // Normalize location: support both string and { name, coordinates } object formats
+  if (isRecord(project.location)) {
+    const loc = project.location as { name?: unknown; coordinates?: unknown }
+    normalizedProject.location = typeof loc.name === 'string' ? loc.name : ''
+    if (typeof loc.coordinates === 'string') {
+      const parts = loc.coordinates.split(',').map((s) => parseFloat(s.trim()))
+      if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+        normalizedProject.latitude = parts[0]
+        normalizedProject.longitude = parts[1]
+      }
+    }
+  }
+
   return {
     version: typeof raw.version === 'number' ? raw.version : 1,
     exportedAt: typeof raw.exportedAt === 'string' ? raw.exportedAt : new Date().toISOString(),
