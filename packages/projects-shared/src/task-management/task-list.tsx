@@ -13,7 +13,9 @@ import { TaskPreviewPanel } from './task-preview.js'
 
 const DEFAULT_GROUP = 'General'
 
-export function TaskManagementModule({ project, taskGroups }: { project: ProjectSummary; taskGroups?: string[] }) {
+export function TaskManagementModule({ project, taskGroups, taskLabel }: { project: ProjectSummary; taskGroups?: string[]; taskLabel?: { singular: string; plural: string } }) {
+  const singular = taskLabel?.singular ?? 'Task'
+  const plural = taskLabel?.plural ?? 'Tasks'
   const groups = taskGroups && taskGroups.length > 0 ? taskGroups : [DEFAULT_GROUP]
   const showTabs = groups.length > 1
   const [activeGroup, setActiveGroup] = React.useState(groups[0]!)
@@ -61,7 +63,7 @@ export function TaskManagementModule({ project, taskGroups }: { project: Project
         <Card className="min-h-0 flex-1 gap-0 py-0 border-slate-200/80 bg-white/92 shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] rounded-none flex flex-col">
           <CardHeader className="border-b border-slate-200/80 pt-4 pb-4 shrink-0">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <CardTitle className="text-xl font-semibold">Task Management</CardTitle>
+              <CardTitle className="text-xl font-semibold">{plural}</CardTitle>
               <div className="flex flex-wrap items-center gap-3">
                 {showTabs && (
                   <div className="inline-flex w-fit rounded-xl border border-slate-200 bg-slate-50 p-1">
@@ -97,7 +99,7 @@ export function TaskManagementModule({ project, taskGroups }: { project: Project
                     >
                       <ListTodo className="size-4" />
                     </button>
-                    <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100">
+                    <div className="pointer-events-none absolute top-full left-1/2 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 z-50">
                       Table view
                     </div>
                   </div>
@@ -109,13 +111,13 @@ export function TaskManagementModule({ project, taskGroups }: { project: Project
                     >
                       <SquareKanban className="size-4" />
                     </button>
-                    <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100">
+                    <div className="pointer-events-none absolute top-full left-1/2 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover/tooltip:opacity-100 z-50">
                       Kanban
                     </div>
                   </div>
                 </div>
                 <a href={`/projects/${project.id}/tasks/add-task`}>
-                  <Button className="h-10 bg-orange-500 text-white hover:bg-orange-600">Add task</Button>
+                  <Button className="h-10 bg-orange-500 text-white hover:bg-orange-600">Add {singular.toLowerCase()}</Button>
                 </a>
               </div>
             </div>

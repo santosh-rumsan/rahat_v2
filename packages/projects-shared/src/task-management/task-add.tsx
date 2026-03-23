@@ -8,20 +8,24 @@ export function TaskManagementAddTaskPage({
   project,
   taskTypes,
   taskGroups,
+  taskLabel,
 }: {
   project: ProjectSummary
   taskTypes?: ReturnType<typeof getRegisteredTaskTypes>
   taskGroups?: string[]
+  taskLabel?: { singular: string; plural: string }
 }) {
+  const singular = taskLabel?.singular ?? 'Task'
+  const plural = taskLabel?.plural ?? 'Tasks'
   return (
     <div className="flex flex-col h-full overflow-y-auto bg-white">
       <div className="px-8 pt-7 pb-5 border-b border-gray-100">
         <a href={`/projects/${project.id}/tasks`} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-4">
           <ChevronLeft size={14} />
-          Back to tasks
+          Back to {plural.toLowerCase()}
         </a>
-        <h1 className="text-2xl font-black text-[#1a1a1a]">Add Task</h1>
-        <p className="text-sm text-gray-400 mt-1">Fill in the details below to create a new task.</p>
+        <h1 className="text-2xl font-black text-[#1a1a1a]">Add {singular}</h1>
+        <p className="text-sm text-gray-400 mt-1">Fill in the details below to create a new {singular.toLowerCase()}.</p>
       </div>
       <div className="flex-1 px-8 py-6 max-w-2xl">
         <TaskForm project={project} taskTypes={taskTypes} taskGroups={taskGroups} onSubmit={() => { window.location.href = `/projects/${project.id}/tasks` }} />

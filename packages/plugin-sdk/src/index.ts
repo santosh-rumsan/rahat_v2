@@ -53,6 +53,7 @@ export interface ProjectFrontendPlugin {
   icon?: string
   menuItems?: MenuItem[]
   taskGroups?: string[]
+  taskLabel?: { singular: string; plural: string }
   SetupPage: (props: SetupPageProps) => unknown
   DashboardPage?: (props: DashboardPageProps) => unknown
 }

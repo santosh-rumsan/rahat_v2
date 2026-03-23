@@ -30,5 +30,5 @@ function TaskManagementAddTaskRoute() {
 
   const taskTypes = getRegisteredTaskTypes().filter((t) => isPluginEnabled(t.type))
   const plugin = getPlugin(project.projectType)
-  return <TaskManagementAddTaskPage project={project} taskTypes={taskTypes} taskGroups={plugin?.taskGroups} />
+  return <TaskManagementAddTaskPage project={project} taskTypes={taskTypes} taskGroups={plugin?.taskGroups} taskLabel={plugin?.taskLabel} />
 }

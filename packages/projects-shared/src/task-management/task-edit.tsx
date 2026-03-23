@@ -5,14 +5,15 @@ import { type TaskDraft, type ProjectTask } from './types.js'
 import { useProjectTasks } from './hooks.js'
 import { TaskForm } from './components/task-form.js'
 
-export function TaskManagementEditTaskPage({ project, taskId, taskGroups }: { project: ProjectSummary; taskId: string; taskGroups?: string[] }) {
+export function TaskManagementEditTaskPage({ project, taskId, taskGroups, taskLabel }: { project: ProjectSummary; taskId: string; taskGroups?: string[]; taskLabel?: { singular: string; plural: string } }) {
+  const singular = taskLabel?.singular ?? 'Task'
   const { tasks, setTasks } = useProjectTasks(project)
   const task = tasks.find((t) => t.id === taskId) ?? null
 
   if (!task) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-gray-400">
-        Task not found.
+        {singular} not found.
       </div>
     )
   }
@@ -54,10 +55,10 @@ export function TaskManagementEditTaskPage({ project, taskId, taskGroups }: { pr
       <div className="px-8 pt-7 pb-5 border-b border-gray-100">
         <a href={`/projects/${project.id}/tasks/${taskId}`} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-4">
           <ChevronLeft size={14} />
-          Back to task
+          Back to {singular.toLowerCase()}
         </a>
-        <h1 className="text-2xl font-black text-[#1a1a1a]">Edit Task</h1>
-        <p className="text-sm text-gray-400 mt-1">Update the task details below.</p>
+        <h1 className="text-2xl font-black text-[#1a1a1a]">Edit {singular}</h1>
+        <p className="text-sm text-gray-400 mt-1">Update the {singular.toLowerCase()} details below.</p>
       </div>
       <div className="flex-1 px-8 py-6 max-w-2xl">
         <TaskForm

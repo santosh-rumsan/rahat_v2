@@ -27,5 +27,5 @@ function TaskManagementPage() {
   }
 
   const plugin = getPlugin(project.projectType)
-  return <TaskManagementModule project={project} taskGroups={plugin?.taskGroups} />
+  return <TaskManagementModule project={project} taskGroups={plugin?.taskGroups} taskLabel={plugin?.taskLabel} />
 }

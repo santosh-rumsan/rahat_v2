@@ -27,5 +27,5 @@ function TaskManagementEditRoute() {
   }
 
   const plugin = getPlugin(project.projectType)
-  return <TaskManagementEditTaskPage project={project} taskId={taskId} taskGroups={plugin?.taskGroups} />
+  return <TaskManagementEditTaskPage project={project} taskId={taskId} taskGroups={plugin?.taskGroups} taskLabel={plugin?.taskLabel} />
 }
