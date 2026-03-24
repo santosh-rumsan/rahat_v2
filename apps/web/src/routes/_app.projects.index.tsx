@@ -204,6 +204,22 @@ function ImportDialog({
   )
 }
 
+function ProjectImage({ project }: { project: { id: string; image?: string; name: string } }) {
+  const fallbackSrc = `https://picsum.photos/seed/${project.id}/800/400`
+  const [src, setSrc] = React.useState(project.image || fallbackSrc)
+
+  return (
+    <img
+      src={src}
+      alt={project.name}
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      onError={() => {
+        if (src !== fallbackSrc) setSrc(fallbackSrc)
+      }}
+    />
+  )
+}
+
 function Projects() {
   const [search, setSearch] = React.useState('')
   const [importOpen, setImportOpen] = React.useState(false)
@@ -272,11 +288,7 @@ function Projects() {
               className="bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-shadow cursor-pointer group"
             >
               <div className="relative h-36 overflow-hidden">
-                <img
-                  src={p.image}
-                  alt={p.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+                <ProjectImage project={p} />
                 <span
                   className={`absolute top-3 right-3 text-xs px-2 py-0.5 rounded font-medium ${STATUS_COLORS[p.status] ?? 'bg-gray-100 text-gray-600'}`}
                 >
