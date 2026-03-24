@@ -1,3 +1,4 @@
+export * from './trigger-management/index.js'
 export * from './beneficiary/index.js'
 export * from './benefits/index.js'
 export * from './communication/index.js'

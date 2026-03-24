@@ -113,3 +113,28 @@ export type {
 export { SERVICE_TYPES, SERVICE_TYPE_LABELS } from './types/index.js'
 export { createServiceService, idbServiceService, createApiServiceService } from './service/index.js'
 export type { ServiceService } from './service/index.js'
+export type {
+  TriggerStatement,
+  Trigger,
+  TriggerExecution,
+  TriggerOperator,
+  TriggerItemType,
+  TriggerStatus,
+  CreateTriggerStatementInput,
+  UpdateTriggerStatementInput,
+  CreateTriggerInput,
+  UpdateTriggerInput,
+  CreateTriggerExecutionInput,
+} from './types/index.js'
+export {
+  createTriggerStatementService,
+  idbTriggerStatementService,
+  createApiTriggerStatementService,
+  createTriggerService,
+  idbTriggerService,
+  createApiTriggerService,
+  createTriggerExecutionService,
+  idbTriggerExecutionService,
+  createApiTriggerExecutionService,
+} from './trigger/index.js'
+export type { TriggerStatementService, TriggerService, TriggerExecutionService } from './trigger/index.js'

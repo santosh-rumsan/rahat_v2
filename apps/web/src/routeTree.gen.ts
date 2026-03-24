@@ -40,6 +40,7 @@ import { Route as AppProjectsIdIndexRouteImport } from './routes/_app.projects.$
 import { Route as AppVendorsVendorIdEditRouteImport } from './routes/_app.vendors.$vendorId.edit'
 import { Route as AppUsersUserIdEditRouteImport } from './routes/_app.users.$userId.edit'
 import { Route as AppServicesServiceIdEditRouteImport } from './routes/_app.services.$serviceId.edit'
+import { Route as AppProjectsIdTriggersRouteImport } from './routes/_app.projects.$id.triggers'
 import { Route as AppProjectsIdTasksRouteImport } from './routes/_app.projects.$id.tasks'
 import { Route as AppProjectsIdReportsRouteImport } from './routes/_app.projects.$id.reports'
 import { Route as AppProjectsIdFundsRouteImport } from './routes/_app.projects.$id.funds'
@@ -47,12 +48,14 @@ import { Route as AppProjectsIdEditRouteImport } from './routes/_app.projects.$i
 import { Route as AppProjectsIdBenefitsRouteImport } from './routes/_app.projects.$id.benefits'
 import { Route as AppProjectsIdBeneficiariesRouteImport } from './routes/_app.projects.$id.beneficiaries'
 import { Route as AppForecastSourceIdEditRouteImport } from './routes/_app.forecast.$sourceId.edit'
+import { Route as AppProjectsIdTriggersIndexRouteImport } from './routes/_app.projects.$id.triggers.index'
 import { Route as AppProjectsIdTasksIndexRouteImport } from './routes/_app.projects.$id.tasks.index'
 import { Route as AppProjectsIdReportsIndexRouteImport } from './routes/_app.projects.$id.reports.index'
 import { Route as AppProjectsIdFundsIndexRouteImport } from './routes/_app.projects.$id.funds.index'
 import { Route as AppProjectsIdCommunicationIndexRouteImport } from './routes/_app.projects.$id.communication.index'
 import { Route as AppProjectsIdBenefitsIndexRouteImport } from './routes/_app.projects.$id.benefits.index'
 import { Route as AppProjectsIdBeneficiariesIndexRouteImport } from './routes/_app.projects.$id.beneficiaries.index'
+import { Route as AppProjectsIdTriggersStatementIdRouteImport } from './routes/_app.projects.$id.triggers.$statementId'
 import { Route as AppProjectsIdTasksAddTaskRouteImport } from './routes/_app.projects.$id.tasks.add-task'
 import { Route as AppProjectsIdTasksTaskIdRouteImport } from './routes/_app.projects.$id.tasks.$taskId'
 import { Route as AppProjectsIdCommunicationAddRouteImport } from './routes/_app.projects.$id.communication.add'
@@ -63,8 +66,11 @@ import { Route as AppProjectsIdBenefitsAddRouteImport } from './routes/_app.proj
 import { Route as AppProjectsIdBeneficiariesGroupsRouteImport } from './routes/_app.projects.$id.beneficiaries.groups'
 import { Route as AppProjectsIdBeneficiariesAddRouteImport } from './routes/_app.projects.$id.beneficiaries.add'
 import { Route as AppForecastSourceIdGlofasItemIndexRouteImport } from './routes/_app.forecast.$sourceId.glofas.$itemIndex'
+import { Route as AppProjectsIdTriggersStatementIdIndexRouteImport } from './routes/_app.projects.$id.triggers.$statementId.index'
 import { Route as AppProjectsIdTasksTaskIdIndexRouteImport } from './routes/_app.projects.$id.tasks.$taskId.index'
 import { Route as AppProjectsIdBenefitsBenefitIdIndexRouteImport } from './routes/_app.projects.$id.benefits.$benefitId.index'
+import { Route as AppProjectsIdTriggersStatementIdConfigureRouteImport } from './routes/_app.projects.$id.triggers.$statementId.configure'
+import { Route as AppProjectsIdTriggersStatementIdAddRouteImport } from './routes/_app.projects.$id.triggers.$statementId.add'
 import { Route as AppProjectsIdTasksTaskIdEditRouteImport } from './routes/_app.projects.$id.tasks.$taskId.edit'
 import { Route as AppProjectsIdBenefitsBenefitIdEditRouteImport } from './routes/_app.projects.$id.benefits.$benefitId.edit'
 import { Route as AppProjectsIdBeneficiariesBeneficiaryIdEditRouteImport } from './routes/_app.projects.$id.beneficiaries.$beneficiaryId.edit'
@@ -225,6 +231,11 @@ const AppServicesServiceIdEditRoute =
     path: '/$serviceId/edit',
     getParentRoute: () => AppServicesRoute,
   } as any)
+const AppProjectsIdTriggersRoute = AppProjectsIdTriggersRouteImport.update({
+  id: '/triggers',
+  path: '/triggers',
+  getParentRoute: () => AppProjectsIdRoute,
+} as any)
 const AppProjectsIdTasksRoute = AppProjectsIdTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -261,6 +272,12 @@ const AppForecastSourceIdEditRoute = AppForecastSourceIdEditRouteImport.update({
   path: '/$sourceId/edit',
   getParentRoute: () => AppForecastRoute,
 } as any)
+const AppProjectsIdTriggersIndexRoute =
+  AppProjectsIdTriggersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppProjectsIdTriggersRoute,
+  } as any)
 const AppProjectsIdTasksIndexRoute = AppProjectsIdTasksIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -294,6 +311,12 @@ const AppProjectsIdBeneficiariesIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AppProjectsIdBeneficiariesRoute,
+  } as any)
+const AppProjectsIdTriggersStatementIdRoute =
+  AppProjectsIdTriggersStatementIdRouteImport.update({
+    id: '/$statementId',
+    path: '/$statementId',
+    getParentRoute: () => AppProjectsIdTriggersRoute,
   } as any)
 const AppProjectsIdTasksAddTaskRoute =
   AppProjectsIdTasksAddTaskRouteImport.update({
@@ -355,6 +378,12 @@ const AppForecastSourceIdGlofasItemIndexRoute =
     path: '/$sourceId/glofas/$itemIndex',
     getParentRoute: () => AppForecastRoute,
   } as any)
+const AppProjectsIdTriggersStatementIdIndexRoute =
+  AppProjectsIdTriggersStatementIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AppProjectsIdTriggersStatementIdRoute,
+  } as any)
 const AppProjectsIdTasksTaskIdIndexRoute =
   AppProjectsIdTasksTaskIdIndexRouteImport.update({
     id: '/',
@@ -366,6 +395,18 @@ const AppProjectsIdBenefitsBenefitIdIndexRoute =
     id: '/$benefitId/',
     path: '/$benefitId/',
     getParentRoute: () => AppProjectsIdBenefitsRoute,
+  } as any)
+const AppProjectsIdTriggersStatementIdConfigureRoute =
+  AppProjectsIdTriggersStatementIdConfigureRouteImport.update({
+    id: '/configure',
+    path: '/configure',
+    getParentRoute: () => AppProjectsIdTriggersStatementIdRoute,
+  } as any)
+const AppProjectsIdTriggersStatementIdAddRoute =
+  AppProjectsIdTriggersStatementIdAddRouteImport.update({
+    id: '/add',
+    path: '/add',
+    getParentRoute: () => AppProjectsIdTriggersStatementIdRoute,
   } as any)
 const AppProjectsIdTasksTaskIdEditRoute =
   AppProjectsIdTasksTaskIdEditRouteImport.update({
@@ -425,6 +466,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id/funds': typeof AppProjectsIdFundsRouteWithChildren
   '/projects/$id/reports': typeof AppProjectsIdReportsRouteWithChildren
   '/projects/$id/tasks': typeof AppProjectsIdTasksRouteWithChildren
+  '/projects/$id/triggers': typeof AppProjectsIdTriggersRouteWithChildren
   '/services/$serviceId/edit': typeof AppServicesServiceIdEditRoute
   '/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
@@ -440,17 +482,22 @@ export interface FileRoutesByFullPath {
   '/projects/$id/communication/add': typeof AppProjectsIdCommunicationAddRoute
   '/projects/$id/tasks/$taskId': typeof AppProjectsIdTasksTaskIdRouteWithChildren
   '/projects/$id/tasks/add-task': typeof AppProjectsIdTasksAddTaskRoute
+  '/projects/$id/triggers/$statementId': typeof AppProjectsIdTriggersStatementIdRouteWithChildren
   '/projects/$id/beneficiaries/': typeof AppProjectsIdBeneficiariesIndexRoute
   '/projects/$id/benefits/': typeof AppProjectsIdBenefitsIndexRoute
   '/projects/$id/communication/': typeof AppProjectsIdCommunicationIndexRoute
   '/projects/$id/funds/': typeof AppProjectsIdFundsIndexRoute
   '/projects/$id/reports/': typeof AppProjectsIdReportsIndexRoute
   '/projects/$id/tasks/': typeof AppProjectsIdTasksIndexRoute
+  '/projects/$id/triggers/': typeof AppProjectsIdTriggersIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
   '/projects/$id/benefits/$benefitId/edit': typeof AppProjectsIdBenefitsBenefitIdEditRoute
   '/projects/$id/tasks/$taskId/edit': typeof AppProjectsIdTasksTaskIdEditRoute
+  '/projects/$id/triggers/$statementId/add': typeof AppProjectsIdTriggersStatementIdAddRoute
+  '/projects/$id/triggers/$statementId/configure': typeof AppProjectsIdTriggersStatementIdConfigureRoute
   '/projects/$id/benefits/$benefitId/': typeof AppProjectsIdBenefitsBenefitIdIndexRoute
   '/projects/$id/tasks/$taskId/': typeof AppProjectsIdTasksTaskIdIndexRoute
+  '/projects/$id/triggers/$statementId/': typeof AppProjectsIdTriggersStatementIdIndexRoute
   '/projects/$id/benefits/$benefitId/beneficiaries/add': typeof AppProjectsIdBenefitsBenefitIdBeneficiariesAddRoute
 }
 export interface FileRoutesByTo {
@@ -492,11 +539,15 @@ export interface FileRoutesByTo {
   '/projects/$id/funds': typeof AppProjectsIdFundsIndexRoute
   '/projects/$id/reports': typeof AppProjectsIdReportsIndexRoute
   '/projects/$id/tasks': typeof AppProjectsIdTasksIndexRoute
+  '/projects/$id/triggers': typeof AppProjectsIdTriggersIndexRoute
   '/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
   '/projects/$id/benefits/$benefitId/edit': typeof AppProjectsIdBenefitsBenefitIdEditRoute
   '/projects/$id/tasks/$taskId/edit': typeof AppProjectsIdTasksTaskIdEditRoute
+  '/projects/$id/triggers/$statementId/add': typeof AppProjectsIdTriggersStatementIdAddRoute
+  '/projects/$id/triggers/$statementId/configure': typeof AppProjectsIdTriggersStatementIdConfigureRoute
   '/projects/$id/benefits/$benefitId': typeof AppProjectsIdBenefitsBenefitIdIndexRoute
   '/projects/$id/tasks/$taskId': typeof AppProjectsIdTasksTaskIdIndexRoute
+  '/projects/$id/triggers/$statementId': typeof AppProjectsIdTriggersStatementIdIndexRoute
   '/projects/$id/benefits/$benefitId/beneficiaries/add': typeof AppProjectsIdBenefitsBenefitIdBeneficiariesAddRoute
 }
 export interface FileRoutesById {
@@ -534,6 +585,7 @@ export interface FileRoutesById {
   '/_app/projects/$id/funds': typeof AppProjectsIdFundsRouteWithChildren
   '/_app/projects/$id/reports': typeof AppProjectsIdReportsRouteWithChildren
   '/_app/projects/$id/tasks': typeof AppProjectsIdTasksRouteWithChildren
+  '/_app/projects/$id/triggers': typeof AppProjectsIdTriggersRouteWithChildren
   '/_app/services/$serviceId/edit': typeof AppServicesServiceIdEditRoute
   '/_app/users/$userId/edit': typeof AppUsersUserIdEditRoute
   '/_app/vendors/$vendorId/edit': typeof AppVendorsVendorIdEditRoute
@@ -549,17 +601,22 @@ export interface FileRoutesById {
   '/_app/projects/$id/communication/add': typeof AppProjectsIdCommunicationAddRoute
   '/_app/projects/$id/tasks/$taskId': typeof AppProjectsIdTasksTaskIdRouteWithChildren
   '/_app/projects/$id/tasks/add-task': typeof AppProjectsIdTasksAddTaskRoute
+  '/_app/projects/$id/triggers/$statementId': typeof AppProjectsIdTriggersStatementIdRouteWithChildren
   '/_app/projects/$id/beneficiaries/': typeof AppProjectsIdBeneficiariesIndexRoute
   '/_app/projects/$id/benefits/': typeof AppProjectsIdBenefitsIndexRoute
   '/_app/projects/$id/communication/': typeof AppProjectsIdCommunicationIndexRoute
   '/_app/projects/$id/funds/': typeof AppProjectsIdFundsIndexRoute
   '/_app/projects/$id/reports/': typeof AppProjectsIdReportsIndexRoute
   '/_app/projects/$id/tasks/': typeof AppProjectsIdTasksIndexRoute
+  '/_app/projects/$id/triggers/': typeof AppProjectsIdTriggersIndexRoute
   '/_app/projects/$id/beneficiaries/$beneficiaryId/edit': typeof AppProjectsIdBeneficiariesBeneficiaryIdEditRoute
   '/_app/projects/$id/benefits/$benefitId/edit': typeof AppProjectsIdBenefitsBenefitIdEditRoute
   '/_app/projects/$id/tasks/$taskId/edit': typeof AppProjectsIdTasksTaskIdEditRoute
+  '/_app/projects/$id/triggers/$statementId/add': typeof AppProjectsIdTriggersStatementIdAddRoute
+  '/_app/projects/$id/triggers/$statementId/configure': typeof AppProjectsIdTriggersStatementIdConfigureRoute
   '/_app/projects/$id/benefits/$benefitId/': typeof AppProjectsIdBenefitsBenefitIdIndexRoute
   '/_app/projects/$id/tasks/$taskId/': typeof AppProjectsIdTasksTaskIdIndexRoute
+  '/_app/projects/$id/triggers/$statementId/': typeof AppProjectsIdTriggersStatementIdIndexRoute
   '/_app/projects/$id/benefits/$benefitId/beneficiaries/add': typeof AppProjectsIdBenefitsBenefitIdBeneficiariesAddRoute
 }
 export interface FileRouteTypes {
@@ -597,6 +654,7 @@ export interface FileRouteTypes {
     | '/projects/$id/funds'
     | '/projects/$id/reports'
     | '/projects/$id/tasks'
+    | '/projects/$id/triggers'
     | '/services/$serviceId/edit'
     | '/users/$userId/edit'
     | '/vendors/$vendorId/edit'
@@ -612,17 +670,22 @@ export interface FileRouteTypes {
     | '/projects/$id/communication/add'
     | '/projects/$id/tasks/$taskId'
     | '/projects/$id/tasks/add-task'
+    | '/projects/$id/triggers/$statementId'
     | '/projects/$id/beneficiaries/'
     | '/projects/$id/benefits/'
     | '/projects/$id/communication/'
     | '/projects/$id/funds/'
     | '/projects/$id/reports/'
     | '/projects/$id/tasks/'
+    | '/projects/$id/triggers/'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
     | '/projects/$id/benefits/$benefitId/edit'
     | '/projects/$id/tasks/$taskId/edit'
+    | '/projects/$id/triggers/$statementId/add'
+    | '/projects/$id/triggers/$statementId/configure'
     | '/projects/$id/benefits/$benefitId/'
     | '/projects/$id/tasks/$taskId/'
+    | '/projects/$id/triggers/$statementId/'
     | '/projects/$id/benefits/$benefitId/beneficiaries/add'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -664,11 +727,15 @@ export interface FileRouteTypes {
     | '/projects/$id/funds'
     | '/projects/$id/reports'
     | '/projects/$id/tasks'
+    | '/projects/$id/triggers'
     | '/projects/$id/beneficiaries/$beneficiaryId/edit'
     | '/projects/$id/benefits/$benefitId/edit'
     | '/projects/$id/tasks/$taskId/edit'
+    | '/projects/$id/triggers/$statementId/add'
+    | '/projects/$id/triggers/$statementId/configure'
     | '/projects/$id/benefits/$benefitId'
     | '/projects/$id/tasks/$taskId'
+    | '/projects/$id/triggers/$statementId'
     | '/projects/$id/benefits/$benefitId/beneficiaries/add'
   id:
     | '__root__'
@@ -705,6 +772,7 @@ export interface FileRouteTypes {
     | '/_app/projects/$id/funds'
     | '/_app/projects/$id/reports'
     | '/_app/projects/$id/tasks'
+    | '/_app/projects/$id/triggers'
     | '/_app/services/$serviceId/edit'
     | '/_app/users/$userId/edit'
     | '/_app/vendors/$vendorId/edit'
@@ -720,17 +788,22 @@ export interface FileRouteTypes {
     | '/_app/projects/$id/communication/add'
     | '/_app/projects/$id/tasks/$taskId'
     | '/_app/projects/$id/tasks/add-task'
+    | '/_app/projects/$id/triggers/$statementId'
     | '/_app/projects/$id/beneficiaries/'
     | '/_app/projects/$id/benefits/'
     | '/_app/projects/$id/communication/'
     | '/_app/projects/$id/funds/'
     | '/_app/projects/$id/reports/'
     | '/_app/projects/$id/tasks/'
+    | '/_app/projects/$id/triggers/'
     | '/_app/projects/$id/beneficiaries/$beneficiaryId/edit'
     | '/_app/projects/$id/benefits/$benefitId/edit'
     | '/_app/projects/$id/tasks/$taskId/edit'
+    | '/_app/projects/$id/triggers/$statementId/add'
+    | '/_app/projects/$id/triggers/$statementId/configure'
     | '/_app/projects/$id/benefits/$benefitId/'
     | '/_app/projects/$id/tasks/$taskId/'
+    | '/_app/projects/$id/triggers/$statementId/'
     | '/_app/projects/$id/benefits/$benefitId/beneficiaries/add'
   fileRoutesById: FileRoutesById
 }
@@ -957,6 +1030,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppServicesServiceIdEditRouteImport
       parentRoute: typeof AppServicesRoute
     }
+    '/_app/projects/$id/triggers': {
+      id: '/_app/projects/$id/triggers'
+      path: '/triggers'
+      fullPath: '/projects/$id/triggers'
+      preLoaderRoute: typeof AppProjectsIdTriggersRouteImport
+      parentRoute: typeof AppProjectsIdRoute
+    }
     '/_app/projects/$id/tasks': {
       id: '/_app/projects/$id/tasks'
       path: '/tasks'
@@ -1006,6 +1086,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppForecastSourceIdEditRouteImport
       parentRoute: typeof AppForecastRoute
     }
+    '/_app/projects/$id/triggers/': {
+      id: '/_app/projects/$id/triggers/'
+      path: '/'
+      fullPath: '/projects/$id/triggers/'
+      preLoaderRoute: typeof AppProjectsIdTriggersIndexRouteImport
+      parentRoute: typeof AppProjectsIdTriggersRoute
+    }
     '/_app/projects/$id/tasks/': {
       id: '/_app/projects/$id/tasks/'
       path: '/'
@@ -1047,6 +1134,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/$id/beneficiaries/'
       preLoaderRoute: typeof AppProjectsIdBeneficiariesIndexRouteImport
       parentRoute: typeof AppProjectsIdBeneficiariesRoute
+    }
+    '/_app/projects/$id/triggers/$statementId': {
+      id: '/_app/projects/$id/triggers/$statementId'
+      path: '/$statementId'
+      fullPath: '/projects/$id/triggers/$statementId'
+      preLoaderRoute: typeof AppProjectsIdTriggersStatementIdRouteImport
+      parentRoute: typeof AppProjectsIdTriggersRoute
     }
     '/_app/projects/$id/tasks/add-task': {
       id: '/_app/projects/$id/tasks/add-task'
@@ -1118,6 +1212,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppForecastSourceIdGlofasItemIndexRouteImport
       parentRoute: typeof AppForecastRoute
     }
+    '/_app/projects/$id/triggers/$statementId/': {
+      id: '/_app/projects/$id/triggers/$statementId/'
+      path: '/'
+      fullPath: '/projects/$id/triggers/$statementId/'
+      preLoaderRoute: typeof AppProjectsIdTriggersStatementIdIndexRouteImport
+      parentRoute: typeof AppProjectsIdTriggersStatementIdRoute
+    }
     '/_app/projects/$id/tasks/$taskId/': {
       id: '/_app/projects/$id/tasks/$taskId/'
       path: '/'
@@ -1131,6 +1232,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/projects/$id/benefits/$benefitId/'
       preLoaderRoute: typeof AppProjectsIdBenefitsBenefitIdIndexRouteImport
       parentRoute: typeof AppProjectsIdBenefitsRoute
+    }
+    '/_app/projects/$id/triggers/$statementId/configure': {
+      id: '/_app/projects/$id/triggers/$statementId/configure'
+      path: '/configure'
+      fullPath: '/projects/$id/triggers/$statementId/configure'
+      preLoaderRoute: typeof AppProjectsIdTriggersStatementIdConfigureRouteImport
+      parentRoute: typeof AppProjectsIdTriggersStatementIdRoute
+    }
+    '/_app/projects/$id/triggers/$statementId/add': {
+      id: '/_app/projects/$id/triggers/$statementId/add'
+      path: '/add'
+      fullPath: '/projects/$id/triggers/$statementId/add'
+      preLoaderRoute: typeof AppProjectsIdTriggersStatementIdAddRouteImport
+      parentRoute: typeof AppProjectsIdTriggersStatementIdRoute
     }
     '/_app/projects/$id/tasks/$taskId/edit': {
       id: '/_app/projects/$id/tasks/$taskId/edit'
@@ -1299,6 +1414,43 @@ const AppProjectsIdTasksRouteChildren: AppProjectsIdTasksRouteChildren = {
 const AppProjectsIdTasksRouteWithChildren =
   AppProjectsIdTasksRoute._addFileChildren(AppProjectsIdTasksRouteChildren)
 
+interface AppProjectsIdTriggersStatementIdRouteChildren {
+  AppProjectsIdTriggersStatementIdAddRoute: typeof AppProjectsIdTriggersStatementIdAddRoute
+  AppProjectsIdTriggersStatementIdConfigureRoute: typeof AppProjectsIdTriggersStatementIdConfigureRoute
+  AppProjectsIdTriggersStatementIdIndexRoute: typeof AppProjectsIdTriggersStatementIdIndexRoute
+}
+
+const AppProjectsIdTriggersStatementIdRouteChildren: AppProjectsIdTriggersStatementIdRouteChildren =
+  {
+    AppProjectsIdTriggersStatementIdAddRoute:
+      AppProjectsIdTriggersStatementIdAddRoute,
+    AppProjectsIdTriggersStatementIdConfigureRoute:
+      AppProjectsIdTriggersStatementIdConfigureRoute,
+    AppProjectsIdTriggersStatementIdIndexRoute:
+      AppProjectsIdTriggersStatementIdIndexRoute,
+  }
+
+const AppProjectsIdTriggersStatementIdRouteWithChildren =
+  AppProjectsIdTriggersStatementIdRoute._addFileChildren(
+    AppProjectsIdTriggersStatementIdRouteChildren,
+  )
+
+interface AppProjectsIdTriggersRouteChildren {
+  AppProjectsIdTriggersStatementIdRoute: typeof AppProjectsIdTriggersStatementIdRouteWithChildren
+  AppProjectsIdTriggersIndexRoute: typeof AppProjectsIdTriggersIndexRoute
+}
+
+const AppProjectsIdTriggersRouteChildren: AppProjectsIdTriggersRouteChildren = {
+  AppProjectsIdTriggersStatementIdRoute:
+    AppProjectsIdTriggersStatementIdRouteWithChildren,
+  AppProjectsIdTriggersIndexRoute: AppProjectsIdTriggersIndexRoute,
+}
+
+const AppProjectsIdTriggersRouteWithChildren =
+  AppProjectsIdTriggersRoute._addFileChildren(
+    AppProjectsIdTriggersRouteChildren,
+  )
+
 interface AppProjectsIdRouteChildren {
   AppProjectsIdBeneficiariesRoute: typeof AppProjectsIdBeneficiariesRouteWithChildren
   AppProjectsIdBenefitsRoute: typeof AppProjectsIdBenefitsRouteWithChildren
@@ -1306,6 +1458,7 @@ interface AppProjectsIdRouteChildren {
   AppProjectsIdFundsRoute: typeof AppProjectsIdFundsRouteWithChildren
   AppProjectsIdReportsRoute: typeof AppProjectsIdReportsRouteWithChildren
   AppProjectsIdTasksRoute: typeof AppProjectsIdTasksRouteWithChildren
+  AppProjectsIdTriggersRoute: typeof AppProjectsIdTriggersRouteWithChildren
   AppProjectsIdIndexRoute: typeof AppProjectsIdIndexRoute
   AppProjectsIdCommunicationCampaignIdRoute: typeof AppProjectsIdCommunicationCampaignIdRoute
   AppProjectsIdCommunicationAddRoute: typeof AppProjectsIdCommunicationAddRoute
@@ -1319,6 +1472,7 @@ const AppProjectsIdRouteChildren: AppProjectsIdRouteChildren = {
   AppProjectsIdFundsRoute: AppProjectsIdFundsRouteWithChildren,
   AppProjectsIdReportsRoute: AppProjectsIdReportsRouteWithChildren,
   AppProjectsIdTasksRoute: AppProjectsIdTasksRouteWithChildren,
+  AppProjectsIdTriggersRoute: AppProjectsIdTriggersRouteWithChildren,
   AppProjectsIdIndexRoute: AppProjectsIdIndexRoute,
   AppProjectsIdCommunicationCampaignIdRoute:
     AppProjectsIdCommunicationCampaignIdRoute,

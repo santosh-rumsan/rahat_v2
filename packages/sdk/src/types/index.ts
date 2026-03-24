@@ -58,3 +58,16 @@ export type {
   UpdateServiceInput,
 } from './service.js'
 export { SERVICE_TYPES, SERVICE_TYPE_LABELS } from './service.js'
+export type {
+  TriggerStatement,
+  Trigger,
+  TriggerExecution,
+  TriggerOperator,
+  TriggerItemType,
+  TriggerStatus,
+  CreateTriggerStatementInput,
+  UpdateTriggerStatementInput,
+  CreateTriggerInput,
+  UpdateTriggerInput,
+  CreateTriggerExecutionInput,
+} from './trigger.js'
