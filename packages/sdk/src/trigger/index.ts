@@ -12,20 +12,20 @@ import {
   createApiTriggerService,
   createApiTriggerExecutionService,
 } from './api.js'
-import { getSDKIsDev } from '../config.js'
+
 import type { TriggerStatementService, TriggerService, TriggerExecutionService } from './service.js'
 
 export function createTriggerStatementService(apiUrl: string): TriggerStatementService {
-  if (apiUrl === 'indexdb' && getSDKIsDev()) return idbTriggerStatementService
+  if (apiUrl === 'indexdb') return idbTriggerStatementService
   return createApiTriggerStatementService(apiUrl)
 }
 
 export function createTriggerService(apiUrl: string): TriggerService {
-  if (apiUrl === 'indexdb' && getSDKIsDev()) return idbTriggerService
+  if (apiUrl === 'indexdb') return idbTriggerService
   return createApiTriggerService(apiUrl)
 }
 
 export function createTriggerExecutionService(apiUrl: string): TriggerExecutionService {
-  if (apiUrl === 'indexdb' && getSDKIsDev()) return idbTriggerExecutionService
+  if (apiUrl === 'indexdb') return idbTriggerExecutionService
   return createApiTriggerExecutionService(apiUrl)
 }

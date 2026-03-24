@@ -16,6 +16,7 @@
     "dev:select": "node scripts/dev.js",
     "dev:api": "cd apps/api && pnpm dev",
     "dev:web": "cd apps/web && pnpm dev",
+    "deploy:web": "pnpm --filter web cf:deploy",
     "format": "turbo run format --continue -- --cache --cache-location .cache/.prettiercache",
     "format:fix": "turbo run format --continue -- --write --cache --cache-location .cache/.prettiercache",
     "lint": "turbo run lint --continue -- --cache --cache-location .cache/.eslintcache",

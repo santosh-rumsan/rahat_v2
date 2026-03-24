@@ -19,7 +19,7 @@ function useFirstRun() {
   const [show, setShow] = React.useState(false)
 
   React.useEffect(() => {
-    if (!import.meta.env.DEV) return
+    if (import.meta.env.VITE_API_URL !== 'indexdb') return
     if (!localStorage.getItem(FIRST_RUN_KEY)) {
       setShow(true)
     }

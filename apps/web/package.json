@@ -6,6 +6,7 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "preview": "vite preview",
+    "cf:deploy": "wrangler pages deploy dist",
     "test": "vitest run",
     "lint": "eslint",
     "format": "prettier",
@@ -81,6 +82,7 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:",
-    "web-vitals": "catalog:"
+    "web-vitals": "catalog:",
+    "wrangler": "^4.0.0"
   }
 }

@@ -46,7 +46,9 @@ const config = defineConfig(async ({ command }) => {
   const isBuild = command === 'build'
   const devtoolsEventBusPort = isBuild ? 42069 : await getAvailablePort(42069)
   const plugins = [
-    nitro(),
+    nitro({
+      preset: 'cloudflare-pages',
+    }),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
