@@ -9,6 +9,19 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Architecture',
+      collapsed: false,
+      items: [
+        'architecture/frontend-overview',
+        'architecture/plugin-system',
+        'architecture/data-management',
+        'architecture/routing-and-layouts',
+        'architecture/component-architecture',
+        'architecture/diagrams',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Features',
       collapsed: false,
       items: [

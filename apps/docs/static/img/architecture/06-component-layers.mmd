@@ -1,0 +1,36 @@
+graph TB
+    subgraph "Layer 1: Route Pages"
+        L1["apps/web/src/routes/*<br/>Page-level composition"]
+    end
+
+    subgraph "Layer 2: Shared Domain Components"
+        L2A["Beneficiary<br/>List, Form, Detail"]
+        L2B["Tasks<br/>Form, Edit, Preview"]
+        L2C["Benefits<br/>FormPage, TokenAssign"]
+        L2D["Communication<br/>CampaignForm, Detail"]
+    end
+
+    subgraph "Layer 3: Plugin Components"
+        L3A["Project Plugins<br/>SetupPage, DashboardPage"]
+        L3B["Task Designers<br/>SMS, Voice, Benefits"]
+        L3C["Comm Type UIs<br/>SMS, WhatsApp, Voice, Slack"]
+        L3D["Benefit Type UIs<br/>Cash, Food, WASH, NFI, Service"]
+    end
+
+    subgraph "Layer 4: UI Primitives (@rs/ui)"
+        L4["Button, Input, Select, Dialog,<br/>Card, Tabs, Badge, Table,<br/>Tooltip, Form"]
+    end
+
+    L1 --> L2A
+    L1 --> L2B
+    L1 --> L2C
+    L1 --> L3A
+    L2A --> L4
+    L2B --> L4
+    L2C --> L4
+    L2D --> L4
+    L3A --> L2A
+    L3A --> L2B
+    L3B --> L4
+    L3C --> L4
+    L3D --> L4

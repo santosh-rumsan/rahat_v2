@@ -1,0 +1,27 @@
+graph TB
+    Root["__root.tsx<br/>QueryClientProvider + SDK + Theme"]
+    App["_app.tsx<br/>AppShell (sidebar + panel + main)"]
+    Projects["_app.projects.index.tsx<br/>/projects"]
+    ProjectLayout["_app.projects.$id.tsx<br/>ProjectHeader + Outlet"]
+    Dashboard["$id.index.tsx<br/>Plugin DashboardPage"]
+    Beneficiaries["$id.beneficiaries.tsx"]
+    Tasks["$id.tasks.index.tsx"]
+    TaskEdit["$id.tasks.$taskId.edit.tsx"]
+    Benefits["$id.benefits.add.tsx"]
+    Users["_app.users.tsx<br/>/users"]
+    Funds["_app.funds.tsx<br/>/funds"]
+    Plugins["_app.plugins.tsx<br/>/plugins"]
+    Settings["_app.settings.tsx<br/>/settings"]
+
+    Root --> App
+    App --> Projects
+    App --> ProjectLayout
+    App --> Users
+    App --> Funds
+    App --> Plugins
+    App --> Settings
+    ProjectLayout --> Dashboard
+    ProjectLayout --> Beneficiaries
+    ProjectLayout --> Tasks
+    ProjectLayout --> Benefits
+    Tasks --> TaskEdit

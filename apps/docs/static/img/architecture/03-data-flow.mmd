@@ -1,0 +1,28 @@
+graph TB
+    subgraph "UI Layer"
+        Component["React Component"]
+    end
+
+    subgraph "React Query Layer"
+        Hook["Custom Hook<br/>(useUsers, useBeneficiaries)"]
+        QC["QueryClient<br/>(cache, refetch, invalidate)"]
+    end
+
+    subgraph "SDK Layer"
+        Factory["Service Factory<br/>(createUserService, etc.)"]
+        REST["REST Adapter"]
+        IDB["IndexedDB Adapter"]
+    end
+
+    subgraph Backend
+        API["NestJS API"]
+        DB[(Database)]
+    end
+
+    Component -->|"useQuery / useMutation"| Hook
+    Hook -->|"queryFn / mutationFn"| Factory
+    Hook ---|"cache management"| QC
+    Factory --> REST
+    Factory -.-> IDB
+    REST -->|"HTTP"| API
+    API --> DB

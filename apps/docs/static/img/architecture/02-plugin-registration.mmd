@@ -1,0 +1,37 @@
+sequenceDiagram
+    participant Entry as plugins/index.ts
+    participant PR as Project Registry
+    participant AR as App Registry
+    participant TR as Task Registry
+    participant CR as Comms Registry
+    participant BR as Benefit Registry
+
+    Note over Entry: App boots, imports plugins/index.ts
+
+    Entry->>PR: registerPlugin(CvaPlugin)
+    Entry->>PR: registerPlugin(AaPlugin)
+    Entry->>PR: registerPlugin(BeneficiaryPlugin)
+    Entry->>PR: registerPlugin(MicrolearningPlugin)
+    Entry->>PR: registerPlugin(MicroloansPlugin)
+
+    Entry->>AR: registerAppPlugin(DashboardPlugin)
+    Entry->>AR: registerAppPlugin(VendorsPlugin)
+    Entry->>AR: registerAppPlugin(FundMgmtPlugin)
+    Entry->>AR: registerAppPlugin(ForecastPlugin)
+    Entry->>AR: registerAppPlugin(ReportsPlugin)
+
+    Note over Entry: Side-effect imports (self-register)
+    Entry-->>TR: import plugin-task-sms
+    Entry-->>TR: import plugin-task-voice
+    Entry-->>TR: import plugin-task-benefits
+
+    Entry-->>CR: import plugin-comms-sms
+    Entry-->>CR: import plugin-comms-whatsapp
+    Entry-->>CR: import plugin-comms-voice
+    Entry-->>CR: import plugin-comms-slack
+
+    Entry-->>BR: import plugin-benefits-cash
+    Entry-->>BR: import plugin-benefits-food
+    Entry-->>BR: import plugin-benefits-wash
+    Entry-->>BR: import plugin-benefits-nfi
+    Entry-->>BR: import plugin-benefits-service

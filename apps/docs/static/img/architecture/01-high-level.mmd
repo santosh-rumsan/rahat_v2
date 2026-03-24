@@ -1,0 +1,38 @@
+graph TB
+    subgraph "apps/web (Vite + React 19)"
+        Routes["Routes<br/>(TanStack Router)"]
+        Layouts["Layouts<br/>(AppShell, Sidebar)"]
+        PluginSystem["Plugin System<br/>(5 registries)"]
+    end
+
+    subgraph "Shared Packages"
+        ProjectsShared["@rahataid/projects-shared<br/>Shared UI & hooks"]
+        PluginSDK["@rahataid/plugin-sdk<br/>Plugin interfaces"]
+        UI["@rs/ui<br/>Radix + Tailwind primitives"]
+        SDK["@rahataid/sdk<br/>Service factories"]
+    end
+
+    subgraph "Plugin Packages"
+        ProjectPlugins["Project Plugins<br/>CVA, AA, Beneficiary,<br/>Microlearning, Microloans"]
+        AppPlugins["App Plugins<br/>Dashboard, Vendors,<br/>Fund Mgmt, Forecast, Reports"]
+        TaskPlugins["Task Plugins<br/>SMS, Voice, Benefits"]
+        CommPlugins["Comms Plugins<br/>SMS, WhatsApp, Voice, Slack"]
+        BenefitPlugins["Benefit Plugins<br/>Cash, Food, WASH, NFI, Service"]
+    end
+
+    subgraph Backend
+        API["NestJS API<br/>(apps/api)"]
+    end
+
+    Routes --> ProjectsShared
+    Routes --> UI
+    Layouts --> UI
+    PluginSystem --> PluginSDK
+    ProjectPlugins --> PluginSDK
+    AppPlugins --> PluginSDK
+    ProjectsShared --> SDK
+    ProjectsShared --> UI
+    SDK --> API
+    TaskPlugins --> ProjectsShared
+    CommPlugins --> ProjectsShared
+    BenefitPlugins --> ProjectsShared

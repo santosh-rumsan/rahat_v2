@@ -1,0 +1,43 @@
+graph LR
+    Web["apps/web"]
+    UI["@rs/ui"]
+    SDK["@rahataid/sdk"]
+    PluginSDK["@rahataid/plugin-sdk"]
+    Shared["@rahataid/projects-shared"]
+
+    CVA["projects/cva"]
+    AA["projects/aa"]
+    BenMgmt["projects/beneficiary"]
+
+    Dashboard["plugins/core-dashboard"]
+    Vendors["plugins/core-vendors"]
+    FundMgmt["plugins/core-fund-management"]
+
+    TaskSMS["plugins/task-sms"]
+    CommsSMS["plugins/comms-sms"]
+    BenCash["plugins/benefits-cash"]
+
+    Web --> UI
+    Web --> SDK
+    Web --> PluginSDK
+    Web --> Shared
+    Web --> CVA
+    Web --> AA
+    Web --> BenMgmt
+    Web --> Dashboard
+    Web --> Vendors
+    Web --> FundMgmt
+    Web --> TaskSMS
+    Web --> CommsSMS
+    Web --> BenCash
+
+    Shared --> UI
+    Shared --> SDK
+    CVA --> PluginSDK
+    CVA --> Shared
+    AA --> PluginSDK
+    AA --> Shared
+    Dashboard --> PluginSDK
+    TaskSMS --> Shared
+    CommsSMS --> Shared
+    BenCash --> Shared
